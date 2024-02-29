@@ -7,7 +7,7 @@ Components:
    * Are supported by strong experimental evidence
    * Cover mouse and human genes (we may consider adding other mammals)
    * Are directly linked to CL terms or are closely linked via some defined pattern (e.g. if a cell type has a cellular component, then we should also pull annotations to terms for assembly and maintenance of that cell type).
-* Sources of assertions about cell type markers.
+* Sources of assertions about cell type markers:   LLMs, CL, GO, CAS.
 * Curated information about cell types and the processes they are involved in derived from LLM-based piplines.
 * In all cases, we will capture which publications support/sources support assertions.
 * Standard model for linking Gene/Protein/Transcript IDs.  TBD.  Initially at least I suggest aggregating to single Neo4J nodes and using APs.
