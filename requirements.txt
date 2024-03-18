@@ -1,5 +1,4 @@
-tiledb==0.25.0
-tiledbsoma==1.7.2
+# tiledbsoma
 cellxgene-census
 pandasaurus-cxg~=0.1.9
 pandas~=2.2.1
