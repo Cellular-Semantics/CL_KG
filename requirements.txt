@@ -1,6 +1,4 @@
-tiledb==0.25.0
-tiledbsoma==1.7.2
-cellxgene-census
-pandasaurus-cxg~=0.1.9
+cellxgene-census==1.11.1
+pandasaurus-cxg~=0.1.11
 pandas~=2.2.1
 PyYAML~=6.0.1

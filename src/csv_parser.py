@@ -5,6 +5,12 @@ import pandas as pd
 import yaml
 
 
+logging.basicConfig(level=logging.WARNING)
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+
 def generate_yaml_data(data):
     grouped_data = data.groupby("CxG link")
     _yaml_data = []
@@ -21,6 +27,7 @@ def generate_yaml_data(data):
 def write_yaml_file(yaml_data, file_path):
     with open(file_path, "w") as yaml_file:
         yaml.dump(yaml_data, yaml_file)
+        logger.info(f"{file_path} written")
 
 
 def generate_author_cell_type_config(curated_data_folder: str = "curated_data"):
@@ -36,7 +43,7 @@ def generate_author_cell_type_config(curated_data_folder: str = "curated_data"):
         elif file_name.endswith(".xlsx") or file_name.endswith(".xls"):
             df = pd.read_excel(file_path)
         else:
-            print(f"Skipping file '{file_name}' with unsupported format.")
+            logger.info(f"Skipping file '{file_name}' with unsupported format.")
             continue
 
         yaml_data = generate_yaml_data(df)

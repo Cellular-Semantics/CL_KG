@@ -6,20 +6,24 @@ import yaml
 from pandasaurus_cxg.enrichment_analysis import AnndataEnrichmentAnalyzer
 from pandasaurus_cxg.graph_generator.graph_generator import GraphGenerator
 
+logging.basicConfig(level=logging.WARNING)
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 
 def generate_rdf_graph(
     anndata_file_path: str, author_cell_type_list: List[str], output_rdf_path: str
 ):
-    print(f"Generating RDF graph using {anndata_file_path}...")
+    logger.info(f"Generating RDF graph using {anndata_file_path}...")
     aea = AnndataEnrichmentAnalyzer(anndata_file_path, author_cell_type_list)
-    # aea.enricher_manager.simple_enrichment()
     aea.analyzer_manager.co_annotation_report()
     gg = GraphGenerator(aea)
     gg.generate_rdf_graph()
     gg.set_label_adding_priority(author_cell_type_list)
     gg.add_label_to_terms()
-    # gg.enrich_rdf_graph()
     gg.save_rdf_graph(file_name=output_rdf_path)
+    logger.info(f"RDF graph has been generated for {anndata_file_path}...")
 
 
 if __name__ == "__main__":

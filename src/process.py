@@ -1,9 +1,18 @@
 import logging
 import os
+import sys
 
 from csv_parser import generate_author_cell_type_config, write_yaml_file
 from pull_anndata import download_dataset_with_id, get_dataset_dict, delete_file
 from generate_rdf import generate_rdf_graph
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.WARNING)
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+stdout_handler.setFormatter(formatter)
+logger.addHandler(stdout_handler)
 
 CONFIG_DIRECTORY = "config"
 CURATED_DATA_DIRECTORY = "curated_data"
@@ -31,4 +40,4 @@ for dataset, author_cell_types in datasets.items():
             dataset,
         ),
     )
-    print("Deleted")
+    delete_file(dataset_path)

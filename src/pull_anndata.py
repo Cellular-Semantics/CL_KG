@@ -6,6 +6,12 @@ import yaml
 import cellxgene_census
 
 
+logging.basicConfig(level=logging.WARNING)
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+
 def download_dataset_with_id(dataset_id: str, file_path: Optional[str] = None) -> str:
     """
     Download an AnnData dataset with the specified ID.
@@ -24,20 +30,20 @@ def download_dataset_with_id(dataset_id: str, file_path: Optional[str] = None) -
         os.path.join("dataset", anndata_file_path),
     )
     if os.path.exists(anndata_file_path):
-        print(f"File '{anndata_file_path}' already exists. Skipping download.")
+        logger.info(f"File '{anndata_file_path}' already exists. Skipping download.")
     else:
-        print(f"Downloading dataset with ID '{dataset_id}'...")
+        logger.info(f"Downloading dataset with ID '{dataset_id} to {anndata_file_path}'...")
         cellxgene_census.download_source_h5ad(dataset_id, to_path=anndata_file_path)
-        print(f"Download complete. File saved at '{anndata_file_path}'.")
+        logger.info(f"Download complete. File saved at '{anndata_file_path}'.")
     return anndata_file_path
 
 
 def delete_file(file_name):
     try:
         os.remove(file_name)
-        print(f"File '{file_name}' deleted successfully.")
+        logger.info(f"File '{file_name}' deleted successfully.")
     except OSError as e:
-        print(f"Error deleting file '{file_name}': {e}")
+        logger.info(f"Error deleting file '{file_name}': {e}")
 
 
 def get_dataset_dict(input_source: List[Dict]):
