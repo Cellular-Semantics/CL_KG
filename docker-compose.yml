@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  anndata2rdf:
+    image: anndata2rdf:latest
+    volumes:
+      - ./src/config:/app/config
+      - ./src/curated_data:/app/curated_data
+      - ./src/dataset:/app/dataset
+      - ./src/graph:/app/graph
+    privileged: true
+    working_dir: /app
+    command: python3.9 -u process.py
