@@ -3,11 +3,9 @@ version: '3.8'
 services:
   anndata2rdf:
     image: anndata2rdf:latest
+    container_name: anndata_to_rdf
     volumes:
-      - ./src/config:/app/config
-      - ./src/curated_data:/app/curated_data
-      - ./src/dataset:/app/dataset
-      - ./src/graph:/app/graph
-    privileged: true
-    working_dir: /app
-    command: python3.9 -u process.py
+      - ./src/config:/app/src/config
+      - ./src/curated_data:/app/src/curated_data
+      - ./src/dataset:/app/src/dataset
+      - ./src/graph:/app/src/graph
