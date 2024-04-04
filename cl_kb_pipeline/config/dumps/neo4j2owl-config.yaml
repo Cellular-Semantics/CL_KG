@@ -1,0 +1,53 @@
+allow_entities_without_labels: true
+index: false
+testmode: false
+batch: true
+safe_label: loose
+batch_size: 100000000
+relation_type_threshold: 0.95
+represent_values_and_annotations_as_json:
+  iris:
+    - "http://purl.obolibrary.org/obo/IAO_0000115"
+    - "http://www.geneontology.org/formats/oboInOwl#hasExactSynonym"
+    - "http://www.geneontology.org/formats/oboInOwl#hasNarrowSynonym"
+    - "http://www.geneontology.org/formats/oboInOwl#hasBroadSynonym"
+    - "http://www.geneontology.org/formats/oboInOwl#hasRelatedSynonym"
+
+neo_node_labelling:
+  - classes:
+      - CL:0000000
+    label: Cell
+
+curie_map:
+  GITHUB: https://github.com/
+  GITHUBH: http://github.com/
+  PMID: http://www.ncbi.nlm.nih.gov/pubmed/
+  orcid: https://orcid.org/
+  doi: https://doi.org/
+  rdfs: http://www.w3.org/2000/01/rdf-schema#
+  ncbigene: http://www.ncbi.nlm.nih.gov/gene/
+  cc: http://creativecommons.org/ns#
+  pato_rel: http://purl.obolibrary.org/obo/pato#
+  so_rel: http://purl.obolibrary.org/obo/so#
+  ro_rel: http://www.obofoundry.org/ro/ro.owl#
+  owl: http://www.w3.org/2002/07/owl#
+  skos: http://www.w3.org/2004/02/skos/core#
+  ensembl: http://identifiers.org/ensembl/
+  RO: http://purl.obolibrary.org/obo/RO_
+  UBERON: http://purl.obolibrary.org/obo/UBERON_
+  CL: http://purl.obolibrary.org/obo/CL_
+  n2o: http://n2o.neo/custom/
+  ILX: http://uri.interlex.org/base/ilx_
+  NCBITaxon: http://purl.obolibrary.org/obo/NCBITaxon_
+  PR: http://purl.obolibrary.org/obo/PR_
+  SO: http://purl.obolibrary.org/obo/SO_
+  OBI: http://purl.obolibrary.org/obo/OBI_
+  PCL: http://purl.obolibrary.org/obo/PCL_
+
+filters:
+  solr:
+    exclusion:
+      iri_prefix:
+        - http://virtualflybrain.org/reports/VFBc_
+      neo4j_node_label:
+        - Channel
