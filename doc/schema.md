@@ -1,4 +1,4 @@
-Status: Draft
+**Status**: Draft
 
 # OWL/RDF to Neo4j Schema
 
@@ -50,14 +50,20 @@ Generate a cluster (cell set) node for the cell_type & relate this as above. One
 Note - this is relatively rare in CxG.
 
 
-## Cell sets to standard CxG metadata (apart from cell ontlogy terms)
+## Cell sets to standard [CxG metadata](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/5.0.0/schema.md) (apart from cell ontlogy terms)
 
+```cypher
 (c:Cluster)-[:CxG_metadata_key { percent_overlap: <float> }]-(x)
+```
 
-Where precent_overlap = percent of cells in cell_set defined by author annotation that are in cell_set defined by 
+Where percent_overlap = percent of cells in cell_set defined by author annotation that are in cell_set defined by metadata annotation.
 
-e.g. 
+e.g.
+```cypher
 (c:Cluster)-[:tissue { percent_overlap: 50.5 }]->(:Class { label: 'cornea', short_form: 'UBERON_'})
+```
+
+Above properties are reprented as OBASK builtin
 
 ## Markers/marker sets
 
