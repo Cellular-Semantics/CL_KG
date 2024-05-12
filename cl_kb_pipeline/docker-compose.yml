@@ -49,7 +49,7 @@ services:
     depends_on:
       triplestore:
         condition: service_started
-      obask-collectdata:
+      anndata2rdf:
         condition: service_completed_successfully
     volumes:
       - ./config/collectdata:/opt/conf_base/config/collectdata

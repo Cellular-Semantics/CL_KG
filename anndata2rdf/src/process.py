@@ -60,4 +60,4 @@ for dataset, author_cell_types in datasets.items():
             get_dataset_id_from_h5ad_link(dataset),
         ),
     )
-    # delete_file(dataset_path)
+    delete_file(dataset_path)
