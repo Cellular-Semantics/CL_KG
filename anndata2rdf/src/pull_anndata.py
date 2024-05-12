@@ -1,9 +1,9 @@
 import logging
 import os
 from typing import Dict, List, Optional, Union
-import yaml
 
-import cellxgene_census
+import requests
+import yaml
 
 
 logging.basicConfig(level=logging.WARNING)
@@ -38,6 +38,42 @@ def download_dataset_with_id(dataset_id: str, file_path: Optional[str] = None) -
     return anndata_file_path
 
 
+def download_dataset_with_url(dataset_url: str, file_path: Optional[str] = None) -> str:
+    """
+    Download an AnnData dataset with the specified url.
+
+    Args:
+        dataset_url (str): The url of the dataset to download.
+        file_path (Optional[str], optional): The file path to save the downloaded AnnData. If not provided,
+            the dataset_id will be used as the file name. Defaults to None.
+
+    Returns:
+        str: The path to the downloaded file
+    """
+
+    anndata_file_path = f"{get_dataset_id_from_h5ad_link(dataset_url)}.h5ad" if file_path is None else file_path
+    anndata_file_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        os.path.join("dataset", anndata_file_path),
+    )
+    if os.path.exists(anndata_file_path):
+        print("File already exists. Skipping download.")
+    else:
+
+        response = requests.get(dataset_url)
+        if response.status_code == 200:
+            with open(anndata_file_path, 'wb') as f:
+                f.write(response.content)
+            print("File downloaded successfully.")
+        else:
+            print("Failed to download the file.")
+    return anndata_file_path
+
+
+def get_dataset_id_from_h5ad_link(dataset_url):
+    return dataset_url.split('/')[-1].split('.')[0]
+
+
 def delete_file(file_name):
     try:
         os.remove(file_name)
@@ -50,8 +86,11 @@ def get_dataset_dict(input_source: List[Dict]):
     cxg_dataset_dict = {}
     for config in input_source:
         cxg_link = config["CxG_link"]
-        cxg_id = get_dataset_id_from_link(cxg_link)
-        cxg_dataset_dict.update({cxg_id.split(".")[0]: config["author_cell_type_list"]})
+        if cxg_link.endswith(".cxg"):
+            cxg_id = get_dataset_id_from_link(cxg_link)
+            cxg_dataset_dict.update({cxg_id.split(".")[0]: config["author_cell_type_list"]})
+        else:
+            cxg_dataset_dict.update({cxg_link: config["author_cell_type_list"]})
     return cxg_dataset_dict
 
 
@@ -76,4 +115,4 @@ if __name__ == "__main__":
     )
     datasets = get_dataset_dict(config_list)
     for dataset in datasets.keys():
-        dataset_name = download_dataset_with_id(dataset)
+        dataset_name = download_dataset_with_url(dataset)

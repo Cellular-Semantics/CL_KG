@@ -1,6 +1,15 @@
 version: '3.8'
 
 services:
+  anndata2rdf:
+    image: anndata2rdf:latest
+    container_name: anndata_to_rdf
+    volumes:
+      - ../anndata2rdf/src/config:/app/src/config
+      - ../anndata2rdf/src/curated_data:/app/src/curated_data
+      - ../anndata2rdf/src/dataset:/app/src/dataset
+      - obask_data:/app/src/graph
+    command: /bin/sh -c "python src/process.py && mkdir -p /app/src/graph/local_ontologies && mv /app/src/graph/*.owl /app/src/graph/local_ontologies/"
   triplestore:
     image: eclipse/rdf4j-workbench:3.7.7
     container_name: triplestore
@@ -38,7 +47,10 @@ services:
     image: ghcr.io/obasktools/pipeline-collectdata:latest
     container_name: collectdata
     depends_on:
-      - triplestore
+      triplestore:
+        condition: service_started
+      obask-collectdata:
+        condition: service_completed_successfully
     volumes:
       - ./config/collectdata:/opt/conf_base/config/collectdata
       - obask_data:/out

@@ -12,7 +12,8 @@ logger.setLevel(logging.INFO)
 
 
 def generate_yaml_data(data):
-    grouped_data = data.groupby("CxG link")
+    filtered_df = data[data["Content"] == "cell types"]
+    grouped_data = filtered_df.groupby("h5ad link")
     _yaml_data = []
     for link, group_df in grouped_data:
         author_cell_type_list = [

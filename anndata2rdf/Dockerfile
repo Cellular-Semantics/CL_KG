@@ -1,24 +1,26 @@
-FROM python:3.9
+FROM python:3.10
 
 SHELL ["/bin/bash", "-c"]
 
-RUN apt-get update && apt-get install -y build-essential graphviz libgraphviz-dev pkg-config zip unzip tar ninja-build  \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y build-essential graphviz libgraphviz-dev pkg-config libhdf5-dev && apt-get clean && rm \
+    -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-ENV VENV="/opt/env"
-ENV PATH="$VENV/bin:$PATH"
-
-RUN python -m venv $VENV
-
-RUN python3 -m venv $VENV
-
-RUN pip3 install --upgrade pip wheel
+#ENV VENV="/opt/env"
+#ENV PATH="$VENV/bin:$PATH"
+#
+#RUN python3 -m venv $VENV
 
 COPY requirements.txt ./
-RUN pip install -r requirements.txt
+RUN pip3 install --upgrade pip
+RUN pip3 install -r requirements.txt
 
-COPY src/ ./src
+RUN mkdir -p src/config src/curated_data src/dataset src/graph
+
+COPY src/csv_parser.py ./src
+COPY src/pull_anndata.py ./src
+COPY src/generate_rdf.py ./src
+COPY src/process.py ./src
 
 CMD ["python", "src/process.py"]
