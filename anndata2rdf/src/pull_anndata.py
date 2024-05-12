@@ -57,16 +57,16 @@ def download_dataset_with_url(dataset_url: str, file_path: Optional[str] = None)
         os.path.join("dataset", anndata_file_path),
     )
     if os.path.exists(anndata_file_path):
-        print("File already exists. Skipping download.")
+        logger.info(f"File '{anndata_file_path}' already exists. Skipping download.")
     else:
-
+        logger.info(f"Downloading dataset with URL '{dataset_url} to {anndata_file_path}'...")
         response = requests.get(dataset_url)
         if response.status_code == 200:
             with open(anndata_file_path, 'wb') as f:
                 f.write(response.content)
-            print("File downloaded successfully.")
+            logger.info(f"Download complete. File saved at '{anndata_file_path}'.")
         else:
-            print("Failed to download the file.")
+            logger.info(f"Failed to download the dataset with URL '{dataset_url}'...")
     return anndata_file_path
 
 
