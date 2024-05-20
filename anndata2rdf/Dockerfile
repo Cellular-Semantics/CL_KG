@@ -7,11 +7,6 @@ RUN apt-get update && apt-get install -y build-essential graphviz libgraphviz-de
 
 WORKDIR /app
 
-#ENV VENV="/opt/env"
-#ENV PATH="$VENV/bin:$PATH"
-#
-#RUN python3 -m venv $VENV
-
 COPY requirements.txt ./
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt

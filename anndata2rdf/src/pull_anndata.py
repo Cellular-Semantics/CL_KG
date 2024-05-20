@@ -32,7 +32,9 @@ def download_dataset_with_id(dataset_id: str, file_path: Optional[str] = None) -
     if os.path.exists(anndata_file_path):
         logger.info(f"File '{anndata_file_path}' already exists. Skipping download.")
     else:
-        logger.info(f"Downloading dataset with ID '{dataset_id} to {anndata_file_path}'...")
+        logger.info(
+            f"Downloading dataset with ID '{dataset_id} to {anndata_file_path}'..."
+        )
         cellxgene_census.download_source_h5ad(dataset_id, to_path=anndata_file_path)
         logger.info(f"Download complete. File saved at '{anndata_file_path}'.")
     return anndata_file_path
@@ -51,7 +53,11 @@ def download_dataset_with_url(dataset_url: str, file_path: Optional[str] = None)
         str: The path to the downloaded file
     """
 
-    anndata_file_path = f"{get_dataset_id_from_h5ad_link(dataset_url)}.h5ad" if file_path is None else file_path
+    anndata_file_path = (
+        f"{get_dataset_id_from_h5ad_link(dataset_url)}.h5ad"
+        if file_path is None
+        else file_path
+    )
     anndata_file_path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
         os.path.join("dataset", anndata_file_path),
@@ -59,10 +65,12 @@ def download_dataset_with_url(dataset_url: str, file_path: Optional[str] = None)
     if os.path.exists(anndata_file_path):
         logger.info(f"File '{anndata_file_path}' already exists. Skipping download.")
     else:
-        logger.info(f"Downloading dataset with URL '{dataset_url} to {anndata_file_path}'...")
+        logger.info(
+            f"Downloading dataset with URL '{dataset_url} to {anndata_file_path}'..."
+        )
         response = requests.get(dataset_url)
         if response.status_code == 200:
-            with open(anndata_file_path, 'wb') as f:
+            with open(anndata_file_path, "wb") as f:
                 f.write(response.content)
             logger.info(f"Download complete. File saved at '{anndata_file_path}'.")
         else:
@@ -71,7 +79,7 @@ def download_dataset_with_url(dataset_url: str, file_path: Optional[str] = None)
 
 
 def get_dataset_id_from_h5ad_link(dataset_url):
-    return dataset_url.split('/')[-1].split('.')[0]
+    return dataset_url.split("/")[-1].split(".")[0]
 
 
 def delete_file(file_name):
@@ -88,7 +96,9 @@ def get_dataset_dict(input_source: List[Dict]):
         cxg_link = config["CxG_link"]
         if cxg_link.endswith(".cxg"):
             cxg_id = get_dataset_id_from_link(cxg_link)
-            cxg_dataset_dict.update({cxg_id.split(".")[0]: config["author_cell_type_list"]})
+            cxg_dataset_dict.update(
+                {cxg_id.split(".")[0]: config["author_cell_type_list"]}
+            )
         else:
             cxg_dataset_dict.update({cxg_link: config["author_cell_type_list"]})
     return cxg_dataset_dict
