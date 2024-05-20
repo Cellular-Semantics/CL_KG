@@ -20,7 +20,7 @@ jobs:
     - name: Schema validation
       id: schema
       run: |
-        python src/test_neo2owl_config.py
+        python cl_kb_pipeline/src/test_neo2owl_config.py
     - name: Prepare schema validator comment
       if: failure()
       run: |
