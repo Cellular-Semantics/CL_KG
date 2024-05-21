@@ -32,7 +32,7 @@ if __name__ == "__main__":
     with open(
         os.path.join(
             config_dir,
-            "rdf_config.yaml",
+            "cxg_author_cell_type.yaml",
         ),
         "r",
     ) as file:

@@ -1,0 +1,2 @@
+### `curated_data` 
+This directory holds the original CSV files that are used as the starting point of the data processing pipeline. These files are read and processed to generate corresponding YAML configurations.

@@ -1,0 +1,39 @@
+name: YAML schema validator
+on:
+  # Triggers the workflow on pull request events but only for the main branch
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'cl_kb_pipeline/config/dumps/neo4j2owl-config.yaml'
+permissions:
+    pull-requests: write
+
+jobs:
+  yaml-schema-validation:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: pip install ruamel.yaml==0.17.21 jsonschema==4.4.0
+    - name: Schema validation
+      id: schema
+      run: |
+        python cl_kb_pipeline/src/test_neo2owl_config.py
+    - name: Prepare schema validator comment
+      if: failure()
+      run: |
+        echo "cl_kb_pipeline/config/dumps/neo4j2owl-config.yaml file failed the schema validation check   " > comment.md; cat validation.report >> comment.md
+    - name: Prepare success comment
+      run: |
+        echo "cl_kb_pipeline/config/dumps/neo4j2owl-config.yaml file passed validation check   " > comment.md
+    - name: Post comment validator comment
+      if: always()
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      uses: NejcZdovc/comment-pr@v1.1.1
+      with:
+        file: "../../comment.md"

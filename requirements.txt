@@ -1,4 +1,0 @@
-cellxgene-census==1.11.1
-pandasaurus-cxg~=0.1.11
-pandas~=2.2.1
-PyYAML~=6.0.1

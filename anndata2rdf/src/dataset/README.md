@@ -1,0 +1,2 @@
+### `dataset`
+Stores the datasets downloaded according to the instructions specified in the YAML files located in the `config` directory. These datasets are then used for further processing and analysis.

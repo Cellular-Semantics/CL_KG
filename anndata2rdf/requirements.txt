@@ -1,0 +1,3 @@
+pandasaurus-cxg
+pandas
+PyYAML~=6.0.1
