@@ -5,6 +5,8 @@ on:
     branches: [ main ]
     paths:
       - 'cl_kb_pipeline/config/dumps/neo4j2owl-config.yaml'
+permissions:
+    pull-requests: write
 
 jobs:
   yaml-schema-validation:
