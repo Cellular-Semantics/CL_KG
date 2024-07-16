@@ -1,6 +1,8 @@
 ## KG query guide
 
-## 
+Other relevant docs: 
+
+[CL_KG user stories, schema and roadmap](https://docs.google.com/document/d/1CIvy_NV1poK1wK-lY9E_sksOIRDxMyyBc-ZZLzD8OrM/edit#heading=h.vq3lz7r6domf)
 
 ### Useful MATCH clauses
 
