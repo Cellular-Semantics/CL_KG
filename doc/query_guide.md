@@ -34,6 +34,11 @@ MATCH (s1)<-[:subcluster_of*..]-(s2)
 
 **Clause to find the proportion of cells in a cell set from specific tissue**
 
+```cypher
+MATCH cc:Cell_cluster{label: 'Enterocyte'})-[t:tissue]->(anat)
+RETURN t.percentage, anat.label, anat.short_form
+```
+
 ## Putting it all together
 
 Query to find the proportion of cells by tissue on a specific annotation.  This was motivated by finding an annotation:
