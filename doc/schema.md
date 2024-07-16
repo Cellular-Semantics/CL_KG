@@ -33,34 +33,20 @@ Where there is a 1:1 relationship between a cell set defined by a cell_type anno
 
 'composed primarily of' ([RO:0002473](https://www.ebi.ac.uk/ols4/ontologies/ro/properties/http%253A%252F%252Fpurl.obolibrary.org%252Fobo%252FRO_0002473))
 
-Where a cell set defined by a cell_type annotation doesn't map to single cell set defined by author category annotation, but subsumes >1 of these, this is represented as:
-
-TBD
-
-proposal 1:
-
-```cypher
-(c:Cluster)-[:cluster_overlaps]->(cl:Cell:Class) // Relations needs to be requested.  Use built-in for now
-```
-
-proposal 2: 
-
-Generate a cluster (cell set) node for the cell_type & relate this as above. One advantage of this is that it allows for CxG metadata to be consistently attached to an author annotation node.
-
-Note - this is relatively rare in CxG.
+Where a cell set defined by a cell_type annotation doesn't map to single cell set defined by author category annotation, but subsumes >1 of these, we generate a cluster (cell set) node for the cell_type & relate this as above. One advantage of this is that it allows for CxG metadata to be consistently attached to an author annotation node.
 
 
 ## Cell sets to standard [CxG metadata](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/5.0.0/schema.md) (apart from cell ontlogy terms)
 
 ```cypher
-(c:Cluster)-[:CxG_metadata_key { percent_overlap: <float> }]-(x)
+(c:Cluster)-[:CxG_metadata_key { percentage: <float> }]-(x)
 ```
 
-Where percent_overlap = percent of cells in cell_set defined by author annotation that are in cell_set defined by metadata annotation.
+Where percentage = percent of cells in cell_set defined by author annotation that are in cell_set defined by metadata annotation.
 
 e.g.
 ```cypher
-(c:Cluster)-[:tissue { percent_overlap: 50.5 }]->(:Class { label: 'cornea', short_form: 'UBERON_'})
+(c:Cluster)-[:tissue { percentage: 50.5 }]->(:Class { label: 'cornea', short_form: 'UBERON_'})
 ```
 
 Above properties are reprented as OBASK builtin
