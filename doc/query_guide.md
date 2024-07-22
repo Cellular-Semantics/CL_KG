@@ -4,6 +4,12 @@ Other relevant docs:
 
 [CL_KG user stories, schema and roadmap](https://docs.google.com/document/d/1CIvy_NV1poK1wK-lY9E_sksOIRDxMyyBc-ZZLzD8OrM/edit#heading=h.vq3lz7r6domf)
 
+[OWL-2-NEO mapping](https://github.com/OBASKTools/neo4j2owl/blob/master/README.md#owl-2-el---neo4j-mapping-direct-existentials)
+
+## Access:
+
+Access is currently restricted to the Sanger VPN - see [How to connect](https://docs.google.com/document/d/1cqiOY3LTQpYy8Bd3kXHLVoegw8zKiS1RWBLJ7qAnFCM/edit).
+
 ### Useful MATCH clauses
 
 **Clause to find author annotated cell sets for a specific dataset:**
@@ -47,10 +53,12 @@ Query to find the proportion of cells by tissue on a specific annotation.  This 
 
 Author_cell_type: 'Enterocyte'; cell_type: 'enterocyte of colon'
 
+Question: Does the tissue origin justify annotating this as a cell type of the colon.
 
 ```cypher
 MATCH (cc:Cell_cluster)-[:has_source]->(ds { publication: ['https://doi.org/10.1038/s41586-021-03852-1']}) 
-MATCH p=(c:Cell { label: 'enterocyte of colon'})<-[:composed_primarily_of]-(cc:Cell_cluster{label: 'Enterocyte'})-[t:tissue]->(anat)
+MATCH p=(c:Cell { label: 'enterocyte of colon'})<-[:composed_primarily_of]
+-(cc:Cell_cluster{label: 'Enterocyte'})-[t:tissue]->(anat)
 RETURN anat.label, t.percentage[0]
 ```
 anat.label | t.percentage[0]
@@ -66,11 +74,28 @@ colon | 0.9
 Conclusion:  >97% if cells are from the small intestine so this annotation is incorrect.
 
 
-**Find leaf node CL terms with nested cell sets underneath**
+** For a specific dataset, find author annotations that are more granular than the CxG CL annotation
+
+```cypher
+MATCH (s1:Cell_cluster)-[:has_source]->(ds) 
+WHERE ds.publication = ['https://doi.org/10.1038/s41586-021-03852-1']
+MATCH p=(c:Class:Cell)<-[:composed_primarily_of]-(s1)<-[:subcluster_of*..]-(s2)
+RETURN p
+```
+
+The above
+
+** For a specific dataset, find all 
+
+
 
 ```cypher
 MATCH p=(c:Class:Cell)<-[:composed_primarily_of]-(s1)<-[:subcluster_of*..]-(s2) where not (c)<-[:SUBCLASSOF]-() return p
 ```
+
+
+**Find leaf node CL terms with nested cell sets underneath**
+
 
 Example results from Sikemma:
 
