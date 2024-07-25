@@ -74,7 +74,7 @@ colon | 0.9
 Conclusion:  >97% if cells are from the small intestine so this annotation is incorrect.
 
 
-** For a specific dataset, find author annotations that are more granular than the CxG CL annotation
+**For a specific dataset, find author annotations that are more granular than the CxG CL annotation**
 
 ```cypher
 MATCH (s1:Cell_cluster)-[:has_source]->(ds) 
@@ -83,11 +83,7 @@ MATCH p=(c:Class:Cell)<-[:composed_primarily_of]-(s1)<-[:subcluster_of*..]-(s2)
 RETURN p
 ```
 
-The above
-
-** For a specific dataset, find all 
-
-
+**For all datasets, find author annotations taht are more granular than the CxG CL annotation, and where the CL term is a leaf node**
 
 ```cypher
 MATCH p=(c:Class:Cell)<-[:composed_primarily_of]-(s1)<-[:subcluster_of*..]-(s2) where not (c)<-[:SUBCLASSOF]-() return p
