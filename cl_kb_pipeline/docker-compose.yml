@@ -9,7 +9,7 @@ services:
       - ../anndata2rdf/src/curated_data:/app/src/curated_data
       - ../anndata2rdf/src/dataset:/app/src/dataset
       - obask_data:/app/src/graph
-    command: /bin/sh -c "python src/process.py && mkdir -p /app/src/graph/local_ontologies && mv /app/src/graph/*.owl /app/src/graph/local_ontologies/"
+    command: /bin/sh -c "python src/process.py && mkdir -p /app/src/graph/local_ontologies && cp /app/src/graph/*.owl /app/src/graph/local_ontologies/"
   triplestore:
     image: eclipse/rdf4j-workbench:3.7.7
     container_name: triplestore

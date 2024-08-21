@@ -13,7 +13,7 @@ logger.setLevel(logging.INFO)
 
 
 def generate_rdf_graph(
-    anndata_file_path: str, author_cell_type_list: List[str], output_rdf_path: str
+        anndata_file_path: str, author_cell_type_list: List[str], output_rdf_path: str
 ):
     logger.info(f"Generating RDF graph using {anndata_file_path}...")
     aea = AnndataEnrichmentAnalyzer(anndata_file_path, author_cell_type_list)
@@ -22,6 +22,12 @@ def generate_rdf_graph(
     gg.generate_rdf_graph()
     gg.set_label_adding_priority(author_cell_type_list)
     gg.add_label_to_terms()
+    metadata_field_list = ["tissue", 'disease', 'development_stage', 'organism']
+    for field_name in metadata_field_list:
+        if field_name in aea.enricher_manager.anndata.obs.columns:
+            continue
+        metadata_field_list.remove(field_name)
+    gg.add_metadata_nodes(metadata_fields=metadata_field_list)
     gg.save_rdf_graph(file_name=output_rdf_path)
     logger.info(f"RDF graph has been generated for {anndata_file_path}...")
 

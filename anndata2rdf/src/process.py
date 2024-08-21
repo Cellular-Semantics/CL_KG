@@ -18,6 +18,7 @@ stdout_handler.setLevel(logging.INFO)
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 stdout_handler.setFormatter(formatter)
 logger.addHandler(stdout_handler)
+logger.setLevel(logging.INFO)
 
 CONFIG_DIRECTORY = "config"
 CURATED_DATA_DIRECTORY = "curated_data"
@@ -35,13 +36,15 @@ output_file_path = os.path.join(
 write_yaml_file(cxg_author_cell_type_yaml, output_file_path)
 datasets = get_dataset_dict(cxg_author_cell_type_yaml)
 for dataset, author_cell_types in datasets.items():
-    dataset_path = download_dataset_with_url(dataset)
-    generate_rdf_graph(
-        dataset_path,
-        author_cell_types,
-        os.path.join(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), GRAPH_DIRECTORY),
-            get_dataset_id_from_h5ad_link(dataset),
-        ),
-    )
-    delete_file(dataset_path)
+    rdf_output_path = os.path.join(os.path.join(os.path.dirname(os.path.abspath(__file__)), GRAPH_DIRECTORY),get_dataset_id_from_h5ad_link(dataset),)
+    logger.info(rdf_output_path)
+    if os.path.exists(rdf_output_path + ".owl"):
+        logger.info(f"RDF graph '{rdf_output_path}' already exists. Skipping process.")
+    else:
+        dataset_path = download_dataset_with_url(dataset)
+        generate_rdf_graph(
+            dataset_path,
+            author_cell_types,
+            rdf_output_path,
+        )
+        delete_file(dataset_path)
