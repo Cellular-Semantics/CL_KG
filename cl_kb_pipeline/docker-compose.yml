@@ -8,8 +8,8 @@ services:
       - ../anndata2rdf/src/config:/app/src/config
       - ../anndata2rdf/src/curated_data:/app/src/curated_data
       - ../anndata2rdf/src/dataset:/app/src/dataset
-      - obask_data:/app/src/graph
-    command: /bin/sh -c "python src/process.py && mkdir -p /app/src/graph/local_ontologies && mv /app/src/graph/*.owl /app/src/graph/local_ontologies/"
+      - ./config/collectdata/local_ontologies:/app/src/graph/
+    command: /bin/sh -c "python src/process.py"
   triplestore:
     image: eclipse/rdf4j-workbench:3.7.7
     container_name: triplestore
