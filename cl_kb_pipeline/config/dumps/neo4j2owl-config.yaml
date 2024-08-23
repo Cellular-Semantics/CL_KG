@@ -20,6 +20,10 @@ neo_node_labelling:
   - classes:
       - PCL:0010001
     label: Cell_cluster
+  - classes:
+      - sc:Dataset
+    label: Dataset
+
 
 curie_map:
   GITHUB: https://github.com/
@@ -46,6 +50,7 @@ curie_map:
   SO: http://purl.obolibrary.org/obo/SO_
   OBI: http://purl.obolibrary.org/obo/OBI_
   PCL: http://purl.obolibrary.org/obo/PCL_
+  sc: https://schema.org/
 
 filters:
   solr:
