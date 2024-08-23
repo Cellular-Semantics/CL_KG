@@ -2,9 +2,8 @@ version: '3.8'
 
 services:
   anndata2rdf:
-    image: anndata2rdf:latest
-    # image: ghcr.io/obophenotype/cl_kb:main@sha256:26384c8de0416e3d9888407d73472d12709d0924cd509081f74b9b5e17e634cf
-    container_name: anndata_to_rdf_2
+    image: ghcr.io/cellular-semantics/cl_kg:main
+    container_name: anndata_to_rdf
     volumes:
       - ./src/config:/app/src/config
       - ./src/curated_data:/app/src/curated_data
