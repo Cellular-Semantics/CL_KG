@@ -1,0 +1,8 @@
+site_name: Cell Type Knowledge Graph Documentation
+nav:
+  - Home: index.md
+  - Access Guide: access_guide.md
+  - Query Guide: query_guide.md
+  - Schema: schema.md
+theme: readthedocs
+docs_dir: docs
