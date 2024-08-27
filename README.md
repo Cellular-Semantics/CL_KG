@@ -1,4 +1,4 @@
-#  Pipeline code for building a cell type knowlege graph
+#  Pipeline code for building a cell type knowledge graph
 
 Components:
 * Hierarchies of nested cell sets defined by author category cell type annotations, combined with CL annotation.
@@ -15,7 +15,7 @@ Components:
 
 Pipelines:
 * Pandasaurus extracts cell sets linked to CL terms following standard schemas
-* Python script to QuickGO API to extract relavant GO annotations
+* Python script to QuickGO API to extract relevant GO annotations
 
 Use cases:
  * Mining CxG for missing CL terms and CL annotations (Cypher queries to be defined)
