@@ -49,7 +49,9 @@ RETURN t.percentage, anat.label, anat.short_form
 
 ## Putting it all together
 
-Query to find the proportion of cells by tissue on a specific annotation.  This was motivated by finding an annotation:
+**Query to find the proportion of cells by tissue on a specific annotation**
+
+This was motivated by finding an annotation:
 
 Author_cell_type: 'Enterocyte'; cell_type: 'enterocyte of colon'
 
