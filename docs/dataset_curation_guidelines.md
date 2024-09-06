@@ -1,7 +1,8 @@
 # Dataset Curation Guidelines for Loading and File Placement
 
-This guide outlines the process for curating datasets and specifies where to place the curation 
-files for proper loading. By following these guidelines, you ensure datasets are prepared correctly 
+This guide outlines the process for curating datasets and specifies the location where 
+curation files should be placed for proper loading. By following these guidelines, you ensure 
+datasets are prepared correctly 
 for integration and that the files are stored in the appropriate directories for seamless access 
 and management.
 
@@ -12,9 +13,10 @@ into the system, ensuring they meet the required standards.
 
 ### Dataset Curation Guidelines
 
-These guidelines are designed to help curators prepare datasets for the pipeline. Below, each 
-column in the curated CSV is explained with example values to guide curators in correctly 
-filling in the necessary data taken from https://cellxgene.cziscience.com/collections/9b02383a-9358-4f0f-9795-a891ec523bcc.
+This section will instruct curators on how to correctly fill in each of the columns required in 
+a curated CSV. Examples have been provided based on the preparation of the linked dataset [here]
+(https://cellxgene.cziscience.com/collections/9b02383a-9358-4f0f-9795-a891ec523bcc) into a 
+curated CSV ready for upload.
 
 ---
 
@@ -76,7 +78,7 @@ filling in the necessary data taken from https://cellxgene.cziscience.com/collec
     
 12. **Notes:**
     - **Description**: Any additional notes or comments regarding the dataset.
-    - **Example**: "Muto et al. (2021) Nat Commun"
+    - **Example**: "Only standard categories used"
     
 13. **Study Short Name:**
     - **Description**: The shortened name or acronym of the study associated with the dataset.
@@ -87,8 +89,8 @@ filling in the necessary data taken from https://cellxgene.cziscience.com/collec
     - **Example**: "https://cellxgene.cziscience.com/collections/9b02383a-9358-4f0f-9795-a891ec523bcc"
     
 15. **Is the dataset Normal or Normal/Diseased:**
-    - **Description**: Indicates whether the dataset is of normal samples or includes both 
-      normal and diseased samples.
+    - **Description**: Indicates whether the dataset includes normal samples, diseased samples or 
+      both.
     - **Example**: "Normal"
     
 16. **Stage:**
