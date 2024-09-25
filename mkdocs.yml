@@ -4,6 +4,5 @@ nav:
   - Access Guide: access_guide.md
   - Query Guide: query_guide.md
   - Dataset Curation Guidelines: dataset_curation_guidelines.md
-  - Schema: schema.md
 theme: readthedocs
 docs_dir: docs
