@@ -1,6 +1,3 @@
-## Cell Ontology Knowledge Graph
+## Cell Ontology Knowledge Graph (CL-KG)
 
-CL-KG is a knowledge graph integrating the cell ontology and linked ontologies with hierarchical annotations of single cell transcriptomics data from CellXGene.  
-It's main current use is as a semantic layer for querying annotations on CELLxGENE.  Future plans include loading cell type markers, along with evidence and confidence from muliple sources and integrating GO annotation for GO terms used to define cell types.
-
-For more details please see [CL-KG schema and roadmap](https://docs.google.com/document/d/1CIvy_NV1poK1wK-lY9E_sksOIRDxMyyBc-ZZLzD8OrM/edit#heading=h.vq3lz7r6domf)
+CL-KG is a knowledge graph integrating the cell ontology and linked ontologies with hierarchical annotations of single cell transcriptomics data from CellXGene.  Its main current use is as a semantic layer for querying annotations on CELLxGENE.  Future plans include loading cell type markers, along with evidence and confidence from muliple sources and integrating GO annotation for GO terms used to define cell types. For more details please see [CL-KG schema and roadmap](https://docs.google.com/document/d/1CIvy_NV1poK1wK-lY9E_sksOIRDxMyyBc-ZZLzD8OrM/edit#heading=h.vq3lz7r6domf).
