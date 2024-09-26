@@ -1,3 +1,6 @@
 http://purl.obolibrary.org/obo/cl/cl-base.owl
 https://purl.obolibrary.org/obo/go/go-base.owl
 http://purl.obolibrary.org/obo/uberon/uberon-base.owl
+https://raw.githubusercontent.com/Cellular-Semantics/lung_demo/refs/heads/main/8bcc7ef5-f08e-49fc-824f-ced6d951138a.owl
+https://raw.githubusercontent.com/Cellular-Semantics/lung_demo/refs/heads/main/b53b3bcd-3485-4562-a543-e473dfef3b27.owl
+https://raw.githubusercontent.com/Cellular-Semantics/CellMark/refs/heads/main/clm-kg.owl
