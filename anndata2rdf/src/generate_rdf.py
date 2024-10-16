@@ -19,7 +19,7 @@ def generate_rdf_graph(
     aea = AnndataEnrichmentAnalyzer(anndata_file_path, author_cell_type_list)
     aea.analyzer_manager.co_annotation_report()
     gg = GraphGenerator(aea)
-    gg.generate_rdf_graph()
+    gg.generate_rdf_graph(merge=True)
     gg.set_label_adding_priority(author_cell_type_list)
     gg.add_label_to_terms()
     metadata_field_list = [
