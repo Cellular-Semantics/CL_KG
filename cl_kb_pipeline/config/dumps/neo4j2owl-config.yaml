@@ -23,6 +23,33 @@ neo_node_labelling:
   - classes:
       - sc:Dataset
     label: Dataset
+  - classes:
+      - HANCESTRO:0004
+    label: Race
+    description: a term that refers to the ancestry of a Homo sapiens
+  - classes:
+      - MONDO:0000001
+    label: Disease
+    description: a disease or disorder, plus 'normal' (latter pulled from SPARQL query)
+  - classes:
+      - UBERON:0000105
+      - MmusDv:0000000
+      - HsapDv:0000000
+    label: Developmental_stage
+    description: a term that refers to a life cycle stage
+  - classes:
+      - NCBITaxon:9606
+    label: Homo_sapiens
+    description: an organism that belongs to the species H. sapiens or a term that is applicable to H. sapiens
+  - classes:
+      - NCBITaxon:10090
+    label: Mus_musculus
+    description: an organism that belongs to the species M. musculus (house mouse) or a term that is applicable to M. musculus
+  - classes:
+      - UBERON:0010000
+      - UBERON:0000178
+    label: Multicellular_anatomical_structure
+
 
 
 curie_map:
