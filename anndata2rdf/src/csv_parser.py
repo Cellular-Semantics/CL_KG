@@ -12,7 +12,7 @@ logger.setLevel(logging.INFO)
 
 
 def generate_yaml_data(data):
-    filtered_df = data[data["Content"].str.lower() == "cell types"]
+    filtered_df = data[data["Content"].str.strip().str.lower() == "cell types"]
     grouped_data = filtered_df.groupby("h5ad link")
     _yaml_data = []
     for link, group_df in grouped_data:
@@ -56,6 +56,6 @@ if __name__ == "__main__":
     config_yaml = generate_author_cell_type_config()
     output_file_path = os.path.join(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "config"),
-        "cxg_author_cell_type.yaml",
+        "xcxg_author_cell_type.yaml",
     )
     write_yaml_file(config_yaml, output_file_path)
