@@ -56,6 +56,6 @@ if __name__ == "__main__":
     config_yaml = generate_author_cell_type_config()
     output_file_path = os.path.join(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "config"),
-        "xcxg_author_cell_type.yaml",
+        "cxg_author_cell_type.yaml",
     )
     write_yaml_file(config_yaml, output_file_path)
