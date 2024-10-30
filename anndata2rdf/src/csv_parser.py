@@ -12,7 +12,7 @@ logger.setLevel(logging.INFO)
 
 
 def generate_yaml_data(data):
-    filtered_df = data[data["Content"].str.lower() == "cell types"]
+    filtered_df = data[data["Content"].str.strip().str.lower() == "cell types"]
     grouped_data = filtered_df.groupby("h5ad link")
     _yaml_data = []
     for link, group_df in grouped_data:
