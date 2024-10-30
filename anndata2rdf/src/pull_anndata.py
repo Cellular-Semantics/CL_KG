@@ -3,6 +3,7 @@ import os
 from typing import Dict, List, Optional
 
 import requests
+from tqdm import tqdm
 import yaml
 
 
@@ -42,15 +43,19 @@ def download_dataset_with_id(dataset_id: str, file_path: Optional[str] = None) -
 
 def download_dataset_with_url(dataset_url: str, file_path: Optional[str] = None) -> str:
     """
-    Download an AnnData dataset with the specified url.
+    Download an AnnData dataset from the specified URL in chunks.
+
+    This function downloads the dataset in 8 MB chunks to handle large files efficiently,
+    avoiding memory overflow issues with large files. If a file path is not provided,
+    the dataset ID will be used as the file name in the 'dataset' directory.
 
     Args:
-        dataset_url (str): The url of the dataset to download.
-        file_path (Optional[str], optional): The file path to save the downloaded AnnData. If not provided,
-            the dataset_id will be used as the file name. Defaults to None.
+        dataset_url (str): The URL of the dataset to download.
+        file_path (Optional[str], optional): The file path to save the downloaded AnnData.
+            If not provided, the dataset ID will be used as the file name. Defaults to None.
 
     Returns:
-        str: The path to the downloaded file
+        str: The path to the downloaded file.
     """
 
     anndata_file_path = (
@@ -62,19 +67,43 @@ def download_dataset_with_url(dataset_url: str, file_path: Optional[str] = None)
         os.path.dirname(os.path.abspath(__file__)),
         os.path.join("dataset", anndata_file_path),
     )
+
     if os.path.exists(anndata_file_path):
         logger.info(f"File '{anndata_file_path}' already exists. Skipping download.")
-    else:
-        logger.info(
-            f"Downloading dataset with URL '{dataset_url} to {anndata_file_path}'..."
-        )
-        response = requests.get(dataset_url)
-        if response.status_code == 200:
-            with open(anndata_file_path, "wb") as f:
-                f.write(response.content)
-            logger.info(f"Download complete. File saved at '{anndata_file_path}'.")
-        else:
-            logger.info(f"Failed to download the dataset with URL '{dataset_url}'...")
+        return anndata_file_path
+
+    # Download the file in chunks
+    logger.info(
+        f"Downloading dataset from URL '{dataset_url}' to '{anndata_file_path}'..."
+    )
+    chunk_size = 8 * 1024 * 1024  # 8 MB per chunk
+
+    try:
+        with requests.get(dataset_url, stream=True) as response:
+            if response.status_code == 200:
+                total_size = int(response.headers.get("content-length", 0))
+                logger.info(f"Total file size: {total_size / (1024 ** 3):.2f} GB")
+
+                with tqdm(
+                    total=total_size,
+                    unit="B",
+                    unit_scale=True,
+                    unit_divisor=1024,
+                    desc="Downloading",
+                ) as progress_bar, open(anndata_file_path, "wb") as file:
+                    for chunk in response.iter_content(chunk_size=chunk_size):
+                        if chunk:  # filter out keep-alive new chunks
+                            file.write(chunk)
+                            progress_bar.update(len(chunk))
+
+                logger.info(f"Download complete. File saved at '{anndata_file_path}'.")
+            else:
+                logger.error(
+                    f"Failed to download the dataset. Status code: {response.status_code}"
+                )
+    except requests.exceptions.RequestException as e:
+        logger.error(f"An error occurred while downloading the dataset: {e}")
+
     return anndata_file_path
 
 
@@ -120,7 +149,7 @@ if __name__ == "__main__":
     config_list = read_yaml_config(
         os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
-            os.path.join("config", "cxg_author_cell_type.yaml"),
+            os.path.join("config", "xcxg_author_cell_type.yaml"),
         )
     )
     datasets = get_dataset_dict(config_list)
