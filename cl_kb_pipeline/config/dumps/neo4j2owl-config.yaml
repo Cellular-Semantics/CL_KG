@@ -49,6 +49,18 @@ neo_node_labelling:
       - UBERON:0010000
       - UBERON:0000178
     label: Multicellular_anatomical_structure
+  - classes:
+      - GO:0008150
+    label: Biological_Process
+  - classes:
+      - GO:0005575
+    label: Cellular_component
+  - classes:
+      - PR:000000001
+    label: Protein
+  - classes:
+      - SO:0000704
+    label: Gene
 
 
 
