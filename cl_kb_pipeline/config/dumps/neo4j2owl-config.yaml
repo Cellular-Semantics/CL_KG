@@ -51,7 +51,7 @@ neo_node_labelling:
     label: Multicellular_anatomical_structure
   - classes:
       - GO:0008150
-    label: Biological_Process
+    label: Biological_process
   - classes:
       - GO:0005575
     label: Cellular_component
