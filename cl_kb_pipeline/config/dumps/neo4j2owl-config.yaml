@@ -90,6 +90,11 @@ curie_map:
   OBI: http://purl.obolibrary.org/obo/OBI_
   PCL: http://purl.obolibrary.org/obo/PCL_
   sc: https://schema.org/
+  HANCESTRO: http://purl.obolibrary.org/obo/HANCESTRO_
+  MONDO: http://purl.obolibrary.org/obo/MONDO_
+  MmusDv: http://purl.obolibrary.org/obo/MmusDv_
+  HsapDv: http://purl.obolibrary.org/obo/HsapDv_
+  GO: http://purl.obolibrary.org/obo/GO_
 
 filters:
   solr:
