@@ -11,4 +11,5 @@ WHERE {
          rdfs:subClassOf [ a owl:Class ;
                                owl:intersectionOf [ rdf:rest*/rdf:first ?otherClass ] ] .
  ?otherClass ?p ?o .
+ FILTER(isIRI(?class))
 }
