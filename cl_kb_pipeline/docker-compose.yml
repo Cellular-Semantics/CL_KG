@@ -122,6 +122,9 @@ services:
     container_name: ontology-search
     ports: 
      - 8007:8007
+    environment:
+      - PYTHON_ENV=production
+      - OBASK_URL_PREFIX=/cl-kg
     depends_on:
       - solr
       - obask-updatesolr
