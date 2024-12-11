@@ -1,11 +1,15 @@
 import logging
 import os
+import time
 from typing import Dict, List, Optional
 
 import requests
 from tqdm import tqdm
 import yaml
 
+CHUNK_SIZE = 8 * 1024 * 1024  # 8 MB per chunk
+MAX_RETRIES = 3
+RETRY_DELAY = 2
 
 logging.basicConfig(level=logging.WARNING)
 
@@ -41,13 +45,15 @@ def download_dataset_with_id(dataset_id: str, file_path: Optional[str] = None) -
     return anndata_file_path
 
 
-def download_dataset_with_url(dataset_url: str, file_path: Optional[str] = None) -> str:
+def download_dataset_with_url(dataset_url: str, file_path: Optional[str] = None) -> Optional[str]:
     """
-    Download an AnnData dataset from the specified URL in chunks.
+    Download an AnnData dataset from the specified URL in chunks with retry logic.
 
     This function downloads the dataset in 8 MB chunks to handle large files efficiently,
-    avoiding memory overflow issues with large files. If a file path is not provided,
-    the dataset ID will be used as the file name in the 'dataset' directory.
+    avoiding memory overflow issues. If a file path is not provided, the dataset ID will
+    be used as the file name and stored in the 'dataset' directory. The function includes
+    retry logic to handle transient errors such as `IncompleteRead` and network issues,
+    ensuring robustness. Incomplete files are deleted before retrying.
 
     Args:
         dataset_url (str): The URL of the dataset to download.
@@ -55,7 +61,8 @@ def download_dataset_with_url(dataset_url: str, file_path: Optional[str] = None)
             If not provided, the dataset ID will be used as the file name. Defaults to None.
 
     Returns:
-        str: The path to the downloaded file.
+        Optional[str]: The path to the downloaded file if successful, or None if the
+            download failed after the maximum number of retries.
     """
 
     anndata_file_path = (
@@ -76,35 +83,52 @@ def download_dataset_with_url(dataset_url: str, file_path: Optional[str] = None)
     logger.info(
         f"Downloading dataset from URL '{dataset_url}' to '{anndata_file_path}'..."
     )
-    chunk_size = 8 * 1024 * 1024  # 8 MB per chunk
 
-    try:
-        with requests.get(dataset_url, stream=True) as response:
-            if response.status_code == 200:
-                total_size = int(response.headers.get("content-length", 0))
-                logger.info(f"Total file size: {total_size / (1024 ** 3):.2f} GB")
+    retries = 0
+    while retries < MAX_RETRIES:
+        try:
+            with requests.get(dataset_url, stream=True) as response:
+                if response.status_code == 200:
+                    total_size = int(response.headers.get("content-length", 0))
+                    logger.info(f"Total file size: {total_size / (1024 ** 3):.2f} GB")
 
-                with tqdm(
-                    total=total_size,
-                    unit="B",
-                    unit_scale=True,
-                    unit_divisor=1024,
-                    desc="Downloading",
-                ) as progress_bar, open(anndata_file_path, "wb") as file:
-                    for chunk in response.iter_content(chunk_size=chunk_size):
-                        if chunk:  # filter out keep-alive new chunks
-                            file.write(chunk)
-                            progress_bar.update(len(chunk))
+                    with tqdm(
+                        total=total_size,
+                        unit="B",
+                        unit_scale=True,
+                        unit_divisor=1024,
+                        desc="Downloading",
+                    ) as progress_bar, open(anndata_file_path, "wb") as file:
+                        for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
+                            if chunk:  # filter out keep-alive new chunks
+                                file.write(chunk)
+                                progress_bar.update(len(chunk))
 
-                logger.info(f"Download complete. File saved at '{anndata_file_path}'.")
-            else:
-                logger.error(
-                    f"Failed to download the dataset. Status code: {response.status_code}"
-                )
-    except requests.exceptions.RequestException as e:
-        logger.error(f"An error occurred while downloading the dataset: {e}")
+                    logger.info(
+                        f"Download complete. File saved at '{anndata_file_path}'."
+                    )
+                    return anndata_file_path
+                else:
+                    logger.error(
+                        f"Failed to download the dataset. Status code: {response.status_code}"
+                    )
+                    break
+        except Exception as e:
+            logger.error(
+                f"Error occurred while downloading the dataset: {e}. Retrying..."
+            )
+            # Delete the incomplete file if an exception occurs
+            if os.path.exists(anndata_file_path):
+                logger.warning(f"Deleting incomplete file: {anndata_file_path}")
+                os.remove(anndata_file_path)
 
-    return anndata_file_path
+        retries += 1
+        if retries < MAX_RETRIES:
+            logger.info(f"Retrying download... Attempt {retries + 1} of {MAX_RETRIES}")
+            time.sleep(RETRY_DELAY)
+        else:
+            logger.error("Max retries reached. Download failed.")
+            return None
 
 
 def get_dataset_id_from_h5ad_link(dataset_url):
