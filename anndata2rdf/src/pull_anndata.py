@@ -1,6 +1,6 @@
 import logging
-from http.client import IncompleteRead
 import os
+import time
 from typing import Dict, List, Optional
 
 import requests
@@ -9,6 +9,7 @@ import yaml
 
 CHUNK_SIZE = 8 * 1024 * 1024  # 8 MB per chunk
 MAX_RETRIES = 3
+RETRY_DELAY = 2
 
 logging.basicConfig(level=logging.WARNING)
 
@@ -106,22 +107,17 @@ def download_dataset_with_url(dataset_url: str, file_path: Optional[str] = None)
                     logger.info(
                         f"Download complete. File saved at '{anndata_file_path}'."
                     )
+                    return anndata_file_path
                 else:
                     logger.error(
                         f"Failed to download the dataset. Status code: {response.status_code}"
                     )
-        except IncompleteRead as ir:
-            logger.error(
-                f"IncompleteRead error occurred while downloading the dataset: {ir}. Retrying..."
-            )
-        except requests.exceptions.RequestException as e:
-            logger.error(
-                f"RequestException occurred while downloading the dataset: {e}. Retrying..."
-            )
+                    break
         except Exception as e:
-            logger.error(f"An unexpected error occurred: {e}. Retrying...")
-        finally:
-            # Delete the incomplete file if it exists
+            logger.error(
+                f"Error occurred while downloading the dataset: {e}. Retrying..."
+            )
+            # Delete the incomplete file if an exception occurs
             if os.path.exists(anndata_file_path):
                 logger.warning(f"Deleting incomplete file: {anndata_file_path}")
                 os.remove(anndata_file_path)
@@ -129,11 +125,10 @@ def download_dataset_with_url(dataset_url: str, file_path: Optional[str] = None)
         retries += 1
         if retries < MAX_RETRIES:
             logger.info(f"Retrying download... Attempt {retries + 1} of {MAX_RETRIES}")
+            time.sleep(RETRY_DELAY)
         else:
             logger.error("Max retries reached. Download failed.")
             return None
-
-    return anndata_file_path
 
 
 def get_dataset_id_from_h5ad_link(dataset_url):
