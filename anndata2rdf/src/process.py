@@ -42,6 +42,9 @@ for dataset, author_cell_types in datasets.items():
         logger.info(f"RDF graph '{rdf_output_path}' already exists. Skipping process.")
     else:
         dataset_path = download_dataset_with_url(dataset)
+        if dataset_path is None:
+            logger.error(f"Failed to download dataset '{dataset}'. Skipping this dataset.")
+            continue
         generate_rdf_graph(
             dataset_path,
             author_cell_types,
