@@ -39,7 +39,8 @@ def generate_yaml_data(data):
             if latest_cxg_dataset:
                 _yaml_data.append(
                     {
-                        "CxG_link": latest_cxg_dataset,
+                        "CxG_link": link,
+                        "download_url": latest_cxg_dataset,
                         "author_cell_type_list": author_cell_type_list,
                     }
                 )
@@ -140,6 +141,6 @@ if __name__ == "__main__":
     config_yaml = generate_author_cell_type_config()
     output_file_path = os.path.join(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), "config"),
-        "cxg_author_cell_type.yaml",
+        "cxg_author_cell_type_v2.yaml",
     )
     write_yaml_file(config_yaml, output_file_path)
