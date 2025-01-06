@@ -1,5 +1,6 @@
 import logging
 import os
+import glob
 import time
 from typing import Dict, List, Optional
 
@@ -45,49 +46,68 @@ def download_dataset_with_id(dataset_id: str, file_path: Optional[str] = None) -
     return anndata_file_path
 
 
-def download_dataset_with_url(dataset_url: str, file_path: Optional[str] = None) -> Optional[str]:
+def download_dataset_with_url(
+    matrix_id: str, dataset_download_url: str, file_path: Optional[str] = None
+) -> Optional[str]:
     """
     Download an AnnData dataset from the specified URL in chunks with retry logic.
 
-    This function downloads the dataset in 8 MB chunks to handle large files efficiently,
-    avoiding memory overflow issues. If a file path is not provided, the dataset ID will
-    be used as the file name and stored in the 'dataset' directory. The function includes
-    retry logic to handle transient errors such as `IncompleteRead` and network issues,
-    ensuring robustness. Incomplete files are deleted before retrying.
+    This function downloads large AnnData datasets in 8 MB chunks to avoid memory overflow issues.
+    If the download is interrupted, the function retries up to a maximum number of attempts.
+    Incomplete files are deleted before retrying to ensure data integrity. If a file path is not specified,
+    the dataset ID is used as the file name, and the file saved in the 'dataset' directory.
+    The function checks if a file with the same prefix already exists in the 'graph' directory. If an older version is
+    found, it is deleted and replaced with the new download.
 
     Args:
-        dataset_url (str): The URL of the dataset to download.
-        file_path (Optional[str], optional): The file path to save the downloaded AnnData.
+        matrix_id: A unique identifier for the matrix associated with the dataset.
+        dataset_download_url: The URL from which the dataset will be downloaded.
+        file_path: The file path to save the downloaded AnnData.
             If not provided, the dataset ID will be used as the file name. Defaults to None.
 
     Returns:
-        Optional[str]: The path to the downloaded file if successful, or None if the
+        The path to the downloaded file if successful, or None if the
             download failed after the maximum number of retries.
     """
-
+    download_id = get_dataset_id_from_link(dataset_download_url)
     anndata_file_path = (
-        f"{get_dataset_id_from_h5ad_link(dataset_url)}.h5ad"
-        if file_path is None
-        else file_path
+        f"{matrix_id}__{download_id}.h5ad" if file_path is None else file_path
     )
     anndata_file_path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
         os.path.join("dataset", anndata_file_path),
     )
+    directory = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "graph",
+    )
 
-    if os.path.exists(anndata_file_path):
-        logger.info(f"File '{anndata_file_path}' already exists. Skipping download.")
-        return anndata_file_path
+    # Check if any owl file with the prefix exists
+    matching_files = check_file_exists_based_on_prefix(directory, matrix_id)
+
+    if matching_files:
+        rdf_graph_path = matching_files[0]
+        if download_id in matching_files[0]:
+            logger.info(
+                f"File with prefix '{matrix_id}' already exists: {matching_files[0]}. Skipping download."
+            )
+            return rdf_graph_path
+        os.remove(rdf_graph_path)
+        logger.info(
+            f"Dataset with ID {matrix_id} has a new version. "
+            f"The previous RDF graph at {rdf_graph_path} has been removed and will be "
+            f"replaced with the latest version."
+        )
 
     # Download the file in chunks
     logger.info(
-        f"Downloading dataset from URL '{dataset_url}' to '{anndata_file_path}'..."
+        f"Downloading dataset from URL '{dataset_download_url}' to '{anndata_file_path}'..."
     )
 
     retries = 0
     while retries < MAX_RETRIES:
         try:
-            with requests.get(dataset_url, stream=True) as response:
+            with requests.get(dataset_download_url, stream=True) as response:
                 if response.status_code == 200:
                     total_size = int(response.headers.get("content-length", 0))
                     logger.info(f"Total file size: {total_size / (1024 ** 3):.2f} GB")
@@ -131,6 +151,12 @@ def download_dataset_with_url(dataset_url: str, file_path: Optional[str] = None)
             return None
 
 
+def check_file_exists_based_on_prefix(directory, prefix):
+    # Construct a search pattern for files that start with the prefix
+    pattern = os.path.join(directory, f"{prefix}__*.owl")
+    return glob.glob(pattern)  # Returns a list of matching files
+
+
 def get_dataset_id_from_h5ad_link(dataset_url):
     return dataset_url.split("/")[-1].split(".")[0]
 
@@ -147,21 +173,29 @@ def get_dataset_dict(input_source: List[Dict]):
     cxg_dataset_dict = {}
     for config in input_source:
         cxg_link = config["CxG_link"]
+        matrix_id = get_dataset_id_from_link(cxg_link)
         if cxg_link.endswith(".cxg"):
-            cxg_id = get_dataset_id_from_link(cxg_link)
+            cxg_id = matrix_id
             cxg_dataset_dict.update(
                 {cxg_id.split(".")[0]: config["author_cell_type_list"]}
             )
         else:
-            cxg_dataset_dict.update({cxg_link: config["author_cell_type_list"]})
+            cxg_dataset_dict.update(
+                {
+                    matrix_id: {
+                        "author_cell_type_list": config["author_cell_type_list"],
+                        "download_url": config["download_url"],
+                    }
+                }
+            )
     return cxg_dataset_dict
 
 
 def get_dataset_id_from_link(cxg_link: str) -> str:
     if cxg_link.endswith("/"):
-        return cxg_link.split("/")[-2]
+        return cxg_link.split("/")[-2][:-4]
     else:
-        return cxg_link.split("/")[-1]
+        return cxg_link.split("/")[-1][:-5]
 
 
 def read_yaml_config(config_file: str):
@@ -173,9 +207,9 @@ if __name__ == "__main__":
     config_list = read_yaml_config(
         os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
-            os.path.join("config", "xcxg_author_cell_type.yaml"),
+            os.path.join("config", "cxg_author_cell_type.yaml"),
         )
     )
     datasets = get_dataset_dict(config_list)
-    for dataset in datasets.keys():
+    for dataset in datasets.items():
         dataset_name = download_dataset_with_url(dataset)
