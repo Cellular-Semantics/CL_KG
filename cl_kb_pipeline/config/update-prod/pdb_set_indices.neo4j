@@ -1,11 +1,18 @@
 {
-  "statements" : [ {
-    "statement" : "CREATE INDEX ON :Individual(short_form)"
-  } , {
-    "statement" : "CREATE INDEX ON :Class(short_form)"
-  }  , {
-    "statement" : "CREATE INDEX ON :Entity(short_form)"
-  }  , {
-    "statement" : "CREATE INDEX ON :Template(short_form)"
-  }   ]
+    "statements": [
+        {"statement": "CREATE INDEX ON :Class(short_form)"},
+        {"statement": "CREATE INDEX ON :Individual(short_form)"},
+        {"statement": "CREATE INDEX ON :Cell(label)"},
+        {"statement": "CREATE INDEX ON :Cell(short_form)"},
+        {"statement": "CREATE INDEX ON :Gene(label)"},
+        {"statement": "CREATE INDEX ON :Gene(short_form)"},
+        {"statement": "CREATE INDEX ON :Cell_cluster(label)"},
+        {"statement": "CREATE INDEX ON :Cell_cluster(short_form)"},
+        {"statement": "CREATE INDEX ON :Disease(label)"},
+        {"statement": "CREATE INDEX ON :Disease(short_form)"},
+        {"statement": "CREATE INDEX ON :Multicellular_anatomical_structure(label)"},
+        {
+            "statement": "CREATE INDEX ON :Multicellular_anatomical_structure(short_form)"
+        },
+    ]
 }
