@@ -1,18 +1,32 @@
 {
     "statements": [
-        {"statement": "CREATE INDEX ON :Class(short_form)"},
-        {"statement": "CREATE INDEX ON :Individual(short_form)"},
-        {"statement": "CREATE INDEX ON :Cell(label)"},
-        {"statement": "CREATE INDEX ON :Cell(short_form)"},
-        {"statement": "CREATE INDEX ON :Gene(label)"},
-        {"statement": "CREATE INDEX ON :Gene(short_form)"},
-        {"statement": "CREATE INDEX ON :Cell_cluster(label)"},
-        {"statement": "CREATE INDEX ON :Cell_cluster(short_form)"},
-        {"statement": "CREATE INDEX ON :Disease(label)"},
-        {"statement": "CREATE INDEX ON :Disease(short_form)"},
-        {"statement": "CREATE INDEX ON :Multicellular_anatomical_structure(label)"},
+        {"statement": "CREATE INDEX class_label_index FOR (n:Class) ON (n.label)"},
         {
-            "statement": "CREATE INDEX ON :Multicellular_anatomical_structure(short_form)"
+            "statement": "CREATE INDEX individual_label_index FOR (n:Individual) ON (n.label)"
         },
+        {"statement": "CREATE INDEX cell_label_index FOR (n:Cell) ON (n.label)"},
+        {
+            "statement": "CREATE INDEX cell_shortform_index FOR (n:Cell) ON (n.short_form)"
+        },
+        {"statement": "CREATE INDEX gene_label_index FOR (n:Gene) ON (n.label)"},
+        {
+            "statement": "CREATE INDEX gene_shortform_index FOR (n:Gene) ON (n.short_form)"
+        },
+        {
+            "statement": "CREATE INDEX cell_cluster_label_index FOR (n:Cell_cluster) ON (n.label)"
+        },
+        {
+            "statement": "CREATE INDEX cell_cluster_shortform_index FOR (n:Cell_cluster) ON (n.short_form)"
+        },
+        {"statement": "CREATE INDEX disease_label_index FOR (n:Disease) ON (n.label)"},
+        {
+            "statement": "CREATE INDEX disease_shortform_index FOR (n:Disease) ON (n.short_form)"
+        },
+        {
+            "statement": "CREATE INDEX mas_label_index FOR (n:Multicellular_anatomical_structure) ON (n.label)"
+        },
+        {
+            "statement": "CREATE INDEX mas_shortform_index FOR (n:Multicellular_anatomical_structure) ON (n.short_form)"
+        }
     ]
 }

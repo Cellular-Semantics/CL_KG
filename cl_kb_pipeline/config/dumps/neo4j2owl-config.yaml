@@ -95,7 +95,6 @@ curie_map:
   MmusDv: http://purl.obolibrary.org/obo/MmusDv_
   HsapDv: http://purl.obolibrary.org/obo/HsapDv_
   GO: http://purl.obolibrary.org/obo/GO_
-  UniProtKB: https://identifiers.org/uniprot:
 
 filters:
   solr:
