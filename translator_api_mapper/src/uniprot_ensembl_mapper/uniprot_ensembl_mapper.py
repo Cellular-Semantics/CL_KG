@@ -1,18 +1,17 @@
+import os
 import logging
-
 import requests
 from SPARQLWrapper import SPARQLWrapper, JSON, POST
 from typing import Dict, List
 
 logging.basicConfig(level=logging.WARNING)
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 # Node Normalization Endpoint
 NODE_NORMALIZATION_URL = "https://nodenormalization-sri.renci.org/get_normalized_nodes"
 # RDF4J local endpoint configuration
-ENDPOINT_URL = "http://triplestore:8080/rdf4j-server/repositories/obask"
+ENDPOINT_URL = os.getenv("ENDPOINT_URL", "http://triplestore:8080/rdf4j-server/repositories/obask")
 
 # RO Relation: Gene produces Protein
 RO_0003000 = "http://purl.obolibrary.org/obo/RO_0003000"
