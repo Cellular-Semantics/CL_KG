@@ -16,17 +16,21 @@ ENDPOINT_URL = os.getenv("ENDPOINT_URL", "http://triplestore:8080/rdf4j-server/r
 # RO Relation: Gene produces Protein
 RO_0003000 = "http://purl.obolibrary.org/obo/RO_0003000"
 
-UNIPROT_SPARQL_QUERY = """
+UNIPROT_PREFIX = "https://identifiers.org/uniprot/"
+ENSEMBL_PREFIX = "http://identifiers.org/ensembl/"
+BATCH_SIZE = 1000
+
+UNIPROT_SPARQL_QUERY = f"""
 SELECT DISTINCT ?s
-WHERE { 
-  ?s a ?o. FILTER(contains(str(?s), "https://identifiers.org/uniprot:"))
-}
+WHERE {{ 
+  ?s a ?o. FILTER(contains(str(?s), "{UNIPROT_PREFIX}"))
+}}
 """
-ENSEMBL_SPARQL_QUERY = """
+ENSEMBL_SPARQL_QUERY = f"""
 SELECT DISTINCT ?s
-WHERE { 
-  ?s a ?o. FILTER(contains(str(?s), "http://identifiers.org/ensembl/"))
-}
+WHERE {{ 
+  ?s a ?o. FILTER(contains(str(?s), "{ENSEMBL_PREFIX}"))
+}}
 """
 
 # Configure the SPARQL query endpoint
@@ -35,10 +39,6 @@ sparql_query.setReturnFormat(JSON)
 # Configure the SPARQL update endpoint
 sparql_update = SPARQLWrapper(ENDPOINT_URL)
 sparql_update.setMethod(POST)
-
-UNIPROT_PREFIX = "https://identifiers.org/uniprot/"
-ENSEMBL_PREFIX = "http://identifiers.org/ensembl/"
-BATCH_SIZE = 1000
 
 
 def run_query(query: str) -> List[str]:
@@ -67,6 +67,7 @@ def uri_to_curie(uri_list: List[str]) -> List[str]:
 def get_normalized_curies(curie_list: List[str]) -> Dict[str, List[str]]:
     """Retrieves normalized equivalent CURIEs for given UniProt CURIEs."""
     normalized_curies = {}
+    logger.info(curie_list)
     result = requests.post(NODE_NORMALIZATION_URL, json={"curies": curie_list})
     if result.status_code == 200:
         result_json = result.json()
@@ -79,7 +80,7 @@ def get_normalized_curies(curie_list: List[str]) -> Dict[str, List[str]]:
                         else:
                             normalized_curies[curie].append(identifier["identifier"])
     else:
-        logger.error(f"Error fetching normalized CURIEs")
+        logger.error(f"Error fetching normalized CURIEs. Status code: {result.status_code}")
     return normalized_curies
 
 
@@ -93,10 +94,11 @@ def insert_triples_in_batch(triples: List[str]):
     if not triples:
         return
 
+    # Use the prefix variables in the SPARQL INSERT query
     insert_query = f"""
     PREFIX RO: <http://purl.obolibrary.org/obo/RO_>
-    PREFIX ensembl: <http://identifiers.org/ensembl/>
-    PREFIX uniprot: <https://identifiers.org/uniprot/>
+    PREFIX ensembl: <{ENSEMBL_PREFIX}>
+    PREFIX uniprot: <{UNIPROT_PREFIX}>
 
     INSERT DATA {{
         {' '.join(triples)}
@@ -132,6 +134,7 @@ def uniprot_ensembl_mapper():
     for uni, ensembl_list in normalized_curie_dict.items():
         for ensembl_id in ensembl_list:
             count += 1
+            # Convert the CURIE back to a full URI using the prefix variables
             ensembl_uri = ensembl_id.replace("ENSEMBL:", ENSEMBL_PREFIX)
             uniprot_uri = uni.replace("UniProtKB:", UNIPROT_PREFIX)
 
