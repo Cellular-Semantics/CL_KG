@@ -37,7 +37,7 @@ sparql_query.setReturnFormat(JSON)
 sparql_update = SPARQLWrapper(ENDPOINT_URL)
 sparql_update.setMethod(POST)
 
-UNIPROT_PREFIX = "https://identifiers.org/uniprot:"
+UNIPROT_PREFIX = "https://identifiers.org/uniprot/"
 ENSEMBL_PREFIX = "http://identifiers.org/ensembl/"
 BATCH_SIZE = 1000
 
