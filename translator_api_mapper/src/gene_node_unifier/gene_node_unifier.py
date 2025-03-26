@@ -88,7 +88,7 @@ def gene_node_unifier():
     for ensembl_node_id, nbcigene_node_id in normalized_curie_dict.items():
         update_gene_nodes(ensembl_node_id, nbcigene_node_id[0])
 
-    logger.info(f"")
+    logger.info("Gene node unification process completed.")
     # Continue with further processing of normalized_curie_dict
     return normalized_curie_dict
 
