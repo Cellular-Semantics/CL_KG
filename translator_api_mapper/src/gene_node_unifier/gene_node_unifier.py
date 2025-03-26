@@ -42,7 +42,7 @@ def update_gene_nodes(ensembl_id: str, ncbigene_id: str):
     INSERT {{
       {ncbigene_id} ?p ?o .
       ?s2 ?p2 {ncbigene_id} .
-      {ncbigene_id} owl:sameAs {ensembl_id} .
+      {ncbigene_id} owl:equivalentClass {ensembl_id} .
     }}
     WHERE {{
       {{
