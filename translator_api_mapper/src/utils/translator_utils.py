@@ -32,7 +32,7 @@ NODE_NORMALIZATION_URL = "https://nodenormalization-sri.renci.org/get_normalized
 #     "ENDPOINT_URL", "http://triplestore:8080/rdf4j-server/repositories/obask"
 # )
 ENDPOINT_URL = os.getenv(
-    "ENDPOINT_URL", "http://localhost:8081/rdf4j-server/repositories/obask"
+    "ENDPOINT_URL", "http://triplestore:8081/rdf4j-server/repositories/obask"
 )
 # RO Relation: Gene produces Protein
 RO_0003000 = "http://purl.obolibrary.org/obo/RO_0003000"
