@@ -34,6 +34,7 @@ def update_gene_nodes(ensembl_id: str, ncbigene_id: str):
     PREFIX ENSEMBL: <{ENSEMBL_PREFIX}>
     PREFIX NCBIGene: <{NCBIGene_PREFIX}>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    PREFIX oio: <http://www.geneontology.org/formats/oboInOwl#>
 
     DELETE {{
       {ensembl_id} ?p ?o .
@@ -42,7 +43,7 @@ def update_gene_nodes(ensembl_id: str, ncbigene_id: str):
     INSERT {{
       {ncbigene_id} ?p ?o .
       ?s2 ?p2 {ncbigene_id} .
-      {ncbigene_id} owl:equivalentClass {ensembl_id} .
+      {ncbigene_id} oio:hasDbXref {ensembl_id} .
     }}
     WHERE {{
       {{
