@@ -23,7 +23,7 @@ WHERE {{
   ?s a ?o. FILTER(contains(str(?s), "{ENSEMBL_PREFIX}"))
 }}
 """
-NCBIGene_PREFIX = "http://www.ncbi.nlm.nih.gov/gene/"
+NCBIGene_PREFIX = "http://identifiers.org/ncbigene/"
 
 # Node Normalization Endpoint
 NODE_NORMALIZATION_URL = "https://nodenormalization-sri.renci.org/get_normalized_nodes"
