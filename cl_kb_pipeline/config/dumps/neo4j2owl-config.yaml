@@ -71,7 +71,7 @@ curie_map:
   orcid: https://orcid.org/
   doi: https://doi.org/
   rdfs: http://www.w3.org/2000/01/rdf-schema#
-  ncbigene: http://www.ncbi.nlm.nih.gov/gene/
+  NCBIGene: http://identifiers.org/ncbigene/
   cc: http://creativecommons.org/ns#
   pato_rel: http://purl.obolibrary.org/obo/pato#
   so_rel: http://purl.obolibrary.org/obo/so#
