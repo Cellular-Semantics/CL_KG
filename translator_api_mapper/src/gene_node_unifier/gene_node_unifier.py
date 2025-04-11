@@ -33,25 +33,6 @@ def update_gene_nodes_batch(update_dict):
     PREFIX NCBIGene: <{NCBIGene_PREFIX}>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
     PREFIX oio: <http://www.geneontology.org/formats/oboInOwl#>
-
-    DELETE {{
-      {ensembl_id} ?p ?o .
-      ?s2 ?p2 {ensembl_id} .
-    }}
-    INSERT {{
-      {ncbigene_id} ?p ?o .
-      ?s2 ?p2 {ncbigene_id} .
-      {ncbigene_id} oio:hasDbXref {ensembl_id} .
-    }}
-    WHERE {{
-      {{
-        {ensembl_id} ?p ?o .
-      }}
-      UNION
-      {{
-        ?s2 ?p2 {ensembl_id} .
-      }}
-    }}
     """
 
     update_statements = []
