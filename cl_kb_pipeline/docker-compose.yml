@@ -3,7 +3,7 @@ version: '3.8'
 services:
   anndata2rdf:
     image: ghcr.io/cellular-semantics/cl_kg/anndata2rdf:latest
-    container_name: anndata_to_rdf
+    # container_name: anndata_to_rdf
     volumes:
       - ../anndata2rdf/src/config:/app/src/config
       - ../anndata2rdf/src/curated_data:/app/src/curated_data
@@ -13,25 +13,25 @@ services:
 
   triplestore:
     image: eclipse/rdf4j-workbench:3.7.7
-    container_name: triplestore
+    # container_name: triplestore
     environment:
       - JAVA_OPTS=-Xms1G -Xmx5G
     ports:
-      - 8080:8080
+      - 8081:8080
     volumes:
       - triplestore_data:/var/rdf4j
 
   obask-kb:
     image: ghcr.io/obasktools/obask-kb:latest
-    container_name: obask-kb
+    # container_name: obask-kb
     environment:
       - NEO4J_AUTH=neo4j/neo
       - NEO4J_dbms_read__only=false
       - NEO4J_dbms_memory_heap_maxSize=4G
       - NEO4J_dbms_memory_heap_initial__size=1G
     ports:
-      - 7474:7474
-      - 7687:7687
+      - 7475:7474
+      - 7688:7687
     links:
       - solr
     depends_on:
@@ -48,7 +48,7 @@ services:
 
   obask-collectdata:
     image: ghcr.io/obasktools/pipeline-collectdata:latest
-    container_name: collectdata
+    # container_name: collectdata
     depends_on:
       triplestore:
         condition: service_started
@@ -60,7 +60,7 @@ services:
 
   obask-updatetriplestore:
     image: ghcr.io/obasktools/pipeline-updatetriplestore:latest
-    container_name: updatetriplestore
+    # container_name: updatetriplestore
     depends_on:
       obask-collectdata:
         condition: service_completed_successfully
@@ -74,7 +74,7 @@ services:
 
   obask-dumps:
     image: ghcr.io/obasktools/pipeline-dumps:latest
-    container_name: dumps
+    # container_name: dumps
     depends_on:
       pipeline-mapper:
         condition: service_completed_successfully
@@ -86,7 +86,7 @@ services:
 
   obask-updateprod:
     image: ghcr.io/obasktools/pipeline-updateprod:latest
-    container_name: updateprod
+    # container_name: updateprod
     depends_on:
       obask-kb:
         condition: service_healthy
@@ -101,9 +101,9 @@ services:
 
   solr:
     image: solr:8.11
-    container_name: solr
+    # container_name: solr
     ports:
-      - 8993:8983
+      - 8994:8983
     depends_on:
       - obask-dumps
     links:
@@ -117,7 +117,7 @@ services:
 
   obask-updatesolr:
     image: ghcr.io/obasktools/pipeline-updatesolr:latest
-    container_name: updatesolr
+    # container_name: updatesolr
     links:
       - solr
     volumes:
@@ -128,9 +128,9 @@ services:
 
   obask-ontology-search:
     image: ghcr.io/obasktools/ontology-search:latest
-    container_name: ontology-search
+    # container_name: ontology-search
     ports:
-      - 8007:8007
+      - 8008:8007
     environment:
       - PYTHON_ENV=production
       - OBASK_URL_PREFIX=/cl-kg
@@ -141,8 +141,9 @@ services:
       - solr
 
   pipeline-mapper:
-    image: ghcr.io/cellular-semantics/cl_kg/translator_api_mapper:latest
-    container_name: pipeline_mapper
+          #image: ghcr.io/cellular-semantics/cl_kg/translator_api_mapper:latest
+    image: pipeline_mapper:latest
+    # container_name: pipeline_mapper
     depends_on:
       obask-updatetriplestore:
         condition: service_completed_successfully

@@ -3,7 +3,7 @@ from typing import List
 
 import requests
 
-from translator_api_mapper.src.utils.translator_utils import (
+from utils.translator_utils import (
     BATCH_SIZE,
     ENDPOINT_URL,
     ENSEMBL_PREFIX,

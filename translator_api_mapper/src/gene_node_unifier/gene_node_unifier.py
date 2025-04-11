@@ -1,5 +1,4 @@
 import logging
-
 import requests
 
 from utils.translator_utils import (
@@ -17,20 +16,19 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-def update_gene_nodes(ensembl_id: str, ncbigene_id: str):
+def update_gene_nodes_batch(update_dict):
     """
-    Updates all triples containing the specified Ensembl identifier by replacing it with the given NCBIGene identifier,
-    regardless of whether it appears as the subject or the object. Additionally, an owl:sameAs triple is inserted
-    to record the equivalence between the two identifiers.
-
+    Combines multiple SPARQL updates into one request.
+    
     Parameters:
-      ensembl_id (str): The Ensembl identifier to replace (e.g., "ensembl:ENSG00000163586").
-      ncbigene_id (str): The NCBIGene identifier to use (e.g., "NCBIGene:2168").
+      update_dict (dict): A mapping of Ensembl identifiers to lists of NCBIGene identifiers 
+                          (the first element will be used for the update).
     """
     endpoint_url = f"{ENDPOINT_URL}/statements"
     headers = {"Content-Type": "application/sparql-update"}
 
-    update_query = f"""
+    # Build the common prefix section
+    prefixes = f"""
     PREFIX ENSEMBL: <{ENSEMBL_PREFIX}>
     PREFIX NCBIGene: <{NCBIGene_PREFIX}>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -56,43 +54,68 @@ def update_gene_nodes(ensembl_id: str, ncbigene_id: str):
     }}
     """
 
+    update_statements = []
+    for ensembl_id, ncbigene_ids in update_dict.items():
+        # Use the first NCBIGene id from the list
+        ncbigene_id = ncbigene_ids[0]
+        update_statement = f"""
+        DELETE {{
+          {ensembl_id} ?p ?o .
+          ?s2 ?p2 {ensembl_id} .
+        }}
+        INSERT {{
+          {ncbigene_id} ?p ?o .
+          ?s2 ?p2 {ncbigene_id} .
+          {ncbigene_id} oio:hasDbXref "{ensembl_id}" .
+        }}
+        WHERE {{
+          {{
+            {ensembl_id} ?p ?o .
+          }}
+          UNION
+          {{
+            ?s2 ?p2 {ensembl_id} .
+          }}
+        }}
+        """
+        update_statements.append(update_statement.strip())
+
+    # Combine all updates with semicolon separators
+    full_query = prefixes + "\n" + " ;\n".join(update_statements)
+    
     try:
-        response = requests.post(endpoint_url, data=update_query, headers=headers)
+        response = requests.post(endpoint_url, data=full_query, headers=headers)
         if response.status_code == 204:
-            logger.info(
-                f"Successfully updated identifier {ensembl_id} to {ncbigene_id}."
-            )
+            logger.info(f"Successfully updated a batch of {len(update_dict)} updates.")
         else:
-            logger.error(
-                f"Failed to update identifier. Status Code: {response.status_code}"
-            )
+            logger.error(f"Batch update failed. Status Code: {response.status_code} - {response.text}")
     except requests.exceptions.RequestException as e:
-        logger.error(f"Request failed: {e}")
+        logger.error(f"Batch update request failed: {e}")
 
 
 def gene_node_unifier():
     ensembl_terms = run_query(ENSEMBL_SPARQL_QUERY)
     ensembl_curie_list = uri_to_curie(ensembl_terms)
 
-    # Process the curies in batches of 20,000 to avoid API limitations.
+    # Process the curies in batches to avoid API limitations
     normalized_curie_dict = {}
     batch_size = 20000
     for start in range(0, len(ensembl_curie_list), batch_size):
         batch = ensembl_curie_list[start : start + batch_size]
-        batch_result = get_normalized_curies(
-            batch, source_field="id", filter_keyword="NCBIGene"
-        )
+        batch_result = get_normalized_curies(batch, source_field="id", filter_keyword="NCBIGene")
         normalized_curie_dict.update(batch_result)
 
-    triples_batch = []
-
-    for ensembl_node_id, nbcigene_node_id in normalized_curie_dict.items():
-        update_gene_nodes(ensembl_node_id, nbcigene_node_id[0])
+    # Batch the SPARQL updates into groups and send them together
+    update_batch_size = 1000  # Adjust this batch size as needed
+    update_items = list(normalized_curie_dict.items())
+    for i in range(0, len(update_items), update_batch_size):
+        batch_dict = dict(update_items[i : i + update_batch_size])
+        update_gene_nodes_batch(batch_dict)
 
     logger.info("Gene node unification process completed.")
-    # Continue with further processing of normalized_curie_dict
     return normalized_curie_dict
 
 
 if __name__ == "__main__":
     gene_node_unifier()
+
