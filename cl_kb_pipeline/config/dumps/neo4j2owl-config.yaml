@@ -96,6 +96,7 @@ curie_map:
   HsapDv: http://purl.obolibrary.org/obo/HsapDv_
   GO: http://purl.obolibrary.org/obo/GO_
   UniProtKB: https://identifiers.org/uniprot/
+  CLM: http://purl.obolibrary.org/obo/CLM_
 
 filters:
   solr:
