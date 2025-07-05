@@ -65,7 +65,7 @@ def uniprot_ensembl_mapper():
     normalized_curie_dict = get_normalized_curies(
         uniprot_curie_list,
         source_field="equivalent_identifiers",
-        filter_keyword="ENSEMBL",
+        filter_keywords=["ENSEMBL"],
     )
 
     triples_batch = []
@@ -88,7 +88,7 @@ def uniprot_ensembl_mapper():
                     insert_triples_in_batch(triples_batch)
                     triples_batch = []
 
-            else:
+            elif "ENSG" in ensembl_id:
                 missing_count += 1
 
     # Insert remaining triples (if any)

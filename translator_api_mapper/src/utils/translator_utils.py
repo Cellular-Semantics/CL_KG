@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import requests
 from SPARQLWrapper import JSON, SPARQLWrapper
@@ -68,41 +68,60 @@ def uri_to_curie(uri_list: List[str]) -> List[str]:
 
 
 def get_normalized_curies(
-    curie_list: List[str], source_field: str, filter_keyword: str
+    curie_list: List[str],
+    source_field: str,
+    filter_keywords: Optional[List[str]] = None,
 ) -> Dict[str, List[str]]:
     """
-    Retrieves normalized CURIEs for a given list of CURIEs using a specified field in the API response.
+    Retrieves normalized CURIEs for a given list of CURIEs using a specified field in the API response,
+    and (optionally) filters them by any of the provided keywords.
 
     Parameters:
       curie_list: List of CURIEs to normalize.
       source_field: The key from the API response to extract identifiers from
                     (e.g., 'id' for a single identifier or 'equivalent_identifiers' for a list).
-      filter_keyword: Substring to filter the identifier values (e.g., 'ENSEMBL').
+      filter_keywords: Optional list of substrings to filter the identifier values.
+                       For example:
+                         ['ENSEMBL', 'HGNC', 'UMLS', 'OMIM', 'UniProtKB', 'PR']
+                       If None or empty, no filtering is applied.
 
     Returns:
-      A dictionary mapping each input CURIE to a list of normalized identifier strings that contain the filter_keyword.
+      A dictionary mapping each input CURIE to a list of normalized identifier strings
+      that contain *any* of the filter_keywords (or all identifiers if no keywords given).
     """
-    normalized_curies = {}
-    # logger.info(curie_list)
-    result = requests.post(NODE_NORMALIZATION_URL, json={"curies": curie_list})
-    if result.status_code == 200:
-        result_json = result.json()
-        for curie in curie_list:
-            curie_info = result_json.get(curie)
-            if curie_info and source_field in curie_info:
-                data = curie_info[source_field]
-                # Handle a single identifier (dict) or a list of identifiers.
-                if isinstance(data, dict):
-                    identifier = data.get("identifier", "")
-                    if filter_keyword in identifier:
-                        normalized_curies[curie] = [identifier]
-                elif isinstance(data, list):
-                    for identifier_dict in data:
-                        identifier = identifier_dict.get("identifier", "")
-                        if filter_keyword in identifier:
-                            normalized_curies.setdefault(curie, []).append(identifier)
-    else:
+    normalized_curies: Dict[str, List[str]] = {}
+    response = requests.post(NODE_NORMALIZATION_URL, json={"curies": curie_list})
+
+    if response.status_code != 200:
         logger.error(
-            f"Error fetching normalized CURIEs. Status code: {result.status_code}"
+            f"Error fetching normalized CURIEs. Status code: {response.status_code}"
         )
+        return normalized_curies
+
+    result_json = response.json()
+
+    def identifier_allowed(identifier: str) -> bool:
+        # If no filter list provided, accept everything
+        if not filter_keywords:
+            return True
+        # Otherwise keep if any keyword matches
+        return any(kw in identifier for kw in filter_keywords)
+
+    for curie in curie_list:
+        info = result_json.get(curie, {})
+        if info is None or source_field not in info:
+            continue
+
+        data = info[source_field]
+
+        if isinstance(data, dict):
+            ident = data.get("identifier", "")
+            if identifier_allowed(ident):
+                normalized_curies[curie] = [ident]
+        elif isinstance(data, list):
+            for id_dict in data:
+                ident = id_dict.get("identifier", "")
+                if identifier_allowed(ident):
+                    normalized_curies.setdefault(curie, []).append(ident)
+
     return normalized_curies
