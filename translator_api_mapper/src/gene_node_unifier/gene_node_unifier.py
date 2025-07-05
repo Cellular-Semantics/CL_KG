@@ -1,5 +1,6 @@
 import logging
 import requests
+from typing import Dict, List
 
 from utils.translator_utils import (
     ENDPOINT_URL,
@@ -16,13 +17,14 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-def update_gene_nodes_batch(update_dict):
+def update_gene_nodes_batch(update_dict: Dict[str, List[str]]):
     """
     Combines multiple SPARQL updates into one request.
-    
+
     Parameters:
-      update_dict (dict): A mapping of Ensembl identifiers to lists of NCBIGene identifiers 
-                          (the first element will be used for the update).
+      update_dict: A mapping of Ensembl identifiers to lists of NCBIGene identifiers
+                          (the first element will be used for the primary update, the rest
+                           will be inserted as additional hasDbXref values).
     """
     endpoint_url = f"{ENDPOINT_URL}/statements"
     headers = {"Content-Type": "application/sparql-update"}
@@ -37,17 +39,28 @@ def update_gene_nodes_batch(update_dict):
 
     update_statements = []
     for ensembl_id, ncbigene_ids in update_dict.items():
-        # Use the first NCBIGene id from the list
-        ncbigene_id = ncbigene_ids[0]
-        update_statement = f"""
+        # Primary NCBIGene id
+        primary = ncbigene_ids[0]
+
+        # Build additional hasDbXref triples for any extra IDs
+        extra_xrefs = ncbigene_ids[1:]
+        extra_triples = ""
+        if extra_xrefs:
+            extras = "\n".join(
+                f"          {primary} oio:hasDbXref \"{xref}\" ."
+                for xref in extra_xrefs
+            )
+            extra_triples = "\n" + extras
+
+        stmt = f"""
         DELETE {{
           {ensembl_id} ?p ?o .
           ?s2 ?p2 {ensembl_id} .
         }}
         INSERT {{
-          {ncbigene_id} ?p ?o .
-          ?s2 ?p2 {ncbigene_id} .
-          {ncbigene_id} oio:hasDbXref "{ensembl_id}" .
+          {primary} ?p ?o .
+          ?s2 ?p2 {primary} .
+          {primary} oio:hasDbXref "{ensembl_id}" .{extra_triples}
         }}
         WHERE {{
           {{
@@ -59,11 +72,11 @@ def update_gene_nodes_batch(update_dict):
           }}
         }}
         """
-        update_statements.append(update_statement.strip())
+        update_statements.append(stmt.strip())
 
     # Combine all updates with semicolon separators
     full_query = prefixes + "\n" + " ;\n".join(update_statements)
-    
+
     try:
         response = requests.post(endpoint_url, data=full_query, headers=headers)
         if response.status_code == 204:
@@ -80,12 +93,14 @@ def gene_node_unifier():
 
     # Process the curies in batches to avoid API limitations
     normalized_curie_dict = {}
+    # batch_size = 10
     batch_size = 20000
     for start in range(0, len(ensembl_curie_list), batch_size):
         batch = ensembl_curie_list[start : start + batch_size]
-        batch_result = get_normalized_curies(batch, source_field="id", filter_keyword="NCBIGene")
+        # batch_result = get_normalized_curies(batch, source_field="id", filter_keywords=["NCBIGene"])
+        batch_result = get_normalized_curies(batch, source_field="equivalent_identifiers")
         normalized_curie_dict.update(batch_result)
-
+        break
     # Batch the SPARQL updates into groups and send them together
     update_batch_size = 1000  # Adjust this batch size as needed
     update_items = list(normalized_curie_dict.items())
