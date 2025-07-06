@@ -93,16 +93,14 @@ def gene_node_unifier():
 
     # Process the curies in batches to avoid API limitations
     normalized_curie_dict = {}
-    # batch_size = 10
     batch_size = 20000
     for start in range(0, len(ensembl_curie_list), batch_size):
         batch = ensembl_curie_list[start : start + batch_size]
         # batch_result = get_normalized_curies(batch, source_field="id", filter_keywords=["NCBIGene"])
         batch_result = get_normalized_curies(batch, source_field="equivalent_identifiers")
         normalized_curie_dict.update(batch_result)
-        break
     # Batch the SPARQL updates into groups and send them together
-    update_batch_size = 1000  # Adjust this batch size as needed
+    update_batch_size = 1000
     update_items = list(normalized_curie_dict.items())
     for i in range(0, len(update_items), update_batch_size):
         batch_dict = dict(update_items[i : i + update_batch_size])
