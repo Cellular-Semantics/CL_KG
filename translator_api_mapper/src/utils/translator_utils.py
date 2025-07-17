@@ -9,31 +9,20 @@ logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-UNIPROT_PREFIX = "https://identifiers.org/uniprot/"
-UNIPROT_SPARQL_QUERY = f"""
-SELECT DISTINCT ?s
-WHERE {{ 
-  ?s a ?o. FILTER(contains(str(?s), "{UNIPROT_PREFIX}"))
-}}
-"""
-ENSEMBL_PREFIX = "http://identifiers.org/ensembl/"
-ENSEMBL_SPARQL_QUERY = f"""
-SELECT DISTINCT ?s
-WHERE {{ 
-  ?s a ?o. FILTER(contains(str(?s), "{ENSEMBL_PREFIX}"))
-}}
-"""
-NCBIGene_PREFIX = "http://identifiers.org/ncbigene/"
-
+PREFIXES = {
+    "uniprot": "https://identifiers.org/uniprot/",
+    "ensembl": "http://identifiers.org/ensembl/",
+    "ncbigene": "http://identifiers.org/ncbigene/",
+}
 # Node Normalization Endpoint
 NODE_NORMALIZATION_URL = "https://nodenormalization-sri.renci.org/get_normalized_nodes"
 # RDF4J local endpoint configuration
-ENDPOINT_URL = os.getenv(
-    "ENDPOINT_URL", "http://triplestore:8080/rdf4j-server/repositories/obask"
-)
 # ENDPOINT_URL = os.getenv(
-#     "ENDPOINT_URL", "http://localhost:8081/rdf4j-server/repositories/obask"
+#     "ENDPOINT_URL", "http://triplestore:8080/rdf4j-server/repositories/obask"
 # )
+ENDPOINT_URL = os.getenv(
+    "ENDPOINT_URL", "http://localhost:8081/rdf4j-server/repositories/obask"
+)
 # RO Relation: Gene produces Protein
 RO_0003000 = "http://purl.obolibrary.org/obo/RO_0003000"
 
@@ -42,6 +31,15 @@ BATCH_SIZE = 1000
 # Configure the SPARQL query endpoint
 sparql_query = SPARQLWrapper(ENDPOINT_URL)
 sparql_query.setReturnFormat(JSON)
+
+
+def build_sparql_query(prefix: str) -> str:
+    return f"""
+    SELECT DISTINCT ?s
+    WHERE {{ 
+      ?s a ?o. FILTER(contains(str(?s), "{prefix}"))
+    }}
+    """
 
 
 def run_query(query: str) -> List[str]:
@@ -60,10 +58,12 @@ def uri_to_curie(uri_list: List[str]) -> List[str]:
     """Converts RDF URIs to CURIEs for use with the Translator API."""
     curie_list = []
     for uri in uri_list:
-        if uri.startswith(UNIPROT_PREFIX):
-            curie_list.append(f"UniProtKB:{uri.replace(UNIPROT_PREFIX, '')}")
-        elif uri.startswith(ENSEMBL_PREFIX):
-            curie_list.append(f"ENSEMBL:{uri.replace(ENSEMBL_PREFIX, '')}")
+        if uri.startswith(PREFIXES["uniprot"]):
+            curie_list.append(f"UniProtKB:{uri.replace(PREFIXES['uniprot'], '')}")
+        elif uri.startswith(PREFIXES["ensembl"]):
+            curie_list.append(f"ENSEMBL:{uri.replace(PREFIXES['ensembl'], '')}")
+        elif uri.startswith(PREFIXES["ncbigene"]):
+            curie_list.append(f"NCBIGene:{uri.replace(PREFIXES['ncbigene'], '')}")
     return curie_list
 
 
