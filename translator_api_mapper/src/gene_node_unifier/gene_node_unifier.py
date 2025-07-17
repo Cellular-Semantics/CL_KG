@@ -1,12 +1,11 @@
 import logging
-import requests
 from typing import Dict, List
 
+import requests
 from utils.translator_utils import (
     ENDPOINT_URL,
-    ENSEMBL_PREFIX,
-    ENSEMBL_SPARQL_QUERY,
-    NCBIGene_PREFIX,
+    PREFIXES,
+    build_sparql_query,
     get_normalized_curies,
     run_query,
     uri_to_curie,
@@ -31,8 +30,8 @@ def update_gene_nodes_batch(update_dict: Dict[str, List[str]]):
 
     # Build the common prefix section
     prefixes = f"""
-    PREFIX ENSEMBL: <{ENSEMBL_PREFIX}>
-    PREFIX NCBIGene: <{NCBIGene_PREFIX}>
+    PREFIX ENSEMBL: <{PREFIXES['ensembl']}>
+    PREFIX NCBIGene: <{PREFIXES['ncbigene']}>
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
     PREFIX oio: <http://www.geneontology.org/formats/oboInOwl#>
     """
@@ -47,8 +46,7 @@ def update_gene_nodes_batch(update_dict: Dict[str, List[str]]):
         extra_triples = ""
         if extra_xrefs:
             extras = "\n".join(
-                f"          {primary} oio:hasDbXref \"{xref}\" ."
-                for xref in extra_xrefs
+                f'          {primary} oio:hasDbXref "{xref}" .' for xref in extra_xrefs
             )
             extra_triples = "\n" + extras
 
@@ -82,13 +80,15 @@ def update_gene_nodes_batch(update_dict: Dict[str, List[str]]):
         if response.status_code == 204:
             logger.info(f"Successfully updated a batch of {len(update_dict)} updates.")
         else:
-            logger.error(f"Batch update failed. Status Code: {response.status_code} - {response.text}")
+            logger.error(
+                f"Batch update failed. Status Code: {response.status_code} - {response.text}"
+            )
     except requests.exceptions.RequestException as e:
         logger.error(f"Batch update request failed: {e}")
 
 
 def gene_node_unifier():
-    ensembl_terms = run_query(ENSEMBL_SPARQL_QUERY)
+    ensembl_terms = run_query(build_sparql_query(PREFIXES['ensembl']))
     ensembl_curie_list = uri_to_curie(ensembl_terms)
 
     # Process the curies in batches to avoid API limitations
@@ -97,7 +97,9 @@ def gene_node_unifier():
     for start in range(0, len(ensembl_curie_list), batch_size):
         batch = ensembl_curie_list[start : start + batch_size]
         # batch_result = get_normalized_curies(batch, source_field="id", filter_keywords=["NCBIGene"])
-        batch_result = get_normalized_curies(batch, source_field="equivalent_identifiers")
+        batch_result = get_normalized_curies(
+            batch, source_field="equivalent_identifiers"
+        )
         normalized_curie_dict.update(batch_result)
     # Batch the SPARQL updates into groups and send them together
     update_batch_size = 1000
@@ -112,4 +114,3 @@ def gene_node_unifier():
 
 if __name__ == "__main__":
     gene_node_unifier()
-

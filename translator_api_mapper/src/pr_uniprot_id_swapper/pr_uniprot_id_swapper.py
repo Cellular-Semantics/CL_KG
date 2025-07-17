@@ -1,9 +1,8 @@
 import logging
 from typing import List, Tuple
+
 import requests
-
-from SPARQLWrapper import SPARQLWrapper, JSON
-
+from SPARQLWrapper import JSON, SPARQLWrapper
 from utils.translator_utils import ENDPOINT_URL
 
 logging.basicConfig(level=logging.WARNING)
@@ -136,7 +135,9 @@ def update_triples_batch(pairs: List[Tuple[str, str]]):
         if response.status_code == 204:
             logger.info(f"Successfully updated a batch of {len(pairs)} updates.")
         else:
-            logger.error(f"Batch update failed. Status Code: {response.status_code} - {response.text}")
+            logger.error(
+                f"Batch update failed. Status Code: {response.status_code} - {response.text}"
+            )
     except requests.exceptions.RequestException as e:
         logger.error(f"Batch update request failed: {e}")
 
@@ -148,7 +149,7 @@ def pr_uniprot_id_swapper():
 
     update_batch_size = 1000
     for i in range(0, len(all_tuples), update_batch_size):
-        batch_list = all_tuples[i:i + update_batch_size]
+        batch_list = all_tuples[i : i + update_batch_size]
         update_triples_batch(batch_list)
 
 
