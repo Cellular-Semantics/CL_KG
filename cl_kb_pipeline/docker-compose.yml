@@ -27,6 +27,7 @@ services:
     environment:
       - NEO4J_AUTH=neo4j/neo
       - NEO4J_dbms_read__only=false
+      - NEO4J_dbms_databases_default__to__read__only=false
       - NEO4J_dbms_memory_heap_maxSize=4G
       - NEO4J_dbms_memory_heap_initial__size=1G
     ports:
@@ -39,6 +40,7 @@ services:
         condition: service_completed_successfully
     volumes:
       - obask_data:/input
+      - obask_neo4j_data:/data # for Neo4j DB itself
     healthcheck:
       test: [ "CMD", "wget", "-O", "-", "http://obask-kb:7474" ]
       interval: 18s
@@ -141,8 +143,7 @@ services:
       - solr
 
   pipeline-mapper:
-          #image: ghcr.io/cellular-semantics/cl_kg/translator_api_mapper:latest
-    image: pipeline_mapper:latest
+    image: ghcr.io/cellular-semantics/cl_kg/translator_api_mapper:latest
     # container_name: pipeline_mapper
     depends_on:
       obask-updatetriplestore:
@@ -152,7 +153,30 @@ services:
     links:
       - triplestore
 
+  obask-make-kb-readonly:
+    image: docker:cli
+    depends_on:
+      obask-updateprod:
+        condition: service_completed_successfully
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    entrypoint: >
+      sh -c 'echo "[INFO] Restarting obask-kb in read-only mode..." && \
+        docker stop cl_kb_pipeline-obask-kb-1 && \
+        docker rm cl_kb_pipeline-obask-kb-1 && \
+        docker run -d --name cl_kb_pipeline-obask-kb-1 \
+          -p 7475:7474 -p 7688:7687 \
+          -v cl_kb_pipeline_obask_data:/input \
+          -v cl_kb_pipeline_obask_neo4j_data:/data \
+          -e NEO4J_AUTH=neo4j/neo \
+          -e NEO4J_dbms_read__only=true \
+          -e NEO4J_dbms_databases_default__to__read__only=true \
+          -e NEO4J_dbms_memory_heap_maxSize=4G \
+          -e NEO4J_dbms_memory_heap_initial__size=1G \
+          ghcr.io/obasktools/obask-kb:latest'
+
 volumes:
   obask_data:
   solr_data:
   triplestore_data:
+  obask_neo4j_data:
