@@ -3,6 +3,7 @@ nav:
   - Home: index.md
   - Access Guide: access_guide.md
   - Query Guide: query_guide.md
+  - Content Analysis: queries_for_content_analysis.md
   - Dataset Curation Guidelines: dataset_curation_guidelines.md
   - Schema: schema.md
 theme: readthedocs
