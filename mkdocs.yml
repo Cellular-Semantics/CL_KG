@@ -10,3 +10,6 @@ nav:
       - CL_KG Summary: reports/clkg-summary.md
 theme: readthedocs
 docs_dir: docs
+
+markdown_extensions:
+  - tables
