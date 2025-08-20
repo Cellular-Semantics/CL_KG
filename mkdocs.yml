@@ -7,7 +7,18 @@ nav:
   - Dataset Curation Guidelines: dataset_curation_guidelines.md
   - Schema: schema.md
   - Reports:
-      - CL_KG Summary: reports/clkg-summary.md
+      - Global totals: reports/sections/01-global-totals.md
+      - Counts by key label: reports/sections/02-counts-by-key-label.md
+      - Average degree by label: reports/sections/03-average-degree-by-label.md
+      - Top relationship types: reports/sections/04-top-relationship-types.md
+      - Top tissues across clusters: reports/sections/05-top-tissues.md
+      - Top diseases across clusters: reports/sections/06-top-diseases.md
+      - Assay types: reports/sections/07-assay-types.md
+      - Development stages: reports/sections/08-development-stages.md
+      - Dataset and cluster coverage: reports/sections/09-dataset-cluster-coverage.md
+      - Top datasets by clusters: reports/sections/10-dataset-coverage.md
+      - Datasets alphabetical: reports/sections/11-datasets-alphabetical.md
+
 theme: readthedocs
 docs_dir: docs
 
