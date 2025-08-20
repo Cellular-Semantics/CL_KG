@@ -13,3 +13,4 @@ docs_dir: docs
 
 markdown_extensions:
   - tables
+  - md_in_html
