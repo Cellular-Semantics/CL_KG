@@ -19,6 +19,15 @@ jobs:
     steps:
       - name: Checkout main
         uses: actions/checkout@v3
+      - name: Show mkdocs.yml (for sanity)
+        run: |
+          echo "----- mkdocs.yml -----"
+          sed -n '1,200p' mkdocs.yml
+          echo "----------------------"
+      - name: Install MkDocs
+        run: pip install mkdocs
+      - name: Build (strict) to catch config/nav issues
+        run: mkdocs build --strict --verbose
       - name: Deploy docs
         uses: mhausenblas/mkdocs-deploy-gh-pages@master
         env:
