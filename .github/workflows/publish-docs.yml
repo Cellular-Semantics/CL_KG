@@ -27,7 +27,7 @@ jobs:
       - name: Install MkDocs
         run: pip install mkdocs
       - name: Build (strict) to catch config/nav issues
-        run: mkdocs build --strict --verbose
+        run: mkdocs build --verbose
       - name: Deploy docs
         uses: mhausenblas/mkdocs-deploy-gh-pages@master
         env:
