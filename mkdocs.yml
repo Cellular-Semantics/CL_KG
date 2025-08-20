@@ -10,14 +10,14 @@ nav:
       - Global totals: reports/sections/01-global-totals.md
       - Counts by key label: reports/sections/02-counts-by-key-label.md
       - Average degree by label: reports/sections/03-average-degree-by-label.md
-      - Top relationship types: reports/sections/04-top-relationship-types.md
-      - Top tissues across clusters: reports/sections/05-top-tissues.md
-      - Top diseases across clusters: reports/sections/06-top-diseases.md
-      - Assay types: reports/sections/07-assay-types.md
-      - Development stages: reports/sections/08-development-stages.md
-      - Dataset and cluster coverage: reports/sections/09-dataset-cluster-coverage.md
-      - Top datasets by clusters: reports/sections/10-dataset-coverage.md
-      - Datasets alphabetical: reports/sections/11-datasets-alphabetical.md
+      - Relationship types by count: reports/sections/04-relationship-types-by-count.md
+      - Top tissues across clusters: reports/sections/05-top-tissues-across-clusters.md
+      - Top diseases across clusters: reports/sections/06-top-diseases-across-clusters.md
+      - Assay types across clusters: reports/sections/07-assay-types-across-clusters.md
+      - Development stages across clusters: reports/sections/08-development-stages-across-clusters.md
+      - How many datasets and clusters with sources?: reports/sections/09-how-many-datasets-and-clusters-with-sources.md
+      - Top datasets by clusters: reports/sections/10-top-datasets-by-clusters.md
+      - List all dataset titles alphabetically with row numbers: reports/sections/11-list-all-dataset-titles-alphabetically-with-row-numbers.md
 
 theme: readthedocs
 docs_dir: docs
