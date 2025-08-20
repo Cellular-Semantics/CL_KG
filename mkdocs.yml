@@ -6,5 +6,7 @@ nav:
   - Content Analysis: queries_for_content_analysis.md
   - Dataset Curation Guidelines: dataset_curation_guidelines.md
   - Schema: schema.md
+  - Reports:
+      - CL_KG Summary: reports/clkg-summary.md
 theme: readthedocs
 docs_dir: docs
