@@ -1,0 +1,1407 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../07-assay-types-across-clusters/">
+      
+      
+        <link rel="next" href="../09-how-many-datasets-and-clusters-with-sources/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
+    
+    
+      
+        <title>Development stages across clusters - Cell Type Knowledge Graph Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.bcfcd587.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#08-development-stages-across-clusters" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Cell Type Knowledge Graph Documentation" class="md-header__button md-logo" aria-label="Cell Type Knowledge Graph Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Cell Type Knowledge Graph Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Development stages across clusters
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Cell Type Knowledge Graph Documentation" class="md-nav__button md-logo" aria-label="Cell Type Knowledge Graph Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Cell Type Knowledge Graph Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../access_guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../query_guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Query Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../queries_for_content_analysis/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Content Analysis
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../dataset_curation_guidelines/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dataset Curation Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../schema/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Schema
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reports
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Reports
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-global-totals/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Global totals
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-counts-by-key-label/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Counts by key label
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-average-degree-by-label/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Average degree by label
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-relationship-types-by-count/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Relationship types by count
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-top-tissues-across-clusters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Top tissues across clusters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-top-diseases-across-clusters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Top diseases across clusters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-assay-types-across-clusters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Assay types across clusters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Development stages across clusters
+  </span>
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-how-many-datasets-and-clusters-with-sources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    How many datasets and clusters with sources?
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-top-datasets-by-clusters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Top datasets by clusters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11-list-all-dataset-titles-alphabetically-with-row-numbers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    List all dataset titles alphabetically with row numbers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="08-development-stages-across-clusters">08 — Development stages across clusters</h1>
+<p><sub><em>Source: 08_development_stages.cypher</em></sub></p>
+<table>
+<thead>
+<tr>
+<th>stage</th>
+<th>clusters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>29-year-old stage</td>
+<td>3910</td>
+</tr>
+<tr>
+<td>50-year-old stage</td>
+<td>3868</td>
+</tr>
+<tr>
+<td>42-year-old stage</td>
+<td>3818</td>
+</tr>
+<tr>
+<td>60-year-old stage</td>
+<td>3336</td>
+</tr>
+<tr>
+<td>43-year-old stage</td>
+<td>2651</td>
+</tr>
+<tr>
+<td>9-week-old stage</td>
+<td>2323</td>
+</tr>
+<tr>
+<td>8-week-old stage</td>
+<td>1868</td>
+</tr>
+<tr>
+<td>16th week post-fertilization stage</td>
+<td>1842</td>
+</tr>
+<tr>
+<td>15th week post-fertilization stage</td>
+<td>1589</td>
+</tr>
+<tr>
+<td>17th week post-fertilization stage</td>
+<td>1413</td>
+</tr>
+<tr>
+<td>12th week post-fertilization stage</td>
+<td>1411</td>
+</tr>
+<tr>
+<td>sixth decade stage</td>
+<td>1395</td>
+</tr>
+<tr>
+<td>13th week post-fertilization stage</td>
+<td>1371</td>
+</tr>
+<tr>
+<td>2-month-old stage</td>
+<td>1367</td>
+</tr>
+<tr>
+<td>65-year-old stage</td>
+<td>1265</td>
+</tr>
+<tr>
+<td>58-year-old stage</td>
+<td>1256</td>
+</tr>
+<tr>
+<td>59-year-old stage</td>
+<td>1239</td>
+</tr>
+<tr>
+<td>70-year-old stage</td>
+<td>1199</td>
+</tr>
+<tr>
+<td>69-year-old stage</td>
+<td>1194</td>
+</tr>
+<tr>
+<td>7-week-old stage</td>
+<td>1156</td>
+</tr>
+<tr>
+<td>56-year-old stage</td>
+<td>1153</td>
+</tr>
+<tr>
+<td>63-year-old stage</td>
+<td>1148</td>
+</tr>
+<tr>
+<td>52-year-old stage</td>
+<td>1126</td>
+</tr>
+<tr>
+<td>4-week-old stage</td>
+<td>1081</td>
+</tr>
+<tr>
+<td>57-year-old stage</td>
+<td>1075</td>
+</tr>
+<tr>
+<td>53-year-old stage</td>
+<td>1056</td>
+</tr>
+<tr>
+<td>68-year-old stage</td>
+<td>1053</td>
+</tr>
+<tr>
+<td>30-year-old stage</td>
+<td>1041</td>
+</tr>
+<tr>
+<td>64-year-old stage</td>
+<td>1035</td>
+</tr>
+<tr>
+<td>75-year-old stage</td>
+<td>1004</td>
+</tr>
+<tr>
+<td>66-year-old stage</td>
+<td>991</td>
+</tr>
+<tr>
+<td>25-year-old stage</td>
+<td>979</td>
+</tr>
+<tr>
+<td>47-year-old stage</td>
+<td>942</td>
+</tr>
+<tr>
+<td>62-year-old stage</td>
+<td>936</td>
+</tr>
+<tr>
+<td>72-year-old stage</td>
+<td>917</td>
+</tr>
+<tr>
+<td>41-year-old stage</td>
+<td>914</td>
+</tr>
+<tr>
+<td>juvenile stage</td>
+<td>900</td>
+</tr>
+<tr>
+<td>46-year-old stage</td>
+<td>898</td>
+</tr>
+<tr>
+<td>39-year-old stage</td>
+<td>897</td>
+</tr>
+<tr>
+<td>61-year-old stage</td>
+<td>886</td>
+</tr>
+<tr>
+<td>40-year-old stage</td>
+<td>880</td>
+</tr>
+<tr>
+<td>73-year-old stage</td>
+<td>869</td>
+</tr>
+<tr>
+<td>35-year-old stage</td>
+<td>864</td>
+</tr>
+<tr>
+<td>prime adult stage</td>
+<td>863</td>
+</tr>
+<tr>
+<td>37-year-old stage</td>
+<td>849</td>
+</tr>
+<tr>
+<td>36-year-old stage</td>
+<td>848</td>
+</tr>
+<tr>
+<td>54-year-old stage</td>
+<td>846</td>
+</tr>
+<tr>
+<td>55-year-old stage</td>
+<td>843</td>
+</tr>
+<tr>
+<td>31-year-old stage</td>
+<td>839</td>
+</tr>
+<tr>
+<td>78-year-old stage</td>
+<td>825</td>
+</tr>
+<tr>
+<td>45-year-old stage</td>
+<td>825</td>
+</tr>
+<tr>
+<td>38-year-old stage</td>
+<td>807</td>
+</tr>
+<tr>
+<td>27-year-old stage</td>
+<td>800</td>
+</tr>
+<tr>
+<td>71-year-old stage</td>
+<td>799</td>
+</tr>
+<tr>
+<td>49-year-old stage</td>
+<td>796</td>
+</tr>
+<tr>
+<td>seventh decade stage</td>
+<td>794</td>
+</tr>
+<tr>
+<td>83-year-old stage</td>
+<td>790</td>
+</tr>
+<tr>
+<td>34-year-old stage</td>
+<td>785</td>
+</tr>
+<tr>
+<td>77-year-old stage</td>
+<td>775</td>
+</tr>
+<tr>
+<td>2-week-old stage</td>
+<td>768</td>
+</tr>
+<tr>
+<td>33-year-old stage</td>
+<td>757</td>
+</tr>
+<tr>
+<td>21-year-old stage</td>
+<td>746</td>
+</tr>
+<tr>
+<td>fourth decade stage</td>
+<td>725</td>
+</tr>
+<tr>
+<td>80-year-old stage</td>
+<td>703</td>
+</tr>
+<tr>
+<td>67-year-old stage</td>
+<td>701</td>
+</tr>
+<tr>
+<td>fifth decade stage</td>
+<td>692</td>
+</tr>
+<tr>
+<td>unknown</td>
+<td>688</td>
+</tr>
+<tr>
+<td>48-year-old stage</td>
+<td>682</td>
+</tr>
+<tr>
+<td>82-year-old stage</td>
+<td>675</td>
+</tr>
+<tr>
+<td>24-year-old stage</td>
+<td>662</td>
+</tr>
+<tr>
+<td>74-year-old stage</td>
+<td>651</td>
+</tr>
+<tr>
+<td>76-year-old stage</td>
+<td>644</td>
+</tr>
+<tr>
+<td>80 year-old and over stage</td>
+<td>633</td>
+</tr>
+<tr>
+<td>23-year-old stage</td>
+<td>628</td>
+</tr>
+<tr>
+<td>51-year-old stage</td>
+<td>619</td>
+</tr>
+<tr>
+<td>44-year-old stage</td>
+<td>617</td>
+</tr>
+<tr>
+<td>84-year-old stage</td>
+<td>610</td>
+</tr>
+<tr>
+<td>6-week-old stage</td>
+<td>603</td>
+</tr>
+<tr>
+<td>26-day-old stage</td>
+<td>591</td>
+</tr>
+<tr>
+<td>81-year-old stage</td>
+<td>583</td>
+</tr>
+<tr>
+<td>86-year-old stage</td>
+<td>573</td>
+</tr>
+<tr>
+<td>1-week-old stage</td>
+<td>571</td>
+</tr>
+<tr>
+<td>26-year-old stage</td>
+<td>565</td>
+</tr>
+<tr>
+<td>third decade stage</td>
+<td>534</td>
+</tr>
+<tr>
+<td>eighth decade stage</td>
+<td>531</td>
+</tr>
+<tr>
+<td>adult stage</td>
+<td>528</td>
+</tr>
+<tr>
+<td>19-year-old stage</td>
+<td>503</td>
+</tr>
+<tr>
+<td>88-year-old stage</td>
+<td>459</td>
+</tr>
+<tr>
+<td>32-year-old stage</td>
+<td>454</td>
+</tr>
+<tr>
+<td>85-year-old stage</td>
+<td>443</td>
+</tr>
+<tr>
+<td>22-year-old stage</td>
+<td>432</td>
+</tr>
+<tr>
+<td>87-year-old stage</td>
+<td>422</td>
+</tr>
+<tr>
+<td>79-year-old stage</td>
+<td>419</td>
+</tr>
+<tr>
+<td>20-month-old stage and over</td>
+<td>418</td>
+</tr>
+<tr>
+<td>23-day-old stage</td>
+<td>400</td>
+</tr>
+<tr>
+<td>89-year-old stage</td>
+<td>397</td>
+</tr>
+<tr>
+<td>20-year-old stage</td>
+<td>396</td>
+</tr>
+<tr>
+<td>10th week post-fertilization stage</td>
+<td>393</td>
+</tr>
+<tr>
+<td>28-year-old stage</td>
+<td>370</td>
+</tr>
+<tr>
+<td>10-week-old stage</td>
+<td>353</td>
+</tr>
+<tr>
+<td>10-year-old stage</td>
+<td>316</td>
+</tr>
+<tr>
+<td>postnatal stage</td>
+<td>285</td>
+</tr>
+<tr>
+<td>11-week-old stage</td>
+<td>284</td>
+</tr>
+<tr>
+<td>15-year-old stage</td>
+<td>271</td>
+</tr>
+<tr>
+<td>18-year-old stage</td>
+<td>259</td>
+</tr>
+<tr>
+<td>newborn stage (0-28 days)</td>
+<td>252</td>
+</tr>
+<tr>
+<td>12-year-old stage</td>
+<td>252</td>
+</tr>
+<tr>
+<td>13-week-old stage</td>
+<td>233</td>
+</tr>
+<tr>
+<td>3-year-old stage</td>
+<td>228</td>
+</tr>
+<tr>
+<td>4-year-old stage</td>
+<td>225</td>
+</tr>
+<tr>
+<td>92-year-old stage</td>
+<td>223</td>
+</tr>
+<tr>
+<td>60-79 year-old stage</td>
+<td>223</td>
+</tr>
+<tr>
+<td>3-month-old stage</td>
+<td>214</td>
+</tr>
+<tr>
+<td>11-year-old stage</td>
+<td>213</td>
+</tr>
+<tr>
+<td>pediatric stage</td>
+<td>208</td>
+</tr>
+<tr>
+<td>14th week post-fertilization stage</td>
+<td>206</td>
+</tr>
+<tr>
+<td>16-year-old stage</td>
+<td>204</td>
+</tr>
+<tr>
+<td>late adult stage</td>
+<td>189</td>
+</tr>
+<tr>
+<td>13-year-old stage</td>
+<td>188</td>
+</tr>
+<tr>
+<td>Carnegie stage 22</td>
+<td>185</td>
+</tr>
+<tr>
+<td>24-week-old stage</td>
+<td>184</td>
+</tr>
+<tr>
+<td>14-week-old stage</td>
+<td>184</td>
+</tr>
+<tr>
+<td>18-month-old stage</td>
+<td>183</td>
+</tr>
+<tr>
+<td>9th week post-fertilization stage</td>
+<td>178</td>
+</tr>
+<tr>
+<td>90 year-old and over stage</td>
+<td>177</td>
+</tr>
+<tr>
+<td>14-year-old stage</td>
+<td>175</td>
+</tr>
+<tr>
+<td>ninth decade stage</td>
+<td>171</td>
+</tr>
+<tr>
+<td>17-year-old stage</td>
+<td>162</td>
+</tr>
+<tr>
+<td>11th week post-fertilization stage</td>
+<td>152</td>
+</tr>
+<tr>
+<td>young adult stage</td>
+<td>145</td>
+</tr>
+<tr>
+<td>9-year-old stage</td>
+<td>144</td>
+</tr>
+<tr>
+<td>6-year-old stage</td>
+<td>140</td>
+</tr>
+<tr>
+<td>Carnegie stage 19</td>
+<td>131</td>
+</tr>
+<tr>
+<td>17-week-old stage</td>
+<td>130</td>
+</tr>
+<tr>
+<td>child stage (1-4 yo)</td>
+<td>126</td>
+</tr>
+<tr>
+<td>juvenile stage (5-14 yo)</td>
+<td>124</td>
+</tr>
+<tr>
+<td>16-week-old stage</td>
+<td>123</td>
+</tr>
+<tr>
+<td>Carnegie stage 23</td>
+<td>122</td>
+</tr>
+<tr>
+<td>18th week post-fertilization stage</td>
+<td>117</td>
+</tr>
+<tr>
+<td>15-week-old stage</td>
+<td>103</td>
+</tr>
+<tr>
+<td>12-week-old stage</td>
+<td>103</td>
+</tr>
+<tr>
+<td>2-year-old stage</td>
+<td>93</td>
+</tr>
+<tr>
+<td>Carnegie stage 18</td>
+<td>92</td>
+</tr>
+<tr>
+<td>Carnegie stage 17</td>
+<td>88</td>
+</tr>
+<tr>
+<td>19-week-old stage</td>
+<td>87</td>
+</tr>
+<tr>
+<td>91-year-old stage</td>
+<td>87</td>
+</tr>
+<tr>
+<td>20-week-old stage</td>
+<td>85</td>
+</tr>
+<tr>
+<td>18-week-old stage</td>
+<td>83</td>
+</tr>
+<tr>
+<td>Theiler stage 25</td>
+<td>81</td>
+</tr>
+<tr>
+<td>Theiler stage 23</td>
+<td>75</td>
+</tr>
+<tr>
+<td>Theiler stage 22</td>
+<td>74</td>
+</tr>
+<tr>
+<td>6-month-old stage</td>
+<td>71</td>
+</tr>
+<tr>
+<td>90-year-old stage</td>
+<td>70</td>
+</tr>
+<tr>
+<td>Theiler stage 27</td>
+<td>69</td>
+</tr>
+<tr>
+<td>Theiler stage 21</td>
+<td>66</td>
+</tr>
+<tr>
+<td>7-day-old stage</td>
+<td>65</td>
+</tr>
+<tr>
+<td>4-day-old stage</td>
+<td>65</td>
+</tr>
+<tr>
+<td>8-year-old stage</td>
+<td>65</td>
+</tr>
+<tr>
+<td>5-year-old stage</td>
+<td>63</td>
+</tr>
+<tr>
+<td>7-year-old stage</td>
+<td>61</td>
+</tr>
+<tr>
+<td>5-week-old stage</td>
+<td>61</td>
+</tr>
+<tr>
+<td>Theiler stage 20</td>
+<td>55</td>
+</tr>
+<tr>
+<td>Theiler stage 18</td>
+<td>53</td>
+</tr>
+<tr>
+<td>12-month-old stage</td>
+<td>51</td>
+</tr>
+<tr>
+<td>embryonic stage</td>
+<td>45</td>
+</tr>
+<tr>
+<td>20th week post-fertilization stage</td>
+<td>44</td>
+</tr>
+<tr>
+<td>23-week-old stage</td>
+<td>42</td>
+</tr>
+<tr>
+<td>Carnegie stage 21</td>
+<td>42</td>
+</tr>
+<tr>
+<td>1-month-old stage</td>
+<td>42</td>
+</tr>
+<tr>
+<td>11-month-old stage</td>
+<td>37</td>
+</tr>
+<tr>
+<td>25-week-old stage</td>
+<td>36</td>
+</tr>
+<tr>
+<td>96-year-old stage</td>
+<td>35</td>
+</tr>
+<tr>
+<td>19-month-old stage</td>
+<td>31</td>
+</tr>
+<tr>
+<td>7-month-old stage</td>
+<td>30</td>
+</tr>
+<tr>
+<td>29-week-old stage</td>
+<td>28</td>
+</tr>
+<tr>
+<td>9-month-old stage</td>
+<td>27</td>
+</tr>
+<tr>
+<td>middle aged stage</td>
+<td>25</td>
+</tr>
+<tr>
+<td>22-week-old stage</td>
+<td>24</td>
+</tr>
+<tr>
+<td>26-week-old stage</td>
+<td>21</td>
+</tr>
+<tr>
+<td>Carnegie stage 09</td>
+<td>15</td>
+</tr>
+<tr>
+<td>Carnegie stage 13</td>
+<td>15</td>
+</tr>
+<tr>
+<td>Carnegie stage 14</td>
+<td>15</td>
+</tr>
+<tr>
+<td>Carnegie stage 11</td>
+<td>15</td>
+</tr>
+<tr>
+<td>Carnegie stage 12</td>
+<td>15</td>
+</tr>
+<tr>
+<td>1-year-old stage</td>
+<td>14</td>
+</tr>
+<tr>
+<td>16-month-old stage</td>
+<td>10</td>
+</tr>
+<tr>
+<td>21-week-old stage</td>
+<td>9</td>
+</tr>
+<tr>
+<td>8-month-old stage</td>
+<td>8</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": [], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.1e8ae164.min.js"></script>
+      
+        <script src="../../../search/main.js"></script>
+      
+    
+  </body>
+</html>
