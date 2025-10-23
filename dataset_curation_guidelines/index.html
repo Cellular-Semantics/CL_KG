@@ -1,0 +1,956 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../queries_for_content_analysis/">
+      
+      
+        <link rel="next" href="../schema/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
+    
+    
+      
+        <title>Dataset Curation Guidelines - Cell Type Knowledge Graph Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.bcfcd587.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#dataset-curation-guidelines-for-loading-and-file-placement" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Cell Type Knowledge Graph Documentation" class="md-header__button md-logo" aria-label="Cell Type Knowledge Graph Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Cell Type Knowledge Graph Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Dataset Curation Guidelines
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Cell Type Knowledge Graph Documentation" class="md-nav__button md-logo" aria-label="Cell Type Knowledge Graph Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Cell Type Knowledge Graph Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../access_guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../query_guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Query Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../queries_for_content_analysis/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Content Analysis
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Dataset Curation Guidelines
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Dataset Curation Guidelines
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#curation-process-steps-for-preparing-datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Curation Process: Steps for Preparing Datasets
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Curation Process: Steps for Preparing Datasets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dataset-curation-guidelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dataset Curation Guidelines
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#columns-and-guidelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      Columns and Guidelines
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#general-tips-for-curators" class="md-nav__link">
+    <span class="md-ellipsis">
+      General Tips for Curators:
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-placement-where-to-store-curation-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      File Placement: Where to Store Curation Files
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schema/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Schema
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reports
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Reports
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/01-global-totals/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Global totals
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/02-counts-by-key-label/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Counts by key label
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/03-average-degree-by-label/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Average degree by label
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/04-relationship-types-by-count/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Relationship types by count
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/05-top-tissues-across-clusters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Top tissues across clusters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/06-top-diseases-across-clusters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Top diseases across clusters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/07-assay-types-across-clusters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Assay types across clusters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/08-development-stages-across-clusters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development stages across clusters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/09-how-many-datasets-and-clusters-with-sources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    How many datasets and clusters with sources?
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/10-top-datasets-by-clusters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Top datasets by clusters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/11-list-all-dataset-titles-alphabetically-with-row-numbers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    List all dataset titles alphabetically with row numbers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#curation-process-steps-for-preparing-datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      Curation Process: Steps for Preparing Datasets
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Curation Process: Steps for Preparing Datasets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dataset-curation-guidelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dataset Curation Guidelines
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#columns-and-guidelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      Columns and Guidelines
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#general-tips-for-curators" class="md-nav__link">
+    <span class="md-ellipsis">
+      General Tips for Curators:
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#file-placement-where-to-store-curation-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      File Placement: Where to Store Curation Files
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="dataset-curation-guidelines-for-loading-and-file-placement">Dataset Curation Guidelines for Loading and File Placement</h1>
+<p>This guide outlines the process for curating datasets and specifies the location where 
+curation files should be placed for proper loading. By following these guidelines, you ensure 
+datasets are prepared correctly 
+for integration and that the files are stored in the appropriate directories for seamless access 
+and management.</p>
+<h2 id="curation-process-steps-for-preparing-datasets">Curation Process: Steps for Preparing Datasets</h2>
+<p>This section describes the necessary steps to format, validate, and prepare datasets for loading 
+into the system, ensuring they meet the required standards.</p>
+<h3 id="dataset-curation-guidelines">Dataset Curation Guidelines</h3>
+<p>This section will instruct curators on how to correctly fill in each of the columns required in 
+a curated CSV. Examples have been provided based on the preparation of the linked dataset [here]
+(https://cellxgene.cziscience.com/collections/9b02383a-9358-4f0f-9795-a891ec523bcc) into a 
+curated CSV ready for upload.</p>
+<hr />
+<h3 id="columns-and-guidelines">Columns and Guidelines</h3>
+<ol>
+<li><strong>Dataset (individual datasets within larger group):</strong></li>
+<li><strong>Description</strong>: The specific name of the dataset being curated within a larger dataset group.</li>
+<li>
+<p><strong>Example</strong>: "Single cell transcriptional and chromatin accessibility profiling redefine 
+     cellular heterogeneity in the adult human kidney - ATACseq"</p>
+</li>
+<li>
+<p><strong>Full name dataset (top of page):</strong></p>
+</li>
+<li><strong>Description</strong>: The full descriptive name of the dataset that should be used for 
+     documentation and display.</li>
+<li>
+<p><strong>Example</strong>: "Single cell transcriptional and chromatin accessibility profiling redefine 
+     cellular heterogeneity in the adult human kidney"</p>
+</li>
+<li>
+<p><strong>CxG Link:</strong></p>
+</li>
+<li><strong>Description</strong>: The CellxGene link to access the dataset.</li>
+<li>
+<p><strong>Example</strong>: "https://cellxgene.cziscience.com/e/13a027de-ea3e-432b-9a5e-6bc7048498fc.cxg/"</p>
+</li>
+<li>
+<p><strong>h5ad link:</strong></p>
+</li>
+<li><strong>Description</strong>: The direct link to the <code>.h5ad</code> data file of the dataset.</li>
+<li>
+<p><strong>Example</strong>: "https://datasets.cellxgene.cziscience.com/dabd979f-cc50-4526-81f3-8bc6c673ca36.h5ad"</p>
+</li>
+<li>
+<p><strong>Reference_DOI:</strong></p>
+</li>
+<li><strong>Description</strong>: The DOI reference for the associated publication(s) for the dataset.</li>
+<li>
+<p><strong>Example</strong>: "DOI: 10.1038/s41467-021-22368-w"</p>
+</li>
+<li>
+<p><strong>Bionetworks reference:</strong></p>
+</li>
+<li><strong>Description</strong>: Indicate whether the dataset has a reference within the Bionetworks repository.</li>
+<li>
+<p><strong>Example</strong>: "T" (True)</p>
+</li>
+<li>
+<p><strong>Standard category present? (T/F):</strong></p>
+</li>
+<li><strong>Description</strong>: Flag indicating whether standard categories are present in the dataset.</li>
+<li>
+<p><strong>Example</strong>: "T" (True)</p>
+</li>
+<li>
+<p><strong>Standard category cell_type present? (T/F):</strong></p>
+</li>
+<li><strong>Description</strong>: Flag indicating whether the standard category for cell type is present in 
+     the dataset.</li>
+<li>
+<p><strong>Example</strong>: "T" (True)</p>
+</li>
+<li>
+<p><strong>Author Category Cell Type Field Name:</strong></p>
+</li>
+<li><strong>Description</strong>: This column shows the name of the field as it appears in the Dataset 
+     Explorer UI. It indicates which specific field within the dataset corresponds to a certain 
+     category, such as "cell type" or other annotations. Fields marked as <code>Cell types</code> in the 
+     <code>Content</code> column play a key role in graph generation using the <code>pandasaurus_cxg</code> library, which 
+     is employed in the data pipeline.</li>
+<li>
+<p><strong>Example</strong>: "author_cell_type"</p>
+</li>
+<li>
+<p><strong>Content:</strong></p>
+<ul>
+<li><strong>Description</strong>: This column indicates whether the field is used for cell type annotations 
+  or for other dataset annotations (e.g., Cell type or Other).</li>
+<li><strong>Example</strong>: "Cell types"</li>
+</ul>
+</li>
+<li>
+<p><strong>Value type(s):</strong></p>
+<ul>
+<li><strong>Description</strong>: This column specifies if the values in the dataset are represented in full 
+  names or as abbreviations.</li>
+<li><strong>Example</strong>: "abbreviations"</li>
+</ul>
+</li>
+<li>
+<p><strong>Notes:</strong></p>
+<ul>
+<li><strong>Description</strong>: Any additional notes or comments regarding the dataset.</li>
+<li><strong>Example</strong>: "Only standard categories used"</li>
+</ul>
+</li>
+<li>
+<p><strong>Study Short Name:</strong></p>
+<ul>
+<li><strong>Description</strong>: The shortened name or acronym of the study associated with the dataset.</li>
+<li><strong>Example</strong>: "Muto et al. (2021) Nat Commun"</li>
+</ul>
+</li>
+<li>
+<p><strong>CxG Dataset Collection X:</strong></p>
+<ul>
+<li><strong>Description</strong>: The CellxGene link to the collection where the dataset is stored.</li>
+<li><strong>Example</strong>: "https://cellxgene.cziscience.com/collections/9b02383a-9358-4f0f-9795-a891ec523bcc"</li>
+</ul>
+</li>
+<li>
+<p><strong>Is the dataset Normal or Normal/Diseased:</strong></p>
+<ul>
+<li><strong>Description</strong>: Indicates whether the dataset includes normal samples, diseased samples or 
+  both.</li>
+<li><strong>Example</strong>: "Normal"</li>
+</ul>
+</li>
+<li>
+<p><strong>Stage:</strong></p>
+<ul>
+<li><strong>Description</strong>: The biological stage of the samples in the dataset, such as adult, fetal, etc.</li>
+<li><strong>Example</strong>: "Adult"</li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="general-tips-for-curators">General Tips for Curators:</h2>
+<ul>
+<li>Ensure that fields marked as <code>Cell types</code> in the <code>Content</code> column are correctly paired with 
+  appropriate <code>Author Category Cell Type Field Name</code>, as these pairs are crucial for graph 
+  generation in the data pipeline using the <code>pandasaurus_cxg</code> library.</li>
+<li>Ensure all links (CxG and h5ad) are correct and accessible.</li>
+<li>Use consistent naming for datasets across related entries.</li>
+<li>Double-check flags (T/F) to ensure they correctly reflect the presence of specific categories.</li>
+<li>Fill out fields such as <code>Study Short Name</code> and <code>Notes</code> with proper references to aid in 
+  documentation and user clarity.</li>
+</ul>
+<p>By following these guidelines, curators can ensure that datasets are correctly formatted and 
+ready for integration into the pipeline.</p>
+<h2 id="file-placement-where-to-store-curation-files">File Placement: Where to Store Curation Files</h2>
+<p>This section provides guidance on the correct directory structure and file locations for placing 
+curated datasets to ensure they are properly recognized and accessible during the loading process.</p>
+<p>In the pipeline, curated CSV files are stored in the <code>curated_data</code> folder. When the pipeline is 
+run, these CSV files are automatically converted into a YAML file named <code>cxg_author_cell_type.yml</code> 
+and placed in the <code>config</code> folder. The YAML file maps the CxG links to the corresponding 
+<code>author_cell_type_list</code> fields, which are essential for processing.</p>
+<p>Example of the YAML format:</p>
+<pre><code class="language-yaml">- CxG_link: https://datasets.cellxgene.cziscience.com/03af5481-a0b6-426c-86b4-9127ada17b53.h5ad
+  author_cell_type_list:
+  - author_cell_type
+  - author_cluster_label
+- CxG_link: https://datasets.cellxgene.cziscience.com/080f9be4-0f94-48cb-a82f-db53df1542ff.h5ad
+  author_cell_type_list:
+  - author_cluster_name
+  - author_cell_type
+  - author_cell_type
+
+</code></pre>
+<p>The CxG links in the YAML file are then used to download datasets into the <code>dataset</code> folder. 
+Finally, the <code>pandasaurus_cxg</code> library is used to generate RDF graphs, which are stored in the 
+<code>graph</code> folder for further use in the pipeline.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.1e8ae164.min.js"></script>
+      
+        <script src="../search/main.js"></script>
+      
+    
+  </body>
+</html>

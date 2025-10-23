@@ -1,0 +1,822 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.17">
+    
+    
+      
+        <title>Marker schema - Cell Type Knowledge Graph Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.bcfcd587.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#marker-schema-doc" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Cell Type Knowledge Graph Documentation" class="md-header__button md-logo" aria-label="Cell Type Knowledge Graph Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Cell Type Knowledge Graph Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Marker schema
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Cell Type Knowledge Graph Documentation" class="md-nav__button md-logo" aria-label="Cell Type Knowledge Graph Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Cell Type Knowledge Graph Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../access_guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Access Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../query_guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Query Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../queries_for_content_analysis/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Content Analysis
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dataset_curation_guidelines/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dataset Curation Guidelines
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schema/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Schema
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Reports
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Reports
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/01-global-totals/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Global totals
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/02-counts-by-key-label/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Counts by key label
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/03-average-degree-by-label/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Average degree by label
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/04-relationship-types-by-count/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Relationship types by count
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/05-top-tissues-across-clusters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Top tissues across clusters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/06-top-diseases-across-clusters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Top diseases across clusters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/07-assay-types-across-clusters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Assay types across clusters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/08-development-stages-across-clusters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development stages across clusters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/09-how-many-datasets-and-clusters-with-sources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    How many datasets and clusters with sources?
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/10-top-datasets-by-clusters/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Top datasets by clusters
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reports/sections/11-list-all-dataset-titles-alphabetically-with-row-numbers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    List all dataset titles alphabetically with row numbers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#marker-schema-doc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Marker schema doc
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Marker schema doc">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aggregating-queries" class="md-nav__link">
+    <span class="md-ellipsis">
+      Aggregating queries
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  <h1>Marker schema</h1>
+
+<h2 id="marker-schema-doc">Marker schema doc</h2>
+<p>Date: 251022</p>
+<p>AFAIK there are currently 3 sources of markers loaded:</p>
+<ul>
+<li>CxG - single reference, every marker has an individual markers score in a context + one marker score with no context</li>
+<li>CellMark - Many references.  No marker scores.  Every marker may have a context.</li>
+<li>NS-Forest - A few references. Groups of markers have an F-beta score and a context.</li>
+</ul>
+<p>Schema:</p>
+<pre><code class="language-cypher">MATCH p=(g:Gene)&lt;-[hp:has_part]-(ms:Class)
+  &lt;-[hm:has_characterizing_marker_set]-(c:Cell)
+MATCH q = (ms)-[:context]-&gt;(:Class) 
+RETURN p,q
+</code></pre>
+<p>CxG + CellMark are aggregated on context</p>
+<p>e.g. </p>
+<pre><code class="language-cypher">MATCH p=(g:Gene)&lt;-[hp:has_part]-(ms:Class)
+  &lt;-[hm:has_characterizing_marker_set]-(c:Cell) 
+WHERE c.label = 'B cell' AND g.label = 'MS4A1'
+OPTIONAL MATCH (ms)-[:context]-&gt;(con:Class) 
+RETURN c.label, g.label, hp.marker_score, con.label, ms.references
+</code></pre>
+<p>=&gt;</p>
+<table>
+<thead>
+<tr>
+<th>c.label</th>
+<th>g.label</th>
+<th>hp.marker_score</th>
+<th>con.label</th>
+<th>ms.references</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B cell</td>
+<td>MS4A1</td>
+<td>[1.6859511]</td>
+<td>kidney</td>
+<td>[PMID:34783463,https://doi.org/10.1101/2023.10.30.563174,...]</td>
+</tr>
+<tr>
+<td>B cell</td>
+<td>MS4A1</td>
+<td>[1.47596]</td>
+<td>esophagus</td>
+<td>[https://doi.org/10.1101/2023.10.30.563174,PMID:31892341]</td>
+</tr>
+<tr>
+<td>B cell</td>
+<td>MS4A1</td>
+<td>null</td>
+<td>decidua</td>
+<td>[PMID:34168655]</td>
+</tr>
+<tr>
+<td>B cell</td>
+<td>MS4A1</td>
+<td>null</td>
+<td>bone marrow</td>
+<td>[PMID:33846355,https://doi.org/10.1101/2023.10.30.563174 ...]</td>
+</tr>
+<tr>
+<td>B cell</td>
+<td>MS4A1</td>
+<td>[2.4003873]</td>
+<td>exocrine gland</td>
+<td>[https://doi.org/10.1101/2023.10.30.563174]</td>
+</tr>
+<tr>
+<td>B cell</td>
+<td>MS4A1</td>
+<td>[1.9412133]</td>
+<td>null</td>
+<td>[PMID:32690901,https://doi.org/10.1101/2023.10.30.563174, ...]</td>
+</tr>
+</tbody>
+</table>
+<p>(ref lists trimmed)
+<code>con.label is null</code> = no context in CxG or CellMark</p>
+<p>Source: </p>
+<p>ROBOT templates: https://github.com/Cellular-Semantics/CellMark/tree/main/src/templates/cl_kg
+Sources are from external links
+CellMark pulled by: https://github.com/Cellular-Semantics/CellMark/blob/main/src/scripts/cellmarker_marker_template_genenrator.py
+CELLxGENE data pulled by: https://github.com/Cellular-Semantics/CellMark/blob/main/src/scripts/cellxgene_marker_template_generator.py</p>
+<p>NS-Forest comes from CellMark.  Aggregation is set there</p>
+<pre><code class="language-cypher">MATCH p=(g:Gene)&lt;-[hp:has_part]-(ms:Class)
+  &lt;-[hm:has_characterizing_marker_set]-(c:Cell) 
+WHERE ms.F4beta_score is not null
+OPTIONAL MATCH (ms)-[:context]-&gt;(con:Class) 
+RETURN distinct c.label, collect(g.label), 
+                ms.F4beta_score , con.label, ms.references
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>c.label</th>
+<th>collect(g.label)</th>
+<th>ms.F4beta_score</th>
+<th>con.label</th>
+<th>ms.references</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cycling pulmonary alveolar type 2 cell</td>
+<td>[PRC1,TOP2A,PEG10]</td>
+<td>[0.61]</td>
+<td>null</td>
+<td>null</td>
+</tr>
+<tr>
+<td>cycling alveolar macrophage</td>
+<td>[NUSAP1,PCLAF,RRM2,UBE2C]</td>
+<td>[0.26]</td>
+<td>null</td>
+<td>null</td>
+</tr>
+<tr>
+<td>CCL3-positive alveolar macrophage</td>
+<td>[CXCL5,TNIP3]</td>
+<td>[0.67]</td>
+<td>null</td>
+<td>null</td>
+</tr>
+<tr>
+<td>metallothionein-positive alveolar   macrophage</td>
+<td>[HMOX1,HPGD]</td>
+<td>[0.41]</td>
+<td>null</td>
+<td>null</td>
+</tr>
+<tr>
+<td>lung interstitial macrophage</td>
+<td>[STAB1,FCGR2B,F13A1 (Hsap)]</td>
+<td>[0.46]</td>
+<td>null</td>
+<td>null</td>
+</tr>
+<tr>
+<td>respiratory tract suprabasal cell</td>
+<td>[SERPINB4,KRT15,TNC]</td>
+<td>[0.62]</td>
+<td>null</td>
+<td>null</td>
+</tr>
+</tbody>
+</table>
+<p>Notes - no context or references - would need to be updated in CellMark to fix
+Minor: F-beta_score name mangled (maybe via URLencode followed by special character stripping?)</p>
+<h3 id="aggregating-queries">Aggregating queries</h3>
+<pre><code class="language-cypher">MATCH p=(g:Gene)&lt;-[hp:has_part]-(ms:Class)&lt;-[hm:has_characterizing_marker_set]-(c:Cell) 
+OPTIONAL MATCH (c)-[]-(go:Class)-[]-(:Protein)&lt;-[:produces]-(g)
+ WHERE ('Biological_process' in labels(go)) OR ('Cellular_component') in labels(go) 
+RETURN c.label, g.label, 
+size(apoc.coll.toSet(apoc.coll.flatten(collect(distinct ms.references)))) as refs,
+ round(apoc.coll.avg(apoc.coll.flatten(collect(hp.marker_score)))) as average_marker_score,
+size(collect(distinct go.label))
+ORDER BY average_marker_score DESC
+</code></pre>
+<p>We could use this to =&gt; reports for markers by cell type with options to rank
+by number of refs, marker score, number of supporting GO terms...</p>
+<p>Optionally specify a context.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.1e8ae164.min.js"></script>
+      
+        <script src="../search/main.js"></script>
+      
+    
+  </body>
+</html>
