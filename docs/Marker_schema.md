@@ -42,7 +42,14 @@ B cell | MS4A1 | [1.9412133] | null | [PMID:32690901,https://doi.org/10.1101/202
 (ref lists trimmed)
 `con.label is null` = no context in CxG or CellMark
 
-Question: Where is the code/templates that build this?
+Source: 
+
+ROBOT templates: https://github.com/Cellular-Semantics/CellMark/tree/main/src/templates/cl_kg
+Sources are from external links
+CellMark pulled by: https://github.com/Cellular-Semantics/CellMark/blob/main/src/scripts/cellmarker_marker_template_genenrator.py
+CELLxGENE data pulled by: https://github.com/Cellular-Semantics/CellMark/blob/main/src/scripts/cellxgene_marker_template_generator.py
+
+
 
 NS-Forest comes from CellMark.  Aggregation is set there
 
