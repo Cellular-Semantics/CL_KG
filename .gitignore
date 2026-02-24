@@ -163,3 +163,8 @@ cython_debug/
 
 anndata2rdf/src/config/*
 *.bak
+
+# Ignore root-level data/scripts only
+/*.py
+/*.csv
+/*.xlsx
