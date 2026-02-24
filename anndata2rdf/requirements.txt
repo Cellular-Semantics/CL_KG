@@ -1,4 +1,4 @@
-pandasaurus-cxg
+pandasaurus-cxg==0.2.4
 pandas
 PyYAML~=6.0.1
 tqdm
