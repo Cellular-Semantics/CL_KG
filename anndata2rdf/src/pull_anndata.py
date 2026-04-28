@@ -185,6 +185,8 @@ def get_dataset_dict(input_source: List[Dict]):
                     matrix_id: {
                         "author_cell_type_list": config["author_cell_type_list"],
                         "download_url": config["download_url"],
+                        "dataset_id": config.get("dataset_id"),
+                        "dataset_version_id": config.get("dataset_version_id"),
                     }
                 }
             )

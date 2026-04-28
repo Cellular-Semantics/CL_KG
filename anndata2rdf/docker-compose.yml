@@ -8,6 +8,8 @@ services:
       - ./src/config:/app/src/config
       - ./src/curated_data:/app/src/curated_data
       - ./src/dataset:/app/src/dataset
-      - obask_data:/app/src/graph
+      - obask_graph_data:/app/src/graph
+      - clkg_bitmap_data:/app/src/bitmaps
 volumes:
-  obask_data:
+  obask_graph_data:
+  clkg_bitmap_data:

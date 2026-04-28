@@ -24,6 +24,7 @@ CONFIG_DIRECTORY = "config"
 CURATED_DATA_DIRECTORY = "curated_data"
 DATASET_DIRECTORY = "dataset"
 GRAPH_DIRECTORY = "graph"
+BITMAP_DIRECTORY = "bitmaps"
 
 CXG_AUTHOR_CELL_TYPE_CONFIG = "cxg_author_cell_type.yaml"
 GENERATE_RDF_CONFIG = "generate_rdf_config.yaml"
@@ -39,11 +40,18 @@ for dataset in datasets.items():
     matrix_id = dataset[0]
     dataset_url = dataset[1].get("download_url")
     author_cell_types = dataset[1].get("author_cell_type_list")
+    dataset_metadata = {
+        "dataset_id": dataset[1].get("dataset_id"),
+        "dataset_version_id": dataset[1].get("dataset_version_id"),
+    }
     download_id = get_dataset_id_from_link(dataset_url)
 
     rdf_output_path = os.path.join(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), GRAPH_DIRECTORY),
         f"{matrix_id}__{download_id}",
+    )
+    bitmap_output_path = os.path.join(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), BITMAP_DIRECTORY),
     )
     h5ad_output_path = os.path.join(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), DATASET_DIRECTORY),
@@ -63,5 +71,7 @@ for dataset in datasets.items():
             dataset_path,
             author_cell_types,
             rdf_output_path,
+            dataset_metadata,
+            bitmap_output_path,
         )
         delete_file(dataset_path)

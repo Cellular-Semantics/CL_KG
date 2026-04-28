@@ -11,9 +11,10 @@ COPY requirements.txt ./
 RUN pip3 install --upgrade pip
 RUN pip3 install --no-cache-dir -r requirements.txt -U
 
-RUN mkdir -p src/config src/curated_data src/dataset src/graph
+RUN mkdir -p src/config src/curated_data src/dataset src/graph src/bitmaps
 
 COPY src/csv_parser.py ./src
+COPY src/bitmap_builder.py ./src
 COPY src/pull_anndata.py ./src
 COPY src/generate_rdf.py ./src
 COPY src/process.py ./src

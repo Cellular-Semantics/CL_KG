@@ -162,6 +162,11 @@ cython_debug/
 **/.DS_Store
 
 anndata2rdf/src/config/*
+anndata2rdf/src/dataset/*
+anndata2rdf/src/graph/*
+anndata2rdf/src/bitmaps/*
+!anndata2rdf/src/bitmaps/README.md
+anndata2rdf/.mplconfig/
 *.bak
 
 # Ignore root-level data/scripts only
