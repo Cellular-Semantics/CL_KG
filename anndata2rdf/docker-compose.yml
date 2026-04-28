@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   anndata2rdf:
-    image: ghcr.io/cellular-semantics/cl_kg:main
+    image: ghcr.io/cellular-semantics/cl_kg/anndata2rdf:latest
     container_name: anndata_to_rdf
     volumes:
       - ./src/config:/app/src/config
