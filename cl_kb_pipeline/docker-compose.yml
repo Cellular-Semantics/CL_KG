@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   anndata2rdf:
@@ -9,6 +9,7 @@ services:
       - ../anndata2rdf/src/curated_data:/app/src/curated_data
       - ../anndata2rdf/src/dataset:/app/src/dataset
       - ./config/collectdata/local_ontologies:/app/src/graph/
+      - clkg_bitmap_data:/app/src/bitmaps
     command: /bin/sh -c "python src/process.py"
 
   triplestore:
@@ -42,7 +43,7 @@ services:
       - obask_data:/input
       - obask_neo4j_data:/data # for Neo4j DB itself
     healthcheck:
-      test: [ "CMD", "wget", "-O", "-", "http://obask-kb:7474" ]
+      test: ["CMD", "wget", "-O", "-", "http://obask-kb:7474"]
       interval: 18s
       timeout: 12s
       retries: 20
@@ -180,3 +181,4 @@ volumes:
   solr_data:
   triplestore_data:
   obask_neo4j_data:
+  clkg_bitmap_data:
