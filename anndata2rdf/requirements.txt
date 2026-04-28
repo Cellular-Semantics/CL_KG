@@ -1,4 +1,6 @@
-pandasaurus-cxg==0.2.5
+pandasaurus-cxg==0.2.8
+cellxgene-census
 pandas
+pyroaring
 PyYAML~=6.0.1
 tqdm

@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-from typing import Optional
+from typing import Dict, Optional
 
 import pandas as pd
 import requests
@@ -34,13 +34,15 @@ def generate_yaml_data(data):
             for col in group_df["author category cell type field name"].tolist()
         ]
         try:
-            # Fetch the latest dataset link
-            latest_cxg_dataset = fetch_latest_cxg_dataset_link(link)
+            # Fetch the latest dataset metadata
+            latest_cxg_dataset = fetch_latest_cxg_dataset_metadata(link)
             if latest_cxg_dataset:
                 _yaml_data.append(
                     {
                         "CxG_link": link,
-                        "download_url": latest_cxg_dataset,
+                        "download_url": latest_cxg_dataset["download_url"],
+                        "dataset_id": latest_cxg_dataset["dataset_id"],
+                        "dataset_version_id": latest_cxg_dataset["dataset_version_id"],
                         "author_cell_type_list": author_cell_type_list,
                     }
                 )
@@ -57,27 +59,32 @@ def generate_yaml_data(data):
     return _yaml_data
 
 
-def fetch_latest_cxg_dataset_link(link: str) -> Optional[str]:
+def fetch_latest_cxg_dataset_metadata(link: str) -> Optional[Dict[str, str]]:
     """
-    Retrieve the latest CXG dataset download link for the given matrix_id.
+    Retrieve the latest CXG dataset metadata for the given dataset identifier.
 
-    This method extracts the `matrix_id` from the provided URL and sends a GET request
+    This method extracts the dataset identifier from the provided URL and sends a GET request
     to the CXG API to fetch dataset versions. It then parses the response to find the
-    URL of the latest dataset file with the file type "H5AD".
+    latest version entry and returns the stable dataset_id, dataset_version_id,
+    and URL of the latest H5AD asset.
 
     Args:
-        link (str): The URL containing the matrix_id to be extracted. The matrix_id is
+        link (str): The URL containing the dataset identifier to be extracted. That ID is
                     used to query the CXG API for dataset versions.
 
     Returns:
-        Optional[str]: The URL of the latest H5AD dataset file if successful, or None if
-                       the request fails or the desired dataset is not found.
+        Optional[Dict[str, str]]: Metadata for the latest dataset version if successful,
+                                  or None if the request fails or the desired dataset is
+                                  not found.
     """
     retries = 0
     while retries < MAX_RETRIES:
         try:
-            matrix_id = link.split("/")[-2].split(".")[0]
-            request_url = f"https://api.cellxgene.cziscience.com/curation/v1/datasets/{matrix_id}/versions"
+            dataset_lookup_id = link.split("/")[-2].split(".")[0]
+            request_url = (
+                "https://api.cellxgene.cziscience.com/curation/v1/datasets/"
+                f"{dataset_lookup_id}/versions"
+            )
 
             response = requests.get(request_url)
             response.raise_for_status()
@@ -87,12 +94,22 @@ def fetch_latest_cxg_dataset_link(link: str) -> Optional[str]:
                 logger.error("Unexpected API response format or empty dataset list.")
                 return None
 
-            # Find the latest H5AD dataset link
-            for asset in data[0].get("assets", []):
-                if asset.get("filetype") == "H5AD":
-                    return asset.get("url")
+            latest_version = data[0]
+            dataset_id = latest_version.get("dataset_id")
+            dataset_version_id = latest_version.get("dataset_version_id")
 
-            logger.warning(f"No H5AD file found in assets for matrix_id {matrix_id}.")
+            # Find the latest H5AD dataset link
+            for asset in latest_version.get("assets", []):
+                if asset.get("filetype") == "H5AD":
+                    return {
+                        "download_url": asset.get("url"),
+                        "dataset_id": dataset_id,
+                        "dataset_version_id": dataset_version_id,
+                    }
+
+            logger.warning(
+                f"No H5AD file found in assets for dataset identifier {dataset_lookup_id}."
+            )
             return None
 
         except (requests.exceptions.RequestException, ValueError, KeyError) as e:
