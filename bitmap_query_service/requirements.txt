@@ -1,0 +1,5 @@
+fastapi
+httpx
+pyroaring
+pytest
+uvicorn[standard]
