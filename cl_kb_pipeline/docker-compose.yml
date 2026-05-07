@@ -12,6 +12,20 @@ services:
       - clkg_bitmap_data:/app/src/bitmaps
     command: /bin/sh -c "python src/process.py"
 
+  bitmap-query-service:
+    build:
+      context: ../bitmap_query_service
+    depends_on:
+      anndata2rdf:
+        condition: service_completed_successfully
+    ports:
+      - 8010:8000
+    environment:
+      - BITMAP_DIR=/app/bitmaps
+      - LOG_LEVEL=INFO
+    volumes:
+      - clkg_bitmap_data:/app/bitmaps:ro
+
   triplestore:
     image: eclipse/rdf4j-workbench:3.7.7
     # container_name: triplestore
