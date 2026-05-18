@@ -72,6 +72,12 @@ instance/
 # Sphinx documentation
 docs/_build/
 
+# Local query and notes scratch files
+*.cypher
+*.md
+!README.md
+!**/README.md
+
 # PyBuilder
 .pybuilder/
 target/
