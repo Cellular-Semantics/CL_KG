@@ -1,0 +1,12 @@
+{
+  "properties": {
+    "iri": "http://example.org/missing-fields",
+    "label": "Missing fields cluster",
+    "author_label_column": [
+      "missing_column"
+    ],
+    "author_synonym_columns": [
+      "[\"missing_synonym\"]"
+    ]
+  }
+}
