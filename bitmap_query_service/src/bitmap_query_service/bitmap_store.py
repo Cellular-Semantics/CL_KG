@@ -2,7 +2,7 @@ from pathlib import Path
 
 from pyroaring import BitMap
 
-from src.iri_utils import bitmap_filename
+from bitmap_query_service.iri_utils import bitmap_filename
 
 
 class BitmapNotFoundError(FileNotFoundError):

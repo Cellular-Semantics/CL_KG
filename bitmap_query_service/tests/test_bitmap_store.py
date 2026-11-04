@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from pyroaring import BitMap
 
-from src.bitmap_store import BitmapNotFoundError, load_bitmap, resolve_bitmap_path
+from bitmap_query_service.bitmap_store import BitmapNotFoundError, load_bitmap, resolve_bitmap_path
 
 
 def test_resolve_bitmap_path_uses_expected_filename(tmp_path: Path):

@@ -3,8 +3,8 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 from pyroaring import BitMap
 
-from src.bitmap_store import resolve_bitmap_path
-from src.main import app
+from bitmap_query_service.bitmap_store import resolve_bitmap_path
+from bitmap_query_service.main import app
 
 
 def test_health_reports_bitmap_dir(tmp_path: Path, monkeypatch):

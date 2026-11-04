@@ -2,7 +2,7 @@ import uuid
 
 import pytest
 
-from src.iri_utils import bitmap_filename, iri_storage_id
+from bitmap_query_service.iri_utils import bitmap_filename, iri_storage_id
 
 
 def test_iri_storage_id_uses_embedded_uuid():

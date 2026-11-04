@@ -189,7 +189,7 @@ def write_roaring_bitmap(
 
 # The bitmap filename is the contract between this builder (writer) and
 # bitmap_query_service (reader). iri_storage_id and bitmap_filename MUST stay
-# identical to bitmap_query_service/src/iri_utils.py; both test suites pin the
+# identical to bitmap_query_service/src/bitmap_query_service/iri_utils.py; both test suites pin the
 # same golden values (see BITMAP_FILENAME_GOLDEN_CASES in their tests).
 def bitmap_filename(node_iri: str, census_version: str) -> str:
     return f"{iri_storage_id(node_iri)}__{census_version}.bitmap"

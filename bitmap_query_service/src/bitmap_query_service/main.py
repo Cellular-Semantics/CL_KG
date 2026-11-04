@@ -2,10 +2,10 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
 
-from src.bitmap_ops import bitmap_count, serialize_bitmap
-from src.bitmap_store import BitmapNotFoundError, BitmapReadError, load_bitmap
-from src.config import get_settings
-from src.models import BitmapQueryRequest, BitmapQueryResponse
+from bitmap_query_service.bitmap_ops import bitmap_count, serialize_bitmap
+from bitmap_query_service.bitmap_store import BitmapNotFoundError, BitmapReadError, load_bitmap
+from bitmap_query_service.config import get_settings
+from bitmap_query_service.models import BitmapQueryRequest, BitmapQueryResponse
 
 
 @asynccontextmanager
