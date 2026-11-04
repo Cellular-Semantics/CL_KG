@@ -13,7 +13,13 @@ from graph_query_service.cluster_metadata.normalizer import (
     synonym_columns,
 )
 from graph_query_service.neo4j.query_template import summarize_cell_labels
-from graph_query_service.warnings import cluster_warning
+
+
+def _cluster_warning(node_iri: str | None, message: str) -> str:
+    """Prefix a manifest warning with the cluster IRI when there is one."""
+    if node_iri:
+        return f"{node_iri}: {message}"
+    return message
 
 
 def build_manifest_response(
@@ -28,7 +34,7 @@ def build_manifest_response(
 
         node_iri = string_value(child_props, "iri")
         if not node_iri:
-            warnings.append(cluster_warning(None, "skipped a cluster result without iri"))
+            warnings.append(_cluster_warning(None, "skipped a cluster result without iri"))
             continue
         if node_iri in clusters:
             continue
@@ -58,22 +64,22 @@ def build_manifest_response(
         clusters[node_iri] = entry
 
         if author_label_column is None:
-            warnings.append(cluster_warning(node_iri, "missing author_label_column"))
+            warnings.append(_cluster_warning(node_iri, "missing author_label_column"))
         elif author_label is None:
             warnings.append(
-                cluster_warning(
+                _cluster_warning(
                     node_iri,
                     f"missing author_label value for column '{author_label_column}'",
                 )
             )
         if dataset_publication_doi is None:
-            warnings.append(cluster_warning(node_iri, "missing dataset publication DOI"))
+            warnings.append(_cluster_warning(node_iri, "missing dataset publication DOI"))
         missing_synonyms = [
             column for column, value in author_synonym_labels.items() if value is None
         ]
         for column in missing_synonyms:
             warnings.append(
-                cluster_warning(
+                _cluster_warning(
                     node_iri,
                     f"missing author synonym value for column '{column}'",
                 )
