@@ -40,7 +40,7 @@ jobs:
           - module: translator_api_mapper
             python: "3.10"
           - module: cl_kb_pipeline
-            python: "3.8"
+            python: "3.10"
           - module: bitmap_query_service
             python: "3.13"
           - module: graph_query_service
