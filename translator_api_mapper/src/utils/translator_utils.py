@@ -7,6 +7,9 @@ from SPARQLWrapper import JSON, SPARQLWrapper
 
 logger = logging.getLogger(__name__)
 
+# The http/https mix is intentional: these IRIs must match the KG export mapping in
+# cl_kb_pipeline/config/dumps/neo4j2owl-config.yaml (NCBIGene, ensembl, UniProtKB).
+# Changing one here alone breaks lookups of existing nodes; change both together.
 PREFIXES = {
     "uniprot": "https://identifiers.org/uniprot/",
     "ensembl": "http://identifiers.org/ensembl/",
