@@ -1,4 +1,0 @@
-# Ruff settings for translator_api_mapper. Packages in src/ import each other as
-# top-level packages (that is how the Dockerfile runs them), so mark src/ as first-party.
-target-version = "py310"  # matches the Dockerfile base image
-src = ["src"]

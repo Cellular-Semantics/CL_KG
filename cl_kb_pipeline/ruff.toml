@@ -1,4 +1,0 @@
-# Ruff settings for cl_kb_pipeline. The schema CI job runs Python 3.8
-# (.github/workflows/schema_validator.yaml), so keep syntax 3.8-compatible.
-target-version = "py38"
-src = ["src"]
