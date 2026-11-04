@@ -1,9 +1,10 @@
+import glob
 import json
 import sys
-from jsonschema import Draft4Validator
-import glob
-from ruamel.yaml import YAML, YAMLError
 from pathlib import Path
+
+from jsonschema import Draft4Validator
+from ruamel.yaml import YAML, YAMLError
 
 
 def get_json_from_file(filename):
@@ -29,7 +30,7 @@ def get_validator(filename):
     (raises SchemaError if not) and return a Draft4Validator for it."""
     schema = get_json_from_file(filename)
     Draft4Validator.check_schema(schema)
-    print("%s is a valid JSON schema" % filename)
+    print(f"{filename} is a valid JSON schema")
     return Draft4Validator(schema=schema)
 
 
@@ -88,7 +89,7 @@ def validate_files_against_schema(path_to_schema_dir, schema_file, path_to_test_
     sv = get_validator(str(schema_dir / schema_file))
     errors = []
     for instance_file in sorted(glob.glob(str(test_dir / f"*.{file_ext}"))):
-        print("Testing: %s" % instance_file)
+        print(f"Testing: {instance_file}")
         try:
             instance = loader(instance_file)
         except ValueError as exc:  # unparsable file
