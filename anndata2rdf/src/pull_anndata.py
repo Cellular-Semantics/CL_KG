@@ -15,10 +15,7 @@ UUID_PATTERN = re.compile(
     r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
 )
 
-logging.basicConfig(level=logging.WARNING)
-
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 def download_dataset_with_url(

@@ -12,13 +12,13 @@ from pull_anndata import (
 from generate_rdf import generate_rdf_graph
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.WARNING)
-stdout_handler = logging.StreamHandler(sys.stdout)
-stdout_handler.setLevel(logging.INFO)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-stdout_handler.setFormatter(formatter)
-logger.addHandler(stdout_handler)
-logger.setLevel(logging.INFO)
+
+PIPELINE_LOGGERS = (
+    "csv_parser",
+    "pull_anndata",
+    "generate_rdf",
+    "bitmap_builder",
+)
 
 CONFIG_DIRECTORY = "config"
 CURATED_DATA_DIRECTORY = "curated_data"
@@ -30,7 +30,22 @@ CXG_AUTHOR_CELL_TYPE_CONFIG = "cxg_author_cell_type.yaml"
 GENERATE_RDF_CONFIG = "generate_rdf_config.yaml"
 
 
+def configure_logging() -> None:
+    """Configure logging once for the whole pipeline.
+
+    Third-party libraries stay at WARNING; this package's modules log at INFO.
+    """
+    logging.basicConfig(
+        level=logging.WARNING,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        stream=sys.stdout,
+    )
+    for name in (__name__, *PIPELINE_LOGGERS):
+        logging.getLogger(name).setLevel(logging.INFO)
+
+
 def main():
+    configure_logging()
     cxg_author_cell_type_yaml = generate_author_cell_type_config()
     output_file_path = os.path.join(
         os.path.join(os.path.dirname(os.path.abspath(__file__)), CONFIG_DIRECTORY),

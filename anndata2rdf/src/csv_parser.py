@@ -12,10 +12,7 @@ from pull_anndata import get_dataset_id_from_link
 MAX_RETRIES = 3
 RETRY_DELAY = 2
 
-logging.basicConfig(level=logging.WARNING)
-
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 class DatasetNotFoundException(Exception):
@@ -54,9 +51,9 @@ def generate_yaml_data(data):
                 )
 
         except DatasetNotFoundException as e:
-            logging.error(e)
+            logger.error(e)
         except Exception as e:
-            logging.error(f"Unexpected error while processing link {link}: {e}")
+            logger.exception(f"Unexpected error while processing link {link}: {e}")
 
     return _yaml_data
 

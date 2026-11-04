@@ -5,10 +5,7 @@ from bitmap_builder import build_cluster_bitmaps
 from pandasaurus_cxg.enrichment_analysis import AnndataEnrichmentAnalyzer
 from pandasaurus_cxg.graph_generator.graph_generator import GraphGenerator
 
-logging.basicConfig(level=logging.WARNING)
-
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 def generate_rdf_graph(
