@@ -173,6 +173,7 @@ anndata2rdf/src/graph/*
 anndata2rdf/src/bitmaps/*
 !anndata2rdf/src/bitmaps/README.md
 anndata2rdf/.mplconfig/
+anndata2rdf/dev_scripts/
 *.bak
 
 # Ignore root-level data/scripts only

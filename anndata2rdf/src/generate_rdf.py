@@ -1,24 +1,19 @@
 import logging
-import os
-from typing import List, Optional
-import yaml
 
-from bitmap_builder import build_cluster_bitmaps
 from pandasaurus_cxg.enrichment_analysis import AnndataEnrichmentAnalyzer
 from pandasaurus_cxg.graph_generator.graph_generator import GraphGenerator
 
-logging.basicConfig(level=logging.WARNING)
+from bitmap_builder import build_cluster_bitmaps
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 def generate_rdf_graph(
     anndata_file_path: str,
-    author_cell_type_list: List[str],
+    author_cell_type_list: list[str],
     output_rdf_path: str,
-    dataset_metadata: Optional[dict] = None,
-    bitmap_output_dir: Optional[str] = None,
+    dataset_metadata: dict | None = None,
+    bitmap_output_dir: str | None = None,
 ):
     logger.info(f"Generating RDF graph using {anndata_file_path}...")
     aea = AnndataEnrichmentAnalyzer(anndata_file_path, author_cell_type_list)
@@ -50,35 +45,3 @@ def generate_rdf_graph(
             logger.exception("Bitmap build failed; continuing with RDF graph save.")
     gg.save_rdf_graph(file_name=output_rdf_path)
     logger.info(f"RDF graph has been generated for {anndata_file_path}...")
-
-
-if __name__ == "__main__":
-    dirname = os.path.dirname(os.path.abspath(__file__))
-    config_dir = os.path.join(dirname, "config")
-    with open(
-        os.path.join(
-            config_dir,
-            "cxg_author_cell_type.yaml",
-        ),
-        "r",
-    ) as file:
-        config_data = yaml.safe_load(file)
-
-    for config in config_data:
-        generate_rdf_graph(
-            os.path.join(dirname, str(config["anndata_file_path"])),
-            config["author_cell_type_list"],
-            os.path.join(
-                "graph",
-                (
-                    config["output_rdf_path"]
-                    if "output_rdf_path" in config
-                    else config["anndata_file_path"].split("/")[-1].split(".")[0]
-                ),
-            ),
-            {
-                "dataset_id": config.get("dataset_id"),
-                "dataset_version_id": config.get("dataset_version_id"),
-            },
-            os.path.join(dirname, "bitmaps"),
-        )

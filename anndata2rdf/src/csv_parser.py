@@ -1,25 +1,23 @@
 import logging
 import os
 import time
-from typing import Dict, Optional
 
 import pandas as pd
 import requests
 import yaml
 
+from pull_anndata import get_dataset_id_from_link
+
 MAX_RETRIES = 3
 RETRY_DELAY = 2
-
-logging.basicConfig(level=logging.WARNING)
+REQUEST_TIMEOUT = (10, 60)  # (connect, read) seconds
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 class DatasetNotFoundException(Exception):
     """Custom exception for missing dataset versions."""
 
-    pass
 
 
 def generate_yaml_data(data):
@@ -52,14 +50,14 @@ def generate_yaml_data(data):
                 )
 
         except DatasetNotFoundException as e:
-            logging.error(e)
-        except Exception as e:
-            logging.error(f"Unexpected error while processing link {link}: {e}")
+            logger.error(e)
+        except Exception:
+            logger.exception(f"Unexpected error while processing link {link}")
 
     return _yaml_data
 
 
-def fetch_latest_cxg_dataset_metadata(link: str) -> Optional[Dict[str, str]]:
+def fetch_latest_cxg_dataset_metadata(link: str) -> dict[str, str] | None:
     """
     Retrieve the latest CXG dataset metadata for the given dataset identifier.
 
@@ -77,16 +75,15 @@ def fetch_latest_cxg_dataset_metadata(link: str) -> Optional[Dict[str, str]]:
                                   or None if the request fails or the desired dataset is
                                   not found.
     """
+    dataset_lookup_id = get_dataset_id_from_link(link)
+    request_url = (
+        "https://api.cellxgene.cziscience.com/curation/v1/datasets/"
+        f"{dataset_lookup_id}/versions"
+    )
     retries = 0
     while retries < MAX_RETRIES:
         try:
-            dataset_lookup_id = link.split("/")[-2].split(".")[0]
-            request_url = (
-                "https://api.cellxgene.cziscience.com/curation/v1/datasets/"
-                f"{dataset_lookup_id}/versions"
-            )
-
-            response = requests.get(request_url)
+            response = requests.get(request_url, timeout=REQUEST_TIMEOUT)
             response.raise_for_status()
 
             data = response.json()
@@ -133,17 +130,14 @@ def write_yaml_file(yaml_data, file_path):
         logger.info(f"{file_path} written")
 
 
-def generate_author_cell_type_config(curated_data_folder: str = "curated_data"):
+def generate_author_cell_type_config(curated_data_dir: str):
     all_yaml_data = []
-    data_folder = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), curated_data_folder
-    )
-    for file_name in os.listdir(data_folder):
-        file_path = os.path.join(data_folder, file_name)
+    for file_name in os.listdir(curated_data_dir):
+        file_path = os.path.join(curated_data_dir, file_name)
 
         if file_name.endswith(".csv"):
             df = pd.read_csv(file_path)
-        elif file_name.endswith(".xlsx") or file_name.endswith(".xls"):
+        elif file_name.endswith((".xlsx", ".xls")):
             df = pd.read_excel(file_path)
         else:
             logger.info(f"Skipping file '{file_name}' with unsupported format.")
@@ -152,12 +146,3 @@ def generate_author_cell_type_config(curated_data_folder: str = "curated_data"):
         yaml_data = generate_yaml_data(df)
         all_yaml_data.extend(yaml_data)
     return all_yaml_data
-
-
-if __name__ == "__main__":
-    config_yaml = generate_author_cell_type_config()
-    output_file_path = os.path.join(
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), "config"),
-        "cxg_author_cell_type_v2.yaml",
-    )
-    write_yaml_file(config_yaml, output_file_path)

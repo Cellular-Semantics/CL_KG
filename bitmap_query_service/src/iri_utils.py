@@ -7,6 +7,10 @@ UUID_PATTERN = re.compile(
 )
 
 
+# The bitmap filename is the contract between anndata2rdf's bitmap_builder
+# (writer) and this service (reader). iri_storage_id and bitmap_filename MUST
+# stay identical to anndata2rdf/src/bitmap_builder.py; both test suites pin the
+# same golden values (see BITMAP_FILENAME_GOLDEN_CASES in their tests).
 def iri_storage_id(node_iri: str) -> str:
     match = UUID_PATTERN.search(node_iri)
     if match:
