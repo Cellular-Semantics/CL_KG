@@ -181,13 +181,18 @@ def write_roaring_bitmap(
     node_iri: str, census_version: str, soma_joinids: Iterable[int], output_dir: str
 ) -> str:
     bitmap = BitMap(soma_joinids)
-    bitmap_path = os.path.join(
-        output_dir,
-        f"{iri_storage_id(node_iri)}__{census_version}.bitmap",
-    )
+    bitmap_path = os.path.join(output_dir, bitmap_filename(node_iri, census_version))
     with open(bitmap_path, "wb") as bitmap_file:
         bitmap_file.write(bitmap.serialize())
     return bitmap_path
+
+
+# The bitmap filename is the contract between this builder (writer) and
+# bitmap_query_service (reader). iri_storage_id and bitmap_filename MUST stay
+# identical to bitmap_query_service/src/iri_utils.py; both test suites pin the
+# same golden values (see BITMAP_FILENAME_GOLDEN_CASES in their tests).
+def bitmap_filename(node_iri: str, census_version: str) -> str:
+    return f"{iri_storage_id(node_iri)}__{census_version}.bitmap"
 
 
 def iri_storage_id(node_iri: str) -> str:
