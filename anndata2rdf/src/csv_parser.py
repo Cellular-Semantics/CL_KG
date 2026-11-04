@@ -11,6 +11,7 @@ from pull_anndata import get_dataset_id_from_link
 
 MAX_RETRIES = 3
 RETRY_DELAY = 2
+REQUEST_TIMEOUT = (10, 60)  # (connect, read) seconds
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +85,7 @@ def fetch_latest_cxg_dataset_metadata(link: str) -> Optional[Dict[str, str]]:
     retries = 0
     while retries < MAX_RETRIES:
         try:
-            response = requests.get(request_url)
+            response = requests.get(request_url, timeout=REQUEST_TIMEOUT)
             response.raise_for_status()
 
             data = response.json()

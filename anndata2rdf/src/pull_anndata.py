@@ -10,6 +10,9 @@ from tqdm import tqdm
 CHUNK_SIZE = 8 * 1024 * 1024  # 8 MB per chunk
 MAX_RETRIES = 3
 RETRY_DELAY = 2
+# (connect, read) seconds. The read timeout is the max gap between bytes,
+# not a cap on total download time, so large files are unaffected.
+REQUEST_TIMEOUT = (10, 60)
 UUID_PATTERN = re.compile(
     r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
 )
@@ -48,7 +51,9 @@ def download_dataset_with_url(
     retries = 0
     while retries < MAX_RETRIES:
         try:
-            with requests.get(dataset_download_url, stream=True) as response:
+            with requests.get(
+                dataset_download_url, stream=True, timeout=REQUEST_TIMEOUT
+            ) as response:
                 if response.status_code == 200:
                     total_size = int(response.headers.get("content-length", 0))
                     logger.info(f"Total file size: {total_size / (1024 ** 3):.2f} GB")
