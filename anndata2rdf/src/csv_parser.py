@@ -7,6 +7,8 @@ import pandas as pd
 import requests
 import yaml
 
+from pull_anndata import get_dataset_id_from_link
+
 MAX_RETRIES = 3
 RETRY_DELAY = 2
 
@@ -77,15 +79,14 @@ def fetch_latest_cxg_dataset_metadata(link: str) -> Optional[Dict[str, str]]:
                                   or None if the request fails or the desired dataset is
                                   not found.
     """
+    dataset_lookup_id = get_dataset_id_from_link(link)
+    request_url = (
+        "https://api.cellxgene.cziscience.com/curation/v1/datasets/"
+        f"{dataset_lookup_id}/versions"
+    )
     retries = 0
     while retries < MAX_RETRIES:
         try:
-            dataset_lookup_id = link.split("/")[-2].split(".")[0]
-            request_url = (
-                "https://api.cellxgene.cziscience.com/curation/v1/datasets/"
-                f"{dataset_lookup_id}/versions"
-            )
-
             response = requests.get(request_url)
             response.raise_for_status()
 

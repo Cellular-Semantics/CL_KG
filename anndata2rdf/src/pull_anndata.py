@@ -1,6 +1,7 @@
 import logging
-import os
 import glob
+import os
+import re
 import time
 from typing import Dict, List, Optional
 
@@ -10,6 +11,9 @@ from tqdm import tqdm
 CHUNK_SIZE = 8 * 1024 * 1024  # 8 MB per chunk
 MAX_RETRIES = 3
 RETRY_DELAY = 2
+UUID_PATTERN = re.compile(
+    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+)
 
 logging.basicConfig(level=logging.WARNING)
 
@@ -128,10 +132,6 @@ def check_file_exists_based_on_prefix(directory, prefix):
     return glob.glob(pattern)  # Returns a list of matching files
 
 
-def get_dataset_id_from_h5ad_link(dataset_url):
-    return dataset_url.split("/")[-1].split(".")[0]
-
-
 def delete_file(file_name):
     try:
         os.remove(file_name)
@@ -153,8 +153,14 @@ def get_dataset_dict(input_source: List[Dict]) -> Dict[str, Dict]:
     return cxg_dataset_dict
 
 
-def get_dataset_id_from_link(cxg_link: str) -> str:
-    if cxg_link.endswith("/"):
-        return cxg_link.split("/")[-2][:-4]
-    else:
-        return cxg_link.split("/")[-1][:-5]
+def get_dataset_id_from_link(link: str) -> str:
+    """Return the dataset UUID embedded in a CxG explorer link or an h5ad download URL.
+
+    Examples:
+        https://cellxgene.cziscience.com/e/<uuid>.cxg/  -> <uuid>
+        https://datasets.cellxgene.cziscience.com/<uuid>.h5ad -> <uuid>
+    """
+    match = UUID_PATTERN.search(link or "")
+    if match is None:
+        raise ValueError(f"No dataset UUID found in link: {link!r}")
+    return match.group(0)
