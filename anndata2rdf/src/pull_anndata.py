@@ -140,27 +140,16 @@ def delete_file(file_name):
         logger.info(f"Error deleting file '{file_name}': {e}")
 
 
-def get_dataset_dict(input_source: List[Dict]):
+def get_dataset_dict(input_source: List[Dict]) -> Dict[str, Dict]:
     cxg_dataset_dict = {}
     for config in input_source:
-        cxg_link = config["CxG_link"]
-        matrix_id = get_dataset_id_from_link(cxg_link)
-        if cxg_link.endswith(".cxg"):
-            cxg_id = matrix_id
-            cxg_dataset_dict.update(
-                {cxg_id.split(".")[0]: config["author_cell_type_list"]}
-            )
-        else:
-            cxg_dataset_dict.update(
-                {
-                    matrix_id: {
-                        "author_cell_type_list": config["author_cell_type_list"],
-                        "download_url": config["download_url"],
-                        "dataset_id": config.get("dataset_id"),
-                        "dataset_version_id": config.get("dataset_version_id"),
-                    }
-                }
-            )
+        matrix_id = get_dataset_id_from_link(config["CxG_link"])
+        cxg_dataset_dict[matrix_id] = {
+            "author_cell_type_list": config["author_cell_type_list"],
+            "download_url": config["download_url"],
+            "dataset_id": config.get("dataset_id"),
+            "dataset_version_id": config.get("dataset_version_id"),
+        }
     return cxg_dataset_dict
 
 
