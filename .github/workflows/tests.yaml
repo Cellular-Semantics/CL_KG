@@ -37,9 +37,6 @@ jobs:
       matrix:
         include:
           # Python versions match each module's runtime (Dockerfile / schema CI job).
-          - module: anndata2rdf
-            python: "3.10"
-            apt: libgraphviz-dev  # needed to build pygraphviz
           - module: translator_api_mapper
             python: "3.10"
           - module: cl_kb_pipeline
@@ -53,9 +50,6 @@ jobs:
         working-directory: ${{ matrix.module }}
     steps:
       - uses: actions/checkout@v7.0.1
-      - name: System packages
-        if: matrix.apt
-        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ${{ matrix.apt }}
       - uses: astral-sh/setup-uv@v10.3.0
         with:
           version: ${{ env.UV_VERSION }}
@@ -63,6 +57,34 @@ jobs:
           working-directory: ${{ matrix.module }}
           enable-cache: true
           cache-dependency-glob: ${{ matrix.module }}/uv.lock
+      - name: Install (locked, incl. dev group)
+        run: uv sync --frozen
+      - name: pytest
+        run: uv run --frozen pytest -q tests
+
+  # anndata2rdf builds pygraphviz from source against the system Graphviz, so it
+  # is tested on the production image's base (python:3.10 = Debian trixie,
+  # Graphviz 2.42). pygraphviz 1.14 does not compile against Graphviz >= 13,
+  # which current ubuntu-latest runners ship.
+  test-anndata2rdf:
+    name: test (anndata2rdf)
+    runs-on: ubuntu-latest
+    container: python:3.10
+    defaults:
+      run:
+        working-directory: anndata2rdf
+    env:
+      UV_PYTHON_PREFERENCE: only-system  # use the image's Python, like the Dockerfile
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: System packages (as in anndata2rdf/Dockerfile)
+        run: apt-get update && apt-get install -y --no-install-recommends libgraphviz-dev pkg-config libhdf5-dev
+      - uses: astral-sh/setup-uv@v10.3.0
+        with:
+          version: ${{ env.UV_VERSION }}
+          working-directory: anndata2rdf
+          enable-cache: true
+          cache-dependency-glob: anndata2rdf/uv.lock
       - name: Install (locked, incl. dev group)
         run: uv sync --frozen
       - name: pytest
