@@ -1,13 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, Request
 
 from graph_query_service.cluster_metadata.models import (
     GraphQueryRequest,
     GraphQueryResponse,
 )
-from graph_query_service.neo4j.client import (
-    GraphQueryExecutionError,
-    GraphQueryServiceProtocol,
-)
+from graph_query_service.neo4j.client import GraphQueryServiceProtocol
 
 router = APIRouter()
 
@@ -31,9 +28,5 @@ def query_graph(
     request: GraphQueryRequest,
     graph_service: GraphQueryServiceProtocol = Depends(get_graph_service),
 ):
-    try:
-        return graph_service.query_manifest(request)
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-    except GraphQueryExecutionError as exc:
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
+    # Errors are mapped to HTTP responses by the handlers registered in main.py.
+    return graph_service.query_manifest(request)
