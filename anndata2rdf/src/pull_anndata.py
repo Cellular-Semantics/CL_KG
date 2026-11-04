@@ -6,7 +6,6 @@ from typing import Dict, List, Optional
 
 import requests
 from tqdm import tqdm
-import yaml
 
 CHUNK_SIZE = 8 * 1024 * 1024  # 8 MB per chunk
 MAX_RETRIES = 3
@@ -170,20 +169,3 @@ def get_dataset_id_from_link(cxg_link: str) -> str:
         return cxg_link.split("/")[-2][:-4]
     else:
         return cxg_link.split("/")[-1][:-5]
-
-
-def read_yaml_config(config_file: str):
-    with open(config_file, "r") as file:
-        return yaml.safe_load(file)
-
-
-if __name__ == "__main__":
-    config_list = read_yaml_config(
-        os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            os.path.join("config", "cxg_author_cell_type.yaml"),
-        )
-    )
-    datasets = get_dataset_dict(config_list)
-    for dataset in datasets.items():
-        dataset_name = download_dataset_with_url(dataset)

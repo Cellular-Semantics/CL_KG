@@ -152,12 +152,3 @@ def generate_author_cell_type_config(curated_data_folder: str = "curated_data"):
         yaml_data = generate_yaml_data(df)
         all_yaml_data.extend(yaml_data)
     return all_yaml_data
-
-
-if __name__ == "__main__":
-    config_yaml = generate_author_cell_type_config()
-    output_file_path = os.path.join(
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), "config"),
-        "cxg_author_cell_type_v2.yaml",
-    )
-    write_yaml_file(config_yaml, output_file_path)
