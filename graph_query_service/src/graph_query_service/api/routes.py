@@ -4,8 +4,10 @@ from graph_query_service.cluster_metadata.models import (
     GraphQueryRequest,
     GraphQueryResponse,
 )
-from graph_query_service.neo4j.client import GraphQueryExecutionError, GraphQueryServiceProtocol
-
+from graph_query_service.neo4j.client import (
+    GraphQueryExecutionError,
+    GraphQueryServiceProtocol,
+)
 
 router = APIRouter()
 
