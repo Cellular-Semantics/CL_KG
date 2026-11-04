@@ -48,7 +48,8 @@ def uniprot_gene_mapper() -> StepReport:
         report.fail(f"querying protein/gene nodes failed: {e}")
         return report
     uniprot_curie_list = uri_to_curie(uniprot_terms)
-    gene_curie_list = uri_to_curie(ensembl_terms) + uri_to_curie(ncbigene_terms)
+    # A set: membership is checked for every gene ID of every protein.
+    known_gene_curies = set(uri_to_curie(ensembl_terms) + uri_to_curie(ncbigene_terms))
 
     # Get mappings
     try:
@@ -75,7 +76,7 @@ def uniprot_gene_mapper() -> StepReport:
             elif gene_curie.startswith("NCBIGene:"):
                 ncbigene_count += 1
 
-            if gene_curie in gene_curie_list:
+            if gene_curie in known_gene_curies:
                 try:
                     triple = build_gene_protein_triple(gene_curie, uni)
                 except InvalidTermError as e:
@@ -90,9 +91,9 @@ def uniprot_gene_mapper() -> StepReport:
                     report.add_batch(batch_no, insert_triples_in_batch(triples_batch))
                     triples_batch = []
 
-            elif "ENSG" in gene_curie:
+            elif gene_curie.startswith("ENSEMBL:"):
                 ensembl_missing_count += 1
-            elif "NCBIGene" in gene_curie:
+            elif gene_curie.startswith("NCBIGene:"):
                 ncbigene_missing_count += 1
 
     # Insert remaining triples (if any)
