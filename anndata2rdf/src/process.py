@@ -29,49 +29,55 @@ BITMAP_DIRECTORY = "bitmaps"
 CXG_AUTHOR_CELL_TYPE_CONFIG = "cxg_author_cell_type.yaml"
 GENERATE_RDF_CONFIG = "generate_rdf_config.yaml"
 
-cxg_author_cell_type_yaml = generate_author_cell_type_config()
-output_file_path = os.path.join(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), CONFIG_DIRECTORY),
-    CXG_AUTHOR_CELL_TYPE_CONFIG,
-)
-write_yaml_file(cxg_author_cell_type_yaml, output_file_path)
-datasets = get_dataset_dict(cxg_author_cell_type_yaml)
-for dataset in datasets.items():
-    matrix_id = dataset[0]
-    dataset_url = dataset[1].get("download_url")
-    author_cell_types = dataset[1].get("author_cell_type_list")
-    dataset_metadata = {
-        "dataset_id": dataset[1].get("dataset_id"),
-        "dataset_version_id": dataset[1].get("dataset_version_id"),
-    }
-    download_id = get_dataset_id_from_link(dataset_url)
 
-    rdf_output_path = os.path.join(
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), GRAPH_DIRECTORY),
-        f"{matrix_id}__{download_id}",
+def main():
+    cxg_author_cell_type_yaml = generate_author_cell_type_config()
+    output_file_path = os.path.join(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), CONFIG_DIRECTORY),
+        CXG_AUTHOR_CELL_TYPE_CONFIG,
     )
-    bitmap_output_path = os.path.join(
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), BITMAP_DIRECTORY),
-    )
-    h5ad_output_path = os.path.join(
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), DATASET_DIRECTORY),
-        f"{matrix_id}",
-    )
-    logger.info(rdf_output_path)
-    if os.path.exists(rdf_output_path + ".owl"):
-        logger.info(f"RDF graph '{rdf_output_path}' already exists. Skipping process.")
-    else:
-        dataset_path = download_dataset_with_url(matrix_id, dataset_url)
-        if dataset_path is None:
-            logger.error(
-                f"Failed to download dataset '{matrix_id}'. Skipping this dataset."
-            )
-            continue
-        generate_rdf_graph(
-            dataset_path,
-            author_cell_types,
-            rdf_output_path,
-            dataset_metadata,
-            bitmap_output_path,
+    write_yaml_file(cxg_author_cell_type_yaml, output_file_path)
+    datasets = get_dataset_dict(cxg_author_cell_type_yaml)
+    for dataset in datasets.items():
+        matrix_id = dataset[0]
+        dataset_url = dataset[1].get("download_url")
+        author_cell_types = dataset[1].get("author_cell_type_list")
+        dataset_metadata = {
+            "dataset_id": dataset[1].get("dataset_id"),
+            "dataset_version_id": dataset[1].get("dataset_version_id"),
+        }
+        download_id = get_dataset_id_from_link(dataset_url)
+
+        rdf_output_path = os.path.join(
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), GRAPH_DIRECTORY),
+            f"{matrix_id}__{download_id}",
         )
-        delete_file(dataset_path)
+        bitmap_output_path = os.path.join(
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), BITMAP_DIRECTORY),
+        )
+        h5ad_output_path = os.path.join(
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), DATASET_DIRECTORY),
+            f"{matrix_id}",
+        )
+        logger.info(rdf_output_path)
+        if os.path.exists(rdf_output_path + ".owl"):
+            logger.info(f"RDF graph '{rdf_output_path}' already exists. Skipping process.")
+        else:
+            dataset_path = download_dataset_with_url(matrix_id, dataset_url)
+            if dataset_path is None:
+                logger.error(
+                    f"Failed to download dataset '{matrix_id}'. Skipping this dataset."
+                )
+                continue
+            generate_rdf_graph(
+                dataset_path,
+                author_cell_types,
+                rdf_output_path,
+                dataset_metadata,
+                bitmap_output_path,
+            )
+            delete_file(dataset_path)
+
+
+if __name__ == "__main__":
+    main()
