@@ -1,0 +1,9 @@
+.venv*
+**/__pycache__
+.pytest_cache
+.mplconfig
+tests
+dev_scripts
+src/dataset
+src/graph
+src/bitmaps
