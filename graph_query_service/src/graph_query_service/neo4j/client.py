@@ -1,17 +1,19 @@
 from dataclasses import dataclass
 from typing import Any, Protocol
 
+from neo4j import GraphDatabase
+from neo4j.exceptions import DriverError, Neo4jError
+
 from graph_query_service.cluster_metadata.builder import build_manifest_response
 from graph_query_service.cluster_metadata.models import (
     GraphQueryRequest,
     GraphQueryResponse,
 )
 from graph_query_service.config import Settings
+from graph_query_service.errors import GraphQueryExecutionError
 from graph_query_service.neo4j.query_template import build_query
 
-
-class GraphQueryExecutionError(RuntimeError):
-    pass
+__all__ = ["GraphQueryExecutionError", "GraphQueryServiceProtocol", "Neo4jGraphQueryService"]
 
 
 class GraphQueryServiceProtocol(Protocol):
@@ -35,20 +37,22 @@ class Neo4jGraphQueryService:
         return build_manifest_response(rows, request)
 
     def _run_query(self, query: str, parameters: dict[str, Any]) -> list[dict[str, Any]]:
-        driver = self._get_driver()
+        """Run a read query and return its records as dicts.
+
+        Raises:
+            GraphQueryExecutionError: the driver could not be created (e.g. malformed
+                NEO4J_URI), Neo4j is unreachable, or the server rejected the query.
+        """
         try:
+            driver = self._get_driver()
             with driver.session(database=self.settings.neo4j_database) as session:
                 result = session.run(query, parameters)
                 return [record.data() for record in result]
-        except ValueError:
-            raise
-        except Exception as exc:
+        except (DriverError, Neo4jError) as exc:
             raise GraphQueryExecutionError("Failed to execute Neo4j graph query.") from exc
 
     def _get_driver(self):
         if self._driver is None:
-            from neo4j import GraphDatabase
-
             self._driver = GraphDatabase.driver(
                 self.settings.neo4j_uri,
                 auth=(self.settings.neo4j_user, self.settings.neo4j_password),
