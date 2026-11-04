@@ -1,13 +1,16 @@
 import logging
-from typing import List, Tuple
 
-import requests
 from SPARQLWrapper import JSON, SPARQLWrapper
-from utils.translator_utils import ENDPOINT_URL
 
-logging.basicConfig(level=logging.WARNING)
+from utils.reporting import BatchResult, StepReport
+from utils.sparql_terms import OIO_HAS_DBXREF, InvalidTermError, curie_iri, iri, literal
+from utils.translator_utils import (
+    QUERY_ERRORS,
+    QUERY_TIMEOUT_SECONDS,
+    post_sparql_update,
+)
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 UBERGRAPH_ENDPOINT = "https://ubergraph.apps.renci.org/sparql"
 
@@ -57,6 +60,7 @@ ORDER BY ?pr
 def run_query(query: str):
     sparql = SPARQLWrapper(UBERGRAPH_ENDPOINT)
     sparql.setReturnFormat(JSON)
+    sparql.setTimeout(QUERY_TIMEOUT_SECONDS)
     sparql.setQuery(query)
     response = sparql.query().convert()
     return response["results"]["bindings"]
@@ -78,17 +82,18 @@ def generate_rename_query(pr_iri: str, xref_curie: str) -> str:
     Generates a SPARQL UPDATE that:
       - deletes all triples for <pr_iri>
       - reinserts them under the new UniProtKB IRI
-      (filtering out the old hasDbXref)
+    Raises InvalidTermError for unusable values.
     """
-    return f"""
-DELETE {{
-  <{pr_iri}> ?p ?o .
+    pr = iri(pr_iri)
+    uniprot = curie_iri(xref_curie)
+    return f"""DELETE {{
+    {pr} ?p ?o .
 }}
 INSERT {{
-  {xref_curie} ?p ?o .
+    {uniprot} ?p ?o .
 }}
 WHERE {{
-  <{pr_iri}> ?p ?o .
+    {pr} ?p ?o .
 }}"""
 
 
@@ -97,61 +102,62 @@ def generate_xref_update_query(pr_iri: str, xref_curie: str) -> str:
     Generates a SPARQL UPDATE that:
       - deletes the old oio:hasDbXref "<xref_curie>"
       - reinserts it as oio:hasDbXref "PR:<suffix>"
+    Raises InvalidTermError for unusable values.
     """
-    pr_id = pr_iri.rsplit("_", 1)[-1]
-    new_xref = f"PR:{pr_id}"
-    return f"""
-DELETE {{
-  {xref_curie} oio:hasDbXref "{xref_curie}" .
+    uniprot = curie_iri(xref_curie)
+    old_xref = literal(xref_curie)
+    new_xref = literal(f"PR:{pr_iri.rsplit('_', 1)[-1]}")
+    return f"""DELETE {{
+    {uniprot} {OIO_HAS_DBXREF} {old_xref} .
 }}
 INSERT {{
-  {xref_curie} oio:hasDbXref "{new_xref}" .
+    {uniprot} {OIO_HAS_DBXREF} {new_xref} .
 }}
 WHERE {{
-  {xref_curie} oio:hasDbXref "{xref_curie}" .
+    {uniprot} {OIO_HAS_DBXREF} {old_xref} .
 }}"""
 
 
-def update_triples_batch(pairs: List[Tuple[str, str]]):
+def update_triples_batch(pairs: list[tuple[str, str]]) -> BatchResult:
     """
-    Updates triples
+    Renames PR nodes to their UniProtKB IRIs and rewrites the matching xref.
+    Pairs with unusable values are skipped individually.
     """
-    endpoint_url = f"{ENDPOINT_URL}/statements"
-    headers = {"Content-Type": "application/sparql-update"}
-
-    prefixes = f"""
-    PREFIX PR: <http://purl.obolibrary.org/obo/PR_>
-    PREFIX UniProtKB: <https://identifiers.org/uniprot/>
-    PREFIX oio: <http://www.geneontology.org/formats/oboInOwl#>
-    """
+    result = BatchResult()
     update_statements = []
     for pr_iri, xref_curie in pairs:
-        update_statements.append(generate_rename_query(pr_iri, xref_curie).strip())
-        update_statements.append(generate_xref_update_query(pr_iri, xref_curie).strip())
+        try:
+            statements = [
+                generate_rename_query(pr_iri, xref_curie),
+                generate_xref_update_query(pr_iri, xref_curie),
+            ]
+        except InvalidTermError as e:
+            logger.warning(f"Skipping {pr_iri} -> {xref_curie}: {e}")
+            result.skipped += 1
+            continue
+        update_statements.extend(statements)
+    if not update_statements:
+        return result
 
-    full_query = prefixes + "\n" + " ;\n".join(update_statements)
+    result.statements = len(update_statements)
+    result.error = post_sparql_update(" ;\n".join(update_statements))
+    if result.error is None:
+        logger.info(f"Successfully updated a batch of {result.statements // 2} updates.")
+    return result
+
+
+def pr_uniprot_id_swapper() -> StepReport:
+    report = StepReport("pr_uniprot_id_swapper")
     try:
-        response = requests.post(endpoint_url, data=full_query, headers=headers)
-        if response.status_code == 204:
-            logger.info(f"Successfully updated a batch of {len(pairs)} updates.")
-        else:
-            logger.error(
-                f"Batch update failed. Status Code: {response.status_code} - {response.text}"
-            )
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Batch update request failed: {e}")
-
-
-def pr_uniprot_id_swapper():
-    first = extract_tuples(run_query(FIRST_QUERY), key_pr="mpr")
-    second = extract_tuples(run_query(SECOND_QUERY))
+        first = extract_tuples(run_query(FIRST_QUERY), key_pr="mpr")
+        second = extract_tuples(run_query(SECOND_QUERY))
+    except QUERY_ERRORS as e:
+        report.fail(f"querying Ubergraph for PR/UniProtKB pairs failed: {e}")
+        return report
     all_tuples = first + second
 
     update_batch_size = 1000
-    for i in range(0, len(all_tuples), update_batch_size):
+    for batch_no, i in enumerate(range(0, len(all_tuples), update_batch_size), 1):
         batch_list = all_tuples[i : i + update_batch_size]
-        update_triples_batch(batch_list)
-
-
-if __name__ == "__main__":
-    pr_uniprot_id_swapper()
+        report.add_batch(batch_no, update_triples_batch(batch_list))
+    return report

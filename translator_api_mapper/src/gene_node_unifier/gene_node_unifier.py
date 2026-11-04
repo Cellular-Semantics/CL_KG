@@ -1,22 +1,54 @@
 import logging
-from typing import Dict, List
 
 import requests
+
+from utils.reporting import BatchResult, StepReport
+from utils.sparql_terms import OIO_HAS_DBXREF, InvalidTermError, curie_iri, literal
 from utils.translator_utils import (
-    ENDPOINT_URL,
     PREFIXES,
+    QUERY_ERRORS,
     build_sparql_query,
     get_normalized_curies,
+    post_sparql_update,
     run_query,
     uri_to_curie,
 )
 
-logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
-def update_gene_nodes_batch(update_dict: Dict[str, List[str]]):
+def build_gene_unify_statement(ensembl_curie: str, ncbigene_ids: list[str]) -> str:
+    """
+    Build one SPARQL update that moves all triples of an Ensembl gene node onto
+    its primary NCBIGene node and records the old IDs as hasDbXref literals.
+
+    The first element of ncbigene_ids is the primary node; the rest become
+    additional hasDbXref values. Raises InvalidTermError for unusable IDs.
+    """
+    if not ncbigene_ids:
+        raise InvalidTermError(f"No target identifiers for {ensembl_curie!r}")
+    ensembl = curie_iri(ensembl_curie)
+    primary = curie_iri(ncbigene_ids[0])
+    xref_triples = "".join(
+        f"\n    {primary} {OIO_HAS_DBXREF} {literal(xref)} ."
+        for xref in [ensembl_curie, *ncbigene_ids[1:]]
+    )
+    return f"""DELETE {{
+    {ensembl} ?p ?o .
+    ?s2 ?p2 {ensembl} .
+}}
+INSERT {{
+    {primary} ?p ?o .
+    ?s2 ?p2 {primary} .{xref_triples}
+}}
+WHERE {{
+    {{ {ensembl} ?p ?o . }}
+    UNION
+    {{ ?s2 ?p2 {ensembl} . }}
+}}"""
+
+
+def update_gene_nodes_batch(update_dict: dict[str, list[str]]) -> BatchResult:
     """
     Combines multiple SPARQL updates into one request.
 
@@ -25,70 +57,31 @@ def update_gene_nodes_batch(update_dict: Dict[str, List[str]]):
                           (the first element will be used for the primary update, the rest
                            will be inserted as additional hasDbXref values).
     """
-    endpoint_url = f"{ENDPOINT_URL}/statements"
-    headers = {"Content-Type": "application/sparql-update"}
-
-    # Build the common prefix section
-    prefixes = f"""
-    PREFIX ENSEMBL: <{PREFIXES['ensembl']}>
-    PREFIX NCBIGene: <{PREFIXES['ncbigene']}>
-    PREFIX owl: <http://www.w3.org/2002/07/owl#>
-    PREFIX oio: <http://www.geneontology.org/formats/oboInOwl#>
-    """
-
+    result = BatchResult()
     update_statements = []
     for ensembl_id, ncbigene_ids in update_dict.items():
-        # Primary NCBIGene id
-        primary = ncbigene_ids[0]
+        try:
+            update_statements.append(build_gene_unify_statement(ensembl_id, ncbigene_ids))
+        except InvalidTermError as e:
+            logger.warning(f"Skipping gene node {ensembl_id}: {e}")
+            result.skipped += 1
+    if not update_statements:
+        return result
 
-        # Build additional hasDbXref triples for any extra IDs
-        extra_xrefs = ncbigene_ids[1:]
-        extra_triples = ""
-        if extra_xrefs:
-            extras = "\n".join(
-                f'          {primary} oio:hasDbXref "{xref}" .' for xref in extra_xrefs
-            )
-            extra_triples = "\n" + extras
+    result.statements = len(update_statements)
+    result.error = post_sparql_update(" ;\n".join(update_statements))
+    if result.error is None:
+        logger.info(f"Successfully updated a batch of {result.statements} updates.")
+    return result
 
-        stmt = f"""
-        DELETE {{
-          {ensembl_id} ?p ?o .
-          ?s2 ?p2 {ensembl_id} .
-        }}
-        INSERT {{
-          {primary} ?p ?o .
-          ?s2 ?p2 {primary} .
-          {primary} oio:hasDbXref "{ensembl_id}" .{extra_triples}
-        }}
-        WHERE {{
-          {{
-            {ensembl_id} ?p ?o .
-          }}
-          UNION
-          {{
-            ?s2 ?p2 {ensembl_id} .
-          }}
-        }}
-        """
-        update_statements.append(stmt.strip())
 
-    # Combine all updates with semicolon separators
-    full_query = prefixes + "\n" + " ;\n".join(update_statements)
-
+def gene_node_unifier() -> StepReport:
+    report = StepReport("gene_node_unifier")
     try:
-        response = requests.post(endpoint_url, data=full_query, headers=headers)
-        if response.status_code == 204:
-            logger.info(f"Successfully updated a batch of {len(update_dict)} updates.")
-        else:
-            logger.error(
-                f"Batch update failed. Status Code: {response.status_code} - {response.text}"
-            )
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Batch update request failed: {e}")
-
-
-def gene_node_unifier():
-    ensembl_terms = run_query(build_sparql_query(PREFIXES['ensembl']))
+        ensembl_terms = run_query(build_sparql_query(PREFIXES["ensembl"]))
+    except QUERY_ERRORS as e:
+        report.fail(f"querying Ensembl gene nodes failed: {e}")
+        return report
     ensembl_curie_list = uri_to_curie(ensembl_terms)
 
     # Process the curies in batches to avoid API limitations
@@ -96,21 +89,27 @@ def gene_node_unifier():
     batch_size = 20000
     for start in range(0, len(ensembl_curie_list), batch_size):
         batch = ensembl_curie_list[start : start + batch_size]
-        # batch_result = get_normalized_curies(batch, source_field="id", filter_keywords=["NCBIGene"])
-        batch_result = get_normalized_curies(
-            batch, source_field="equivalent_identifiers"
-        )
+        # Node Normalization lists equivalent_identifiers with the preferred ID first;
+        # for genes that is the NCBIGene ID when a mapping exists, so [0] becomes the
+        # primary node and every other equivalent ID (ENSEMBL, HGNC, OMIM, UMLS, ...)
+        # is kept as a hasDbXref literal. Genes with no NCBIGene mapping get their own
+        # Ensembl ID as [0], which rewrites the node onto itself. Pinned by
+        # tests/test_gene_node_unifier_selection.py.
+        try:
+            batch_result = get_normalized_curies(
+                batch, source_field="equivalent_identifiers"
+            )
+        except requests.exceptions.RequestException as e:
+            report.fail(f"normalizing CURIEs {start}-{start + len(batch) - 1} failed: {e}")
+            continue
         normalized_curie_dict.update(batch_result)
+
     # Batch the SPARQL updates into groups and send them together
     update_batch_size = 1000
     update_items = list(normalized_curie_dict.items())
-    for i in range(0, len(update_items), update_batch_size):
+    for batch_no, i in enumerate(range(0, len(update_items), update_batch_size), 1):
         batch_dict = dict(update_items[i : i + update_batch_size])
-        update_gene_nodes_batch(batch_dict)
+        report.add_batch(batch_no, update_gene_nodes_batch(batch_dict))
 
     logger.info("Gene node unification process completed.")
-    return normalized_curie_dict
-
-
-if __name__ == "__main__":
-    gene_node_unifier()
+    return report
