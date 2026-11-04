@@ -25,8 +25,6 @@ def load_bitmap(bitmap_dir: str, node_iri: str, census_version: str) -> BitMap:
     try:
         bitmap_bytes = bitmap_path.read_bytes()
         return BitMap.deserialize(bitmap_bytes)
-    except BitmapNotFoundError:
-        raise
     except Exception as exc:
         raise BitmapReadError(
             f"Failed to load bitmap file '{bitmap_path.name}'."
