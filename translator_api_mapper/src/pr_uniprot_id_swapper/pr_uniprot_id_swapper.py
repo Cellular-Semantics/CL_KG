@@ -6,9 +6,7 @@ from utils.sparql_terms import OIO_HAS_DBXREF, InvalidTermError, curie_iri, iri,
 from utils.reporting import BatchResult, StepReport
 from utils.translator_utils import QUERY_TIMEOUT_SECONDS, post_sparql_update
 
-logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 UBERGRAPH_ENDPOINT = "https://ubergraph.apps.renci.org/sparql"
 
@@ -159,7 +157,3 @@ def pr_uniprot_id_swapper() -> StepReport:
         batch_list = all_tuples[i : i + update_batch_size]
         report.add_batch(batch_no, update_triples_batch(batch_list))
     return report
-
-
-if __name__ == "__main__":
-    pr_uniprot_id_swapper().log_summary(logger)

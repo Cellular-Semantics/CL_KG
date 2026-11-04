@@ -13,9 +13,7 @@ from utils.translator_utils import (
     uri_to_curie,
 )
 
-logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 def build_gene_unify_statement(ensembl_curie: str, ncbigene_ids: List[str]) -> str:
@@ -114,7 +112,3 @@ def gene_node_unifier() -> StepReport:
 
     logger.info("Gene node unification process completed.")
     return report
-
-
-if __name__ == "__main__":
-    gene_node_unifier().log_summary(logger)

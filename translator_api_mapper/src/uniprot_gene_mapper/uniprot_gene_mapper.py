@@ -15,9 +15,7 @@ from utils.translator_utils import (
     uri_to_curie,
 )
 
-logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 def build_gene_protein_triple(gene_curie: str, uniprot_curie: str) -> str:
@@ -104,7 +102,3 @@ def uniprot_gene_mapper() -> StepReport:
     logger.info(f"Out of {ensembl_count} ENSEMBL IDs, {ensembl_missing_count} are missing")
     logger.info(f"Out of {ncbigene_count} NCBIGene IDs, {ncbigene_missing_count} are missing")
     return report
-
-
-if __name__ == "__main__":
-    uniprot_gene_mapper().log_summary(logger)

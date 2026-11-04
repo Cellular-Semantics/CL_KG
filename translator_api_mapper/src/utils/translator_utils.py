@@ -5,9 +5,7 @@ from typing import Dict, List, Optional
 import requests
 from SPARQLWrapper import JSON, SPARQLWrapper
 
-logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 PREFIXES = {
     "uniprot": "https://identifiers.org/uniprot/",
@@ -33,11 +31,6 @@ BATCH_SIZE = 1000
 REQUEST_TIMEOUT = (10, 300)
 QUERY_TIMEOUT_SECONDS = 300
 
-# Configure the SPARQL query endpoint
-sparql_query = SPARQLWrapper(ENDPOINT_URL)
-sparql_query.setReturnFormat(JSON)
-sparql_query.setTimeout(QUERY_TIMEOUT_SECONDS)
-
 
 def build_sparql_query(prefix: str) -> str:
     return f"""
@@ -53,8 +46,11 @@ def run_query(query: str) -> List[str]:
 
     Errors propagate: callers must tell "query failed" apart from "no results".
     """
-    sparql_query.setQuery(query)
-    results = sparql_query.query().convert()
+    sparql = SPARQLWrapper(ENDPOINT_URL)
+    sparql.setReturnFormat(JSON)
+    sparql.setTimeout(QUERY_TIMEOUT_SECONDS)
+    sparql.setQuery(query)
+    results = sparql.query().convert()
     return [result["s"]["value"] for result in results["results"]["bindings"]]
 
 

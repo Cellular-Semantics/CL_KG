@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from gene_node_unifier.gene_node_unifier import gene_node_unifier
 from pr_uniprot_id_swapper.pr_uniprot_id_swapper import pr_uniprot_id_swapper
@@ -6,7 +7,26 @@ from uniprot_gene_mapper.uniprot_gene_mapper import uniprot_gene_mapper
 from utils.reporting import StepReport
 
 logger = logging.getLogger("pipeline_mapper")
-logger.setLevel(logging.INFO)
+
+# Top-level packages of this pipeline; their module loggers inherit INFO.
+PIPELINE_LOGGERS = (
+    "pipeline_mapper",
+    "gene_node_unifier",
+    "pr_uniprot_id_swapper",
+    "uniprot_gene_mapper",
+    "utils",
+)
+
+
+def configure_logging() -> None:
+    """Configure logging once: third-party libraries at WARNING, pipeline at INFO."""
+    logging.basicConfig(
+        level=logging.WARNING,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        stream=sys.stdout,
+    )
+    for name in PIPELINE_LOGGERS:
+        logging.getLogger(name).setLevel(logging.INFO)
 
 # Steps run in order and never abort the pipeline: each is safe to re-run, so a
 # failed batch is reported here and picked up by the next run.
@@ -20,6 +40,7 @@ STEPS = (
 )
 
 def main() -> None:
+    configure_logging()
     reports = []
     for name, step in STEPS:
         try:
