@@ -1,0 +1,20 @@
+# Project-wide ruff settings for all CL_KB modules.
+target-version = "py310"  # anndata2rdf, translator_api_mapper (Dockerfiles)
+
+# Each module's import root, so its own modules count as first-party.
+src = [
+    "anndata2rdf/src",
+    "translator_api_mapper/src",
+    "cl_kb_pipeline/src",
+    "bitmap_query_service",
+    "graph_query_service/src",
+    "cl_kb_mcp/src",
+]
+
+extend-exclude = ["anndata2rdf/.venv-anndata2rdf"]
+
+[per-file-target-version]
+"cl_kb_pipeline/**" = "py38"          # schema_validator CI job
+"bitmap_query_service/**" = "py313"   # Dockerfile
+"graph_query_service/**" = "py313"    # Dockerfile
+"cl_kb_mcp/**" = "py311"              # pyproject requires-python
