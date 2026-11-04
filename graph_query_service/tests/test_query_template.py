@@ -7,6 +7,8 @@ def test_build_query_uses_parameterized_cell_labels():
     assert "WITH $cell_labels AS cell_labels" in query
     assert "MATCH (n:Cell)-[:composed_primarily_of]-(child:Cell_cluster)" in query
     assert "OPTIONAL MATCH (child)-[:has_source]->(dataset:Dataset)" in query
+    # MATCH already requires :Cell_cluster; no redundant re-check.
+    assert "WHERE child:Cell_cluster" not in query
 
 
 def test_summarize_cell_labels_includes_count():

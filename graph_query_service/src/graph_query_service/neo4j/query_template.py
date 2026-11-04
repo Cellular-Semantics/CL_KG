@@ -4,7 +4,6 @@ def build_query() -> str:
         "MATCH (n:Cell)-[:composed_primarily_of]-(child:Cell_cluster)\n"
         "WHERE ANY(label IN n.label WHERE label IN cell_labels)\n"
         "WITH DISTINCT child\n"
-        "WHERE child:Cell_cluster\n"
         "OPTIONAL MATCH (child)-[:has_source]->(dataset:Dataset)\n"
         "RETURN child, dataset\n"
         "ORDER BY child.iri"
