@@ -4,16 +4,18 @@ import re
 import uuid
 from dataclasses import dataclass
 from typing import Dict, Iterable, Optional, Tuple
-from urllib.parse import unquote
 
 import cellxgene_census
 import pandas as pd
+from pandasaurus_cxg.graph_generator.graph_generator_utils import ncname_safe
 from pyroaring import BitMap
-from rdflib import RDF, RDFS, URIRef
+from rdflib import DCTERMS, RDF, RDFS, Namespace, URIRef
 
 logger = logging.getLogger(__name__)
 
 CELL_CLUSTER_CLASS = URIRef("http://purl.obolibrary.org/obo/PCL_0010001")
+# Namespace pandasaurus_cxg's GraphGenerator uses for obs-column and dataset predicates.
+DEFAULT_GRAPH_NS = Namespace("http://example.org/")
 UUID_PATTERN = re.compile(
     r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
 )
@@ -38,7 +40,8 @@ def build_cluster_bitmaps(aea, gg, output_dir: str) -> int:
         return 0
 
     graph = _get_rdf_graph(gg)
-    records = list(iter_cluster_bitmap_records(graph))
+    ns = getattr(gg, "ns", DEFAULT_GRAPH_NS)
+    records = list(iter_cluster_bitmap_records(graph, ns))
     if not records:
         logger.warning("Skipping bitmap build: no cluster bitmap records found in RDF graph.")
         return 0
@@ -100,28 +103,35 @@ def build_cluster_bitmaps(aea, gg, output_dir: str) -> int:
     return bitmap_count
 
 
-def iter_cluster_bitmap_records(graph) -> Iterable[ClusterBitmapRecord]:
+def iter_cluster_bitmap_records(
+    graph, ns: Namespace = DEFAULT_GRAPH_NS
+) -> Iterable[ClusterBitmapRecord]:
+    """Yield one record per cell cluster node that has everything needed for a bitmap.
+
+    Predicates are matched by exact IRI, mirroring how pandasaurus_cxg's GraphGenerator
+    writes them: obs columns as ns[ncname_safe(column)], dataset link as dcterms:source,
+    cluster label as rdfs:label.
+    """
     for cluster_node in graph.subjects(RDF.type, CELL_CLUSTER_CLASS):
-        author_label_column = _get_first_literal(graph, cluster_node, "author_label_column")
+        author_label_column = _get_literal(graph, cluster_node, ns.author_label_column)
         if not author_label_column:
             continue
 
-        dataset_node = _get_first_related_node(
-            graph, cluster_node, "has_source", "source"
-        )
-        if dataset_node is None:
+        dataset_node = graph.value(cluster_node, DCTERMS.source)
+        if not isinstance(dataset_node, URIRef):
             continue
 
-        census_dataset_id = _get_first_literal(graph, dataset_node, "census_dataset_id")
+        census_dataset_id = _get_literal(graph, dataset_node, ns.census_dataset_id)
         if not census_dataset_id:
             continue
 
         census_version = (
-            _get_first_literal(graph, dataset_node, "census_version_cached") or "stable"
+            _get_literal(graph, dataset_node, ns.census_version_cached) or "stable"
         )
-        cluster_label = _get_cluster_label(graph, cluster_node)
-        author_label_value = _get_cluster_author_value(
-            graph, cluster_node, author_label_column, cluster_label
+        cluster_label = _get_literal(graph, cluster_node, RDFS.label)
+        author_label_value = (
+            _get_literal(graph, cluster_node, ns[ncname_safe(author_label_column)])
+            or cluster_label
         )
         if not cluster_label or not author_label_value:
             continue
@@ -200,48 +210,6 @@ def _get_rdf_graph(gg):
     raise AttributeError("GraphGenerator does not expose an RDF graph via 'rdf_graph' or 'graph'.")
 
 
-def _get_cluster_label(graph, cluster_node) -> Optional[str]:
-    label = _get_first_literal(graph, cluster_node, "label")
-    if label:
-        return label
-    for obj in graph.objects(cluster_node, RDFS.label):
-        return str(obj)
-    label_rdfs = _get_first_literal(graph, cluster_node, "label_rdfs")
-    if label_rdfs:
-        return label_rdfs
-    return None
-
-
-def _get_cluster_author_value(
-    graph, cluster_node, author_label_column: str, fallback_label: Optional[str]
-) -> Optional[str]:
-    author_value = _get_first_literal(graph, cluster_node, author_label_column)
-    return author_value or fallback_label
-
-
-def _get_first_related_node(graph, subject, *predicate_names: str):
-    for predicate, obj in graph.predicate_objects(subject):
-        if any(
-            _predicate_matches(predicate, predicate_name)
-            for predicate_name in predicate_names
-        ) and isinstance(obj, URIRef):
-            return obj
-    return None
-
-
-def _get_first_literal(graph, subject, predicate_name: str) -> Optional[str]:
-    for predicate, obj in graph.predicate_objects(subject):
-        if _predicate_matches(predicate, predicate_name):
-            return str(obj)
-    return None
-
-
-def _predicate_matches(predicate: URIRef, predicate_name: str) -> bool:
-    predicate_text = unquote(str(predicate))
-    predicate_key = _predicate_key(predicate_text)
-    target_key = _predicate_key(predicate_name)
-    return predicate_key == target_key or predicate_text.endswith(predicate_name)
-
-
-def _predicate_key(value: str) -> str:
-    return value.rsplit("#", 1)[-1].rsplit("/", 1)[-1]
+def _get_literal(graph, subject, predicate: URIRef) -> Optional[str]:
+    value = graph.value(subject, predicate)
+    return None if value is None else str(value)
