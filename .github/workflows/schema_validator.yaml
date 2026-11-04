@@ -5,6 +5,9 @@ on:
     branches: [ main ]
     paths:
       - 'cl_kb_pipeline/config/dumps/neo4j2owl-config.yaml'
+      - 'cl_kb_pipeline/config/dumps/neo4j2owl_config_schema.json'
+      - 'cl_kb_pipeline/src/**'
+      - '.github/workflows/schema_validator.yaml'
 permissions:
     pull-requests: write
 
