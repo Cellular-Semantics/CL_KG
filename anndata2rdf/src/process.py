@@ -1,3 +1,4 @@
+import glob
 import logging
 import os
 import sys
@@ -43,6 +44,24 @@ def configure_logging() -> None:
         logging.getLogger(name).setLevel(logging.INFO)
 
 
+def remove_stale_graphs(graph_dir: str, matrix_id: str, current_graph_path: str) -> None:
+    """Delete every '<matrix_id>__*.owl' graph in graph_dir except current_graph_path.
+
+    Called only after the current graph has been written, so a failed download or
+    generation never leaves a dataset without a graph.
+    """
+    if not os.path.exists(current_graph_path):
+        logger.warning(
+            f"Expected RDF graph '{current_graph_path}' was not written; "
+            f"keeping previous graph versions for {matrix_id}."
+        )
+        return
+    current = os.path.abspath(current_graph_path)
+    for path in glob.glob(os.path.join(graph_dir, f"{matrix_id}__*.owl")):
+        if os.path.abspath(path) != current:
+            delete_file(path)
+
+
 def main():
     configure_logging()
     cxg_author_cell_type_yaml = generate_author_cell_type_config(CURATED_DATA_DIR)
@@ -65,9 +84,7 @@ def main():
         if os.path.exists(rdf_output_path + ".owl"):
             logger.info(f"RDF graph '{rdf_output_path}' already exists. Skipping process.")
         else:
-            dataset_path = download_dataset_with_url(
-                matrix_id, dataset_url, DATASET_DIR, GRAPH_DIR
-            )
+            dataset_path = download_dataset_with_url(matrix_id, dataset_url, DATASET_DIR)
             if dataset_path is None:
                 logger.error(
                     f"Failed to download dataset '{matrix_id}'. Skipping this dataset."
@@ -81,6 +98,7 @@ def main():
                 BITMAP_DIR,
             )
             delete_file(dataset_path)
+            remove_stale_graphs(GRAPH_DIR, matrix_id, rdf_output_path + ".owl")
 
 
 if __name__ == "__main__":
