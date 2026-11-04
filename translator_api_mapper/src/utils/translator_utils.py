@@ -28,9 +28,15 @@ RO_0003000 = "http://purl.obolibrary.org/obo/RO_0003000"
 
 BATCH_SIZE = 1000
 
+# (connect, read) seconds. Reads are generous: large update batches and
+# 20k-CURIE normalization requests can take minutes.
+REQUEST_TIMEOUT = (10, 300)
+QUERY_TIMEOUT_SECONDS = 300
+
 # Configure the SPARQL query endpoint
 sparql_query = SPARQLWrapper(ENDPOINT_URL)
 sparql_query.setReturnFormat(JSON)
+sparql_query.setTimeout(QUERY_TIMEOUT_SECONDS)
 
 
 def build_sparql_query(prefix: str) -> str:
@@ -43,15 +49,32 @@ def build_sparql_query(prefix: str) -> str:
 
 
 def run_query(query: str) -> List[str]:
-    """Executes a SPARQL SELECT query and returns the results as a list of URIs."""
-    sparql_query.setQuery(query)
+    """Executes a SPARQL SELECT query and returns the results as a list of URIs.
 
+    Errors propagate: callers must tell "query failed" apart from "no results".
+    """
+    sparql_query.setQuery(query)
+    results = sparql_query.query().convert()
+    return [result["s"]["value"] for result in results["results"]["bindings"]]
+
+
+def post_sparql_update(update: str) -> Optional[str]:
+    """POST a SPARQL update to the RDF4J repository.
+
+    Returns None on success, otherwise a short error description.
+    """
     try:
-        results = sparql_query.query().convert()
-        return [result["s"]["value"] for result in results["results"]["bindings"]]
-    except Exception as e:
-        logger.error(f"An error occurred: {e}")
-        return []
+        response = requests.post(
+            f"{ENDPOINT_URL}/statements",
+            data=update,
+            headers={"Content-Type": "application/sparql-update"},
+            timeout=REQUEST_TIMEOUT,
+        )
+    except requests.exceptions.RequestException as e:
+        return f"request failed: {e}"
+    if response.status_code != 204:
+        return f"HTTP {response.status_code}: {response.text[:500]}"
+    return None
 
 
 def uri_to_curie(uri_list: List[str]) -> List[str]:
@@ -85,19 +108,18 @@ def get_normalized_curies(
                          ['ENSEMBL', 'HGNC', 'UMLS', 'OMIM', 'UniProtKB', 'PR']
                        If None or empty, no filtering is applied.
 
+    Raises:
+      requests.RequestException if the service fails or returns an error status.
+
     Returns:
       A dictionary mapping each input CURIE to a list of normalized identifier strings
       that contain *any* of the filter_keywords (or all identifiers if no keywords given).
     """
     normalized_curies: Dict[str, List[str]] = {}
-    response = requests.post(NODE_NORMALIZATION_URL, json={"curies": curie_list})
-
-    if response.status_code != 200:
-        logger.error(
-            f"Error fetching normalized CURIEs. Status code: {response.status_code}"
-        )
-        return normalized_curies
-
+    response = requests.post(
+        NODE_NORMALIZATION_URL, json={"curies": curie_list}, timeout=REQUEST_TIMEOUT
+    )
+    response.raise_for_status()
     result_json = response.json()
 
     def identifier_allowed(identifier: str) -> bool:

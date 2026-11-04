@@ -3,11 +3,12 @@ from typing import Dict, List
 
 import requests
 from utils.sparql_terms import OIO_HAS_DBXREF, InvalidTermError, curie_iri, literal
+from utils.reporting import BatchResult, StepReport
 from utils.translator_utils import (
-    ENDPOINT_URL,
     PREFIXES,
     build_sparql_query,
     get_normalized_curies,
+    post_sparql_update,
     run_query,
     uri_to_curie,
 )
@@ -48,7 +49,7 @@ WHERE {{
 }}"""
 
 
-def update_gene_nodes_batch(update_dict: Dict[str, List[str]]):
+def update_gene_nodes_batch(update_dict: Dict[str, List[str]]) -> BatchResult:
     """
     Combines multiple SPARQL updates into one request.
 
@@ -57,34 +58,31 @@ def update_gene_nodes_batch(update_dict: Dict[str, List[str]]):
                           (the first element will be used for the primary update, the rest
                            will be inserted as additional hasDbXref values).
     """
-    endpoint_url = f"{ENDPOINT_URL}/statements"
-    headers = {"Content-Type": "application/sparql-update"}
-
+    result = BatchResult()
     update_statements = []
     for ensembl_id, ncbigene_ids in update_dict.items():
         try:
             update_statements.append(build_gene_unify_statement(ensembl_id, ncbigene_ids))
         except InvalidTermError as e:
             logger.warning(f"Skipping gene node {ensembl_id}: {e}")
+            result.skipped += 1
     if not update_statements:
-        return
+        return result
 
-    full_query = " ;\n".join(update_statements)
+    result.statements = len(update_statements)
+    result.error = post_sparql_update(" ;\n".join(update_statements))
+    if result.error is None:
+        logger.info(f"Successfully updated a batch of {result.statements} updates.")
+    return result
 
+
+def gene_node_unifier() -> StepReport:
+    report = StepReport("gene_node_unifier")
     try:
-        response = requests.post(endpoint_url, data=full_query, headers=headers)
-        if response.status_code == 204:
-            logger.info(f"Successfully updated a batch of {len(update_statements)} updates.")
-        else:
-            logger.error(
-                f"Batch update failed. Status Code: {response.status_code} - {response.text}"
-            )
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Batch update request failed: {e}")
-
-
-def gene_node_unifier():
-    ensembl_terms = run_query(build_sparql_query(PREFIXES['ensembl']))
+        ensembl_terms = run_query(build_sparql_query(PREFIXES["ensembl"]))
+    except Exception as e:
+        report.fail(f"querying Ensembl gene nodes failed: {e}")
+        return report
     ensembl_curie_list = uri_to_curie(ensembl_terms)
 
     # Process the curies in batches to avoid API limitations
@@ -98,20 +96,25 @@ def gene_node_unifier():
         # is kept as a hasDbXref literal. Genes with no NCBIGene mapping get their own
         # Ensembl ID as [0], which rewrites the node onto itself. Pinned by
         # tests/test_gene_node_unifier_selection.py.
-        batch_result = get_normalized_curies(
-            batch, source_field="equivalent_identifiers"
-        )
+        try:
+            batch_result = get_normalized_curies(
+                batch, source_field="equivalent_identifiers"
+            )
+        except requests.exceptions.RequestException as e:
+            report.fail(f"normalizing CURIEs {start}-{start + len(batch) - 1} failed: {e}")
+            continue
         normalized_curie_dict.update(batch_result)
+
     # Batch the SPARQL updates into groups and send them together
     update_batch_size = 1000
     update_items = list(normalized_curie_dict.items())
-    for i in range(0, len(update_items), update_batch_size):
+    for batch_no, i in enumerate(range(0, len(update_items), update_batch_size), 1):
         batch_dict = dict(update_items[i : i + update_batch_size])
-        update_gene_nodes_batch(batch_dict)
+        report.add_batch(batch_no, update_gene_nodes_batch(batch_dict))
 
     logger.info("Gene node unification process completed.")
-    return normalized_curie_dict
+    return report
 
 
 if __name__ == "__main__":
-    gene_node_unifier()
+    gene_node_unifier().log_summary(logger)

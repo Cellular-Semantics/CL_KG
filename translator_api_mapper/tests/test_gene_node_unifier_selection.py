@@ -21,6 +21,10 @@ def _normalization_response(curie, identifiers):
         status_code = 200
 
         @staticmethod
+        def raise_for_status():
+            pass
+
+        @staticmethod
         def json():
             return {
                 curie: {

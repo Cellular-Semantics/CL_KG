@@ -1,10 +1,10 @@
 import logging
 from typing import List, Tuple
 
-import requests
 from SPARQLWrapper import JSON, SPARQLWrapper
 from utils.sparql_terms import OIO_HAS_DBXREF, InvalidTermError, curie_iri, iri, literal
-from utils.translator_utils import ENDPOINT_URL
+from utils.reporting import BatchResult, StepReport
+from utils.translator_utils import QUERY_TIMEOUT_SECONDS, post_sparql_update
 
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
@@ -58,6 +58,7 @@ ORDER BY ?pr
 def run_query(query: str):
     sparql = SPARQLWrapper(UBERGRAPH_ENDPOINT)
     sparql.setReturnFormat(JSON)
+    sparql.setTimeout(QUERY_TIMEOUT_SECONDS)
     sparql.setQuery(query)
     response = sparql.query().convert()
     return response["results"]["bindings"]
@@ -115,14 +116,12 @@ WHERE {{
 }}"""
 
 
-def update_triples_batch(pairs: List[Tuple[str, str]]):
+def update_triples_batch(pairs: List[Tuple[str, str]]) -> BatchResult:
     """
     Renames PR nodes to their UniProtKB IRIs and rewrites the matching xref.
     Pairs with unusable values are skipped individually.
     """
-    endpoint_url = f"{ENDPOINT_URL}/statements"
-    headers = {"Content-Type": "application/sparql-update"}
-
+    result = BatchResult()
     update_statements = []
     for pr_iri, xref_curie in pairs:
         try:
@@ -132,34 +131,35 @@ def update_triples_batch(pairs: List[Tuple[str, str]]):
             ]
         except InvalidTermError as e:
             logger.warning(f"Skipping {pr_iri} -> {xref_curie}: {e}")
+            result.skipped += 1
             continue
         update_statements.extend(statements)
     if not update_statements:
-        return
+        return result
 
-    full_query = " ;\n".join(update_statements)
+    result.statements = len(update_statements)
+    result.error = post_sparql_update(" ;\n".join(update_statements))
+    if result.error is None:
+        logger.info(f"Successfully updated a batch of {result.statements // 2} updates.")
+    return result
+
+
+def pr_uniprot_id_swapper() -> StepReport:
+    report = StepReport("pr_uniprot_id_swapper")
     try:
-        response = requests.post(endpoint_url, data=full_query, headers=headers)
-        if response.status_code == 204:
-            logger.info(f"Successfully updated a batch of {len(update_statements) // 2} updates.")
-        else:
-            logger.error(
-                f"Batch update failed. Status Code: {response.status_code} - {response.text}"
-            )
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Batch update request failed: {e}")
-
-
-def pr_uniprot_id_swapper():
-    first = extract_tuples(run_query(FIRST_QUERY), key_pr="mpr")
-    second = extract_tuples(run_query(SECOND_QUERY))
+        first = extract_tuples(run_query(FIRST_QUERY), key_pr="mpr")
+        second = extract_tuples(run_query(SECOND_QUERY))
+    except Exception as e:
+        report.fail(f"querying Ubergraph for PR/UniProtKB pairs failed: {e}")
+        return report
     all_tuples = first + second
 
     update_batch_size = 1000
-    for i in range(0, len(all_tuples), update_batch_size):
+    for batch_no, i in enumerate(range(0, len(all_tuples), update_batch_size), 1):
         batch_list = all_tuples[i : i + update_batch_size]
-        update_triples_batch(batch_list)
+        report.add_batch(batch_no, update_triples_batch(batch_list))
+    return report
 
 
 if __name__ == "__main__":
-    pr_uniprot_id_swapper()
+    pr_uniprot_id_swapper().log_summary(logger)
