@@ -3,6 +3,7 @@ from typing import List, Tuple
 
 import requests
 from SPARQLWrapper import JSON, SPARQLWrapper
+from utils.sparql_terms import OIO_HAS_DBXREF, InvalidTermError, curie_iri, iri, literal
 from utils.translator_utils import ENDPOINT_URL
 
 logging.basicConfig(level=logging.WARNING)
@@ -78,17 +79,18 @@ def generate_rename_query(pr_iri: str, xref_curie: str) -> str:
     Generates a SPARQL UPDATE that:
       - deletes all triples for <pr_iri>
       - reinserts them under the new UniProtKB IRI
-      (filtering out the old hasDbXref)
+    Raises InvalidTermError for unusable values.
     """
-    return f"""
-DELETE {{
-  <{pr_iri}> ?p ?o .
+    pr = iri(pr_iri)
+    uniprot = curie_iri(xref_curie)
+    return f"""DELETE {{
+    {pr} ?p ?o .
 }}
 INSERT {{
-  {xref_curie} ?p ?o .
+    {uniprot} ?p ?o .
 }}
 WHERE {{
-  <{pr_iri}> ?p ?o .
+    {pr} ?p ?o .
 }}"""
 
 
@@ -97,43 +99,49 @@ def generate_xref_update_query(pr_iri: str, xref_curie: str) -> str:
     Generates a SPARQL UPDATE that:
       - deletes the old oio:hasDbXref "<xref_curie>"
       - reinserts it as oio:hasDbXref "PR:<suffix>"
+    Raises InvalidTermError for unusable values.
     """
-    pr_id = pr_iri.rsplit("_", 1)[-1]
-    new_xref = f"PR:{pr_id}"
-    return f"""
-DELETE {{
-  {xref_curie} oio:hasDbXref "{xref_curie}" .
+    uniprot = curie_iri(xref_curie)
+    old_xref = literal(xref_curie)
+    new_xref = literal(f"PR:{pr_iri.rsplit('_', 1)[-1]}")
+    return f"""DELETE {{
+    {uniprot} {OIO_HAS_DBXREF} {old_xref} .
 }}
 INSERT {{
-  {xref_curie} oio:hasDbXref "{new_xref}" .
+    {uniprot} {OIO_HAS_DBXREF} {new_xref} .
 }}
 WHERE {{
-  {xref_curie} oio:hasDbXref "{xref_curie}" .
+    {uniprot} {OIO_HAS_DBXREF} {old_xref} .
 }}"""
 
 
 def update_triples_batch(pairs: List[Tuple[str, str]]):
     """
-    Updates triples
+    Renames PR nodes to their UniProtKB IRIs and rewrites the matching xref.
+    Pairs with unusable values are skipped individually.
     """
     endpoint_url = f"{ENDPOINT_URL}/statements"
     headers = {"Content-Type": "application/sparql-update"}
 
-    prefixes = f"""
-    PREFIX PR: <http://purl.obolibrary.org/obo/PR_>
-    PREFIX UniProtKB: <https://identifiers.org/uniprot/>
-    PREFIX oio: <http://www.geneontology.org/formats/oboInOwl#>
-    """
     update_statements = []
     for pr_iri, xref_curie in pairs:
-        update_statements.append(generate_rename_query(pr_iri, xref_curie).strip())
-        update_statements.append(generate_xref_update_query(pr_iri, xref_curie).strip())
+        try:
+            statements = [
+                generate_rename_query(pr_iri, xref_curie),
+                generate_xref_update_query(pr_iri, xref_curie),
+            ]
+        except InvalidTermError as e:
+            logger.warning(f"Skipping {pr_iri} -> {xref_curie}: {e}")
+            continue
+        update_statements.extend(statements)
+    if not update_statements:
+        return
 
-    full_query = prefixes + "\n" + " ;\n".join(update_statements)
+    full_query = " ;\n".join(update_statements)
     try:
         response = requests.post(endpoint_url, data=full_query, headers=headers)
         if response.status_code == 204:
-            logger.info(f"Successfully updated a batch of {len(pairs)} updates.")
+            logger.info(f"Successfully updated a batch of {len(update_statements) // 2} updates.")
         else:
             logger.error(
                 f"Batch update failed. Status Code: {response.status_code} - {response.text}"

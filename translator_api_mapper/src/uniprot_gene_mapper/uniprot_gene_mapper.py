@@ -2,6 +2,7 @@ import logging
 from typing import List
 
 import requests
+from utils.sparql_terms import InvalidTermError, curie_iri, iri
 from utils.translator_utils import (
     BATCH_SIZE,
     ENDPOINT_URL,
@@ -18,6 +19,11 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
+def build_gene_protein_triple(gene_curie: str, uniprot_curie: str) -> str:
+    """Return '<gene> RO:0003000 <protein> .' (gene produces protein) with safe IRIs."""
+    return f"{curie_iri(gene_curie)} {iri(RO_0003000)} {curie_iri(uniprot_curie)} ."
+
+
 def insert_triples_in_batch(triples: List[str]):
     """Inserts a batch of RDF triples into the RDF4J repository."""
     endpoint_url = f"{ENDPOINT_URL}/statements"
@@ -26,16 +32,9 @@ def insert_triples_in_batch(triples: List[str]):
     if not triples:
         return
 
-    # Use the prefix variables in the SPARQL INSERT query
-    insert_query = f"""
-    PREFIX RO: <http://purl.obolibrary.org/obo/RO_>
-    PREFIX ensembl: <{PREFIXES['ensembl']}>
-    PREFIX uniprot: <{PREFIXES['uniprot']}>
-
-    INSERT DATA {{
-        {' '.join(triples)}
-    }}
-    """
+    insert_query = f"""INSERT DATA {{
+    {' '.join(triples)}
+}}"""
 
     try:
         response = requests.post(endpoint_url, data=insert_query, headers=headers)
@@ -74,17 +73,17 @@ def uniprot_gene_mapper():
 
     for uni, gene_list in normalized_curie_dict.items():
         for gene_curie in gene_list:
-            # Convert the CURIE back to a full URI using the prefix variables
             if gene_curie.startswith("ENSEMBL:"):
-                gene_uri = gene_curie.replace("ENSEMBL:", PREFIXES["ensembl"])
                 ensembl_count += 1
             elif gene_curie.startswith("NCBIGene:"):
-                gene_uri = gene_curie.replace("NCBIGene:", PREFIXES["ncbigene"])
                 ncbigene_count += 1
-            uniprot_uri = uni.replace("UniProtKB:", PREFIXES["uniprot"])
 
             if gene_curie in gene_curie_list:
-                triple = f"<{gene_uri}> <{RO_0003000}> <{uniprot_uri}> ."
+                try:
+                    triple = build_gene_protein_triple(gene_curie, uni)
+                except InvalidTermError as e:
+                    logger.warning(f"Skipping {gene_curie} -> {uni}: {e}")
+                    continue
                 triples_batch.append(triple)
 
                 # Insert in batches

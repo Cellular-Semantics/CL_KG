@@ -2,6 +2,7 @@ import logging
 from typing import Dict, List
 
 import requests
+from utils.sparql_terms import OIO_HAS_DBXREF, InvalidTermError, curie_iri, literal
 from utils.translator_utils import (
     ENDPOINT_URL,
     PREFIXES,
@@ -16,6 +17,37 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
+def build_gene_unify_statement(ensembl_curie: str, ncbigene_ids: List[str]) -> str:
+    """
+    Build one SPARQL update that moves all triples of an Ensembl gene node onto
+    its primary NCBIGene node and records the old IDs as hasDbXref literals.
+
+    The first element of ncbigene_ids is the primary node; the rest become
+    additional hasDbXref values. Raises InvalidTermError for unusable IDs.
+    """
+    if not ncbigene_ids:
+        raise InvalidTermError(f"No target identifiers for {ensembl_curie!r}")
+    ensembl = curie_iri(ensembl_curie)
+    primary = curie_iri(ncbigene_ids[0])
+    xref_triples = "".join(
+        f"\n    {primary} {OIO_HAS_DBXREF} {literal(xref)} ."
+        for xref in [ensembl_curie, *ncbigene_ids[1:]]
+    )
+    return f"""DELETE {{
+    {ensembl} ?p ?o .
+    ?s2 ?p2 {ensembl} .
+}}
+INSERT {{
+    {primary} ?p ?o .
+    ?s2 ?p2 {primary} .{xref_triples}
+}}
+WHERE {{
+    {{ {ensembl} ?p ?o . }}
+    UNION
+    {{ ?s2 ?p2 {ensembl} . }}
+}}"""
+
+
 def update_gene_nodes_batch(update_dict: Dict[str, List[str]]):
     """
     Combines multiple SPARQL updates into one request.
@@ -28,57 +60,21 @@ def update_gene_nodes_batch(update_dict: Dict[str, List[str]]):
     endpoint_url = f"{ENDPOINT_URL}/statements"
     headers = {"Content-Type": "application/sparql-update"}
 
-    # Build the common prefix section
-    prefixes = f"""
-    PREFIX ENSEMBL: <{PREFIXES['ensembl']}>
-    PREFIX NCBIGene: <{PREFIXES['ncbigene']}>
-    PREFIX owl: <http://www.w3.org/2002/07/owl#>
-    PREFIX oio: <http://www.geneontology.org/formats/oboInOwl#>
-    """
-
     update_statements = []
     for ensembl_id, ncbigene_ids in update_dict.items():
-        # Primary NCBIGene id
-        primary = ncbigene_ids[0]
+        try:
+            update_statements.append(build_gene_unify_statement(ensembl_id, ncbigene_ids))
+        except InvalidTermError as e:
+            logger.warning(f"Skipping gene node {ensembl_id}: {e}")
+    if not update_statements:
+        return
 
-        # Build additional hasDbXref triples for any extra IDs
-        extra_xrefs = ncbigene_ids[1:]
-        extra_triples = ""
-        if extra_xrefs:
-            extras = "\n".join(
-                f'          {primary} oio:hasDbXref "{xref}" .' for xref in extra_xrefs
-            )
-            extra_triples = "\n" + extras
-
-        stmt = f"""
-        DELETE {{
-          {ensembl_id} ?p ?o .
-          ?s2 ?p2 {ensembl_id} .
-        }}
-        INSERT {{
-          {primary} ?p ?o .
-          ?s2 ?p2 {primary} .
-          {primary} oio:hasDbXref "{ensembl_id}" .{extra_triples}
-        }}
-        WHERE {{
-          {{
-            {ensembl_id} ?p ?o .
-          }}
-          UNION
-          {{
-            ?s2 ?p2 {ensembl_id} .
-          }}
-        }}
-        """
-        update_statements.append(stmt.strip())
-
-    # Combine all updates with semicolon separators
-    full_query = prefixes + "\n" + " ;\n".join(update_statements)
+    full_query = " ;\n".join(update_statements)
 
     try:
         response = requests.post(endpoint_url, data=full_query, headers=headers)
         if response.status_code == 204:
-            logger.info(f"Successfully updated a batch of {len(update_dict)} updates.")
+            logger.info(f"Successfully updated a batch of {len(update_statements)} updates.")
         else:
             logger.error(
                 f"Batch update failed. Status Code: {response.status_code} - {response.text}"
