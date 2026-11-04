@@ -18,34 +18,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-def download_dataset_with_id(dataset_id: str, file_path: Optional[str] = None) -> str:
-    """
-    Download an AnnData dataset with the specified ID.
-
-    Args:
-        dataset_id (str): The ID of the dataset to download.
-        file_path (Optional[str], optional): The file path to save the downloaded AnnData. If not provided,
-            the dataset_id will be used as the file name. Defaults to None.
-
-    Returns:
-        str: The path to the downloaded file
-    """
-    anndata_file_path = f"{dataset_id}.h5ad" if file_path is None else file_path
-    anndata_file_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        os.path.join("dataset", anndata_file_path),
-    )
-    if os.path.exists(anndata_file_path):
-        logger.info(f"File '{anndata_file_path}' already exists. Skipping download.")
-    else:
-        logger.info(
-            f"Downloading dataset with ID '{dataset_id} to {anndata_file_path}'..."
-        )
-        cellxgene_census.download_source_h5ad(dataset_id, to_path=anndata_file_path)
-        logger.info(f"Download complete. File saved at '{anndata_file_path}'.")
-    return anndata_file_path
-
-
 def download_dataset_with_url(
     matrix_id: str, dataset_download_url: str, file_path: Optional[str] = None
 ) -> Optional[str]:
