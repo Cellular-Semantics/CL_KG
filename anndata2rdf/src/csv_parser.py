@@ -131,13 +131,10 @@ def write_yaml_file(yaml_data, file_path):
         logger.info(f"{file_path} written")
 
 
-def generate_author_cell_type_config(curated_data_folder: str = "curated_data"):
+def generate_author_cell_type_config(curated_data_dir: str):
     all_yaml_data = []
-    data_folder = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)), curated_data_folder
-    )
-    for file_name in os.listdir(data_folder):
-        file_path = os.path.join(data_folder, file_name)
+    for file_name in os.listdir(curated_data_dir):
+        file_path = os.path.join(curated_data_dir, file_name)
 
         if file_name.endswith(".csv"):
             df = pd.read_csv(file_path)

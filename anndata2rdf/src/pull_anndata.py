@@ -19,43 +19,33 @@ logger = logging.getLogger(__name__)
 
 
 def download_dataset_with_url(
-    matrix_id: str, dataset_download_url: str, file_path: Optional[str] = None
+    matrix_id: str, dataset_download_url: str, dataset_dir: str, graph_dir: str
 ) -> Optional[str]:
     """
     Download an AnnData dataset from the specified URL in chunks with retry logic.
 
     This function downloads large AnnData datasets in 8 MB chunks to avoid memory overflow issues.
     If the download is interrupted, the function retries up to a maximum number of attempts.
-    Incomplete files are deleted before retrying to ensure data integrity. If a file path is not specified,
-    the dataset ID is used as the file name, and the file saved in the 'dataset' directory.
-    The function checks if a file with the same prefix already exists in the 'graph' directory. If an older version is
+    Incomplete files are deleted before retrying to ensure data integrity. The file is saved
+    in dataset_dir as '<matrix_id>__<download_id>.h5ad'.
+    The function checks if a file with the same prefix already exists in graph_dir. If an older version is
     found, it is deleted and replaced with the new download.
 
     Args:
         matrix_id: A unique identifier for the matrix associated with the dataset.
         dataset_download_url: The URL from which the dataset will be downloaded.
-        file_path: The file path to save the downloaded AnnData.
-            If not provided, the dataset ID will be used as the file name. Defaults to None.
+        dataset_dir: Directory to save the downloaded AnnData file in.
+        graph_dir: Directory holding previously generated RDF graphs.
 
     Returns:
         The path to the downloaded file if successful, or None if the
             download failed after the maximum number of retries.
     """
     download_id = get_dataset_id_from_link(dataset_download_url)
-    anndata_file_path = (
-        f"{matrix_id}__{download_id}.h5ad" if file_path is None else file_path
-    )
-    anndata_file_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        os.path.join("dataset", anndata_file_path),
-    )
-    directory = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        "graph",
-    )
+    anndata_file_path = os.path.join(dataset_dir, f"{matrix_id}__{download_id}.h5ad")
 
     # Check if any owl file with the prefix exists
-    matching_files = check_file_exists_based_on_prefix(directory, matrix_id)
+    matching_files = check_file_exists_based_on_prefix(graph_dir, matrix_id)
 
     if matching_files:
         rdf_graph_path = matching_files[0]

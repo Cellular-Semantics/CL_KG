@@ -20,15 +20,14 @@ PIPELINE_LOGGERS = (
     "bitmap_builder",
 )
 
-CONFIG_DIRECTORY = "config"
-CURATED_DATA_DIRECTORY = "curated_data"
-DATASET_DIRECTORY = "dataset"
-GRAPH_DIRECTORY = "graph"
-BITMAP_DIRECTORY = "bitmaps"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_DIR = os.path.join(BASE_DIR, "config")
+CURATED_DATA_DIR = os.path.join(BASE_DIR, "curated_data")
+DATASET_DIR = os.path.join(BASE_DIR, "dataset")
+GRAPH_DIR = os.path.join(BASE_DIR, "graph")
+BITMAP_DIR = os.path.join(BASE_DIR, "bitmaps")
 
 CXG_AUTHOR_CELL_TYPE_CONFIG = "cxg_author_cell_type.yaml"
-GENERATE_RDF_CONFIG = "generate_rdf_config.yaml"
-
 
 def configure_logging() -> None:
     """Configure logging once for the whole pipeline.
@@ -46,12 +45,10 @@ def configure_logging() -> None:
 
 def main():
     configure_logging()
-    cxg_author_cell_type_yaml = generate_author_cell_type_config()
-    output_file_path = os.path.join(
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), CONFIG_DIRECTORY),
-        CXG_AUTHOR_CELL_TYPE_CONFIG,
+    cxg_author_cell_type_yaml = generate_author_cell_type_config(CURATED_DATA_DIR)
+    write_yaml_file(
+        cxg_author_cell_type_yaml, os.path.join(CONFIG_DIR, CXG_AUTHOR_CELL_TYPE_CONFIG)
     )
-    write_yaml_file(cxg_author_cell_type_yaml, output_file_path)
     datasets = get_dataset_dict(cxg_author_cell_type_yaml)
     for dataset in datasets.items():
         matrix_id = dataset[0]
@@ -63,22 +60,14 @@ def main():
         }
         download_id = get_dataset_id_from_link(dataset_url)
 
-        rdf_output_path = os.path.join(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), GRAPH_DIRECTORY),
-            f"{matrix_id}__{download_id}",
-        )
-        bitmap_output_path = os.path.join(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), BITMAP_DIRECTORY),
-        )
-        h5ad_output_path = os.path.join(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), DATASET_DIRECTORY),
-            f"{matrix_id}",
-        )
+        rdf_output_path = os.path.join(GRAPH_DIR, f"{matrix_id}__{download_id}")
         logger.info(rdf_output_path)
         if os.path.exists(rdf_output_path + ".owl"):
             logger.info(f"RDF graph '{rdf_output_path}' already exists. Skipping process.")
         else:
-            dataset_path = download_dataset_with_url(matrix_id, dataset_url)
+            dataset_path = download_dataset_with_url(
+                matrix_id, dataset_url, DATASET_DIR, GRAPH_DIR
+            )
             if dataset_path is None:
                 logger.error(
                     f"Failed to download dataset '{matrix_id}'. Skipping this dataset."
@@ -89,7 +78,7 @@ def main():
                 author_cell_types,
                 rdf_output_path,
                 dataset_metadata,
-                bitmap_output_path,
+                BITMAP_DIR,
             )
             delete_file(dataset_path)
 
