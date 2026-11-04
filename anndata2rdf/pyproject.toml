@@ -1,0 +1,24 @@
+[project]
+name = "anndata2rdf"
+version = "0.1.0"
+description = "Builds RDF graphs and cluster bitmaps from curated CxG AnnData datasets"
+requires-python = ">=3.10,<3.11"  # matches the Dockerfile base image
+dependencies = [
+    "pandasaurus-cxg==0.2.9",
+    "cellxgene-census",
+    "pandas",
+    "pyroaring",
+    "PyYAML~=6.0.1",
+    "rdflib",     # imported directly by bitmap_builder
+    "requests",   # imported directly by csv_parser / pull_anndata
+    "setuptools<81",  # a dependency (eutils) still imports pkg_resources
+    "tqdm",
+]
+
+[dependency-groups]
+# Test-only: not installed in the Docker image (uv sync --no-dev).
+dev = ["pytest"]
+
+[tool.uv]
+# Scripts in src/ run directly (python src/process.py); not an installable package.
+package = false
