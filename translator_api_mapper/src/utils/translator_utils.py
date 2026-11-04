@@ -1,9 +1,9 @@
 import logging
 import os
-from typing import Dict, List, Optional
 
 import requests
 from SPARQLWrapper import JSON, SPARQLWrapper
+from SPARQLWrapper.SPARQLExceptions import SPARQLWrapperException
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +44,12 @@ def build_sparql_query(prefix: str) -> str:
     """
 
 
-def run_query(query: str) -> List[str]:
+# Errors a SPARQL SELECT can raise: network/timeouts (OSError incl. URLError),
+# endpoint errors (SPARQLWrapperException) and malformed results.
+QUERY_ERRORS = (OSError, SPARQLWrapperException, ValueError, KeyError)
+
+
+def run_query(query: str) -> list[str]:
     """Executes a SPARQL SELECT query and returns the results as a list of URIs.
 
     Errors propagate: callers must tell "query failed" apart from "no results".
@@ -57,7 +62,7 @@ def run_query(query: str) -> List[str]:
     return [result["s"]["value"] for result in results["results"]["bindings"]]
 
 
-def post_sparql_update(update: str) -> Optional[str]:
+def post_sparql_update(update: str) -> str | None:
     """POST a SPARQL update to the RDF4J repository.
 
     Returns None on success, otherwise a short error description.
@@ -76,7 +81,7 @@ def post_sparql_update(update: str) -> Optional[str]:
     return None
 
 
-def uri_to_curie(uri_list: List[str]) -> List[str]:
+def uri_to_curie(uri_list: list[str]) -> list[str]:
     """Converts RDF URIs to CURIEs for use with the Translator API."""
     curie_list = []
     for uri in uri_list:
@@ -90,10 +95,10 @@ def uri_to_curie(uri_list: List[str]) -> List[str]:
 
 
 def get_normalized_curies(
-    curie_list: List[str],
+    curie_list: list[str],
     source_field: str,
-    filter_keywords: Optional[List[str]] = None,
-) -> Dict[str, List[str]]:
+    filter_keywords: list[str] | None = None,
+) -> dict[str, list[str]]:
     """
     Retrieves normalized CURIEs for a given list of CURIEs using a specified field in the API response,
     and (optionally) filters them by any of the provided keywords.
@@ -114,7 +119,7 @@ def get_normalized_curies(
       A dictionary mapping each input CURIE to a list of normalized identifier strings
       that contain *any* of the filter_keywords (or all identifiers if no keywords given).
     """
-    normalized_curies: Dict[str, List[str]] = {}
+    normalized_curies: dict[str, list[str]] = {}
     response = requests.post(
         NODE_NORMALIZATION_URL, json={"curies": curie_list}, timeout=REQUEST_TIMEOUT
     )

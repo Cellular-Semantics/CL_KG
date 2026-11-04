@@ -1,10 +1,14 @@
 import logging
-from typing import List, Tuple
 
 from SPARQLWrapper import JSON, SPARQLWrapper
-from utils.sparql_terms import OIO_HAS_DBXREF, InvalidTermError, curie_iri, iri, literal
+
 from utils.reporting import BatchResult, StepReport
-from utils.translator_utils import QUERY_TIMEOUT_SECONDS, post_sparql_update
+from utils.sparql_terms import OIO_HAS_DBXREF, InvalidTermError, curie_iri, iri, literal
+from utils.translator_utils import (
+    QUERY_ERRORS,
+    QUERY_TIMEOUT_SECONDS,
+    post_sparql_update,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -114,7 +118,7 @@ WHERE {{
 }}"""
 
 
-def update_triples_batch(pairs: List[Tuple[str, str]]) -> BatchResult:
+def update_triples_batch(pairs: list[tuple[str, str]]) -> BatchResult:
     """
     Renames PR nodes to their UniProtKB IRIs and rewrites the matching xref.
     Pairs with unusable values are skipped individually.
@@ -147,7 +151,7 @@ def pr_uniprot_id_swapper() -> StepReport:
     try:
         first = extract_tuples(run_query(FIRST_QUERY), key_pr="mpr")
         second = extract_tuples(run_query(SECOND_QUERY))
-    except Exception as e:
+    except QUERY_ERRORS as e:
         report.fail(f"querying Ubergraph for PR/UniProtKB pairs failed: {e}")
         return report
     all_tuples = first + second

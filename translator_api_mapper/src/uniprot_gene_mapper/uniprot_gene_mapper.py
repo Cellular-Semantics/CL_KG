@@ -1,12 +1,13 @@
 import logging
-from typing import List
 
 import requests
-from utils.sparql_terms import InvalidTermError, curie_iri, iri
+
 from utils.reporting import BatchResult, StepReport
+from utils.sparql_terms import InvalidTermError, curie_iri, iri
 from utils.translator_utils import (
     BATCH_SIZE,
     PREFIXES,
+    QUERY_ERRORS,
     RO_0003000,
     build_sparql_query,
     get_normalized_curies,
@@ -23,7 +24,7 @@ def build_gene_protein_triple(gene_curie: str, uniprot_curie: str) -> str:
     return f"{curie_iri(gene_curie)} {iri(RO_0003000)} {curie_iri(uniprot_curie)} ."
 
 
-def insert_triples_in_batch(triples: List[str]) -> BatchResult:
+def insert_triples_in_batch(triples: list[str]) -> BatchResult:
     """Inserts a batch of RDF triples into the RDF4J repository."""
     result = BatchResult(statements=len(triples))
     if not triples:
@@ -42,7 +43,7 @@ def uniprot_gene_mapper() -> StepReport:
         uniprot_terms = run_query(build_sparql_query(PREFIXES["uniprot"]))
         ensembl_terms = run_query(build_sparql_query(PREFIXES["ensembl"]))
         ncbigene_terms = run_query(build_sparql_query(PREFIXES["ncbigene"]))
-    except Exception as e:
+    except QUERY_ERRORS as e:
         report.fail(f"querying protein/gene nodes failed: {e}")
         return report
     uniprot_curie_list = uri_to_curie(uniprot_terms)

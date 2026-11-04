@@ -1,11 +1,12 @@
 import logging
-from typing import Dict, List
 
 import requests
-from utils.sparql_terms import OIO_HAS_DBXREF, InvalidTermError, curie_iri, literal
+
 from utils.reporting import BatchResult, StepReport
+from utils.sparql_terms import OIO_HAS_DBXREF, InvalidTermError, curie_iri, literal
 from utils.translator_utils import (
     PREFIXES,
+    QUERY_ERRORS,
     build_sparql_query,
     get_normalized_curies,
     post_sparql_update,
@@ -16,7 +17,7 @@ from utils.translator_utils import (
 logger = logging.getLogger(__name__)
 
 
-def build_gene_unify_statement(ensembl_curie: str, ncbigene_ids: List[str]) -> str:
+def build_gene_unify_statement(ensembl_curie: str, ncbigene_ids: list[str]) -> str:
     """
     Build one SPARQL update that moves all triples of an Ensembl gene node onto
     its primary NCBIGene node and records the old IDs as hasDbXref literals.
@@ -47,7 +48,7 @@ WHERE {{
 }}"""
 
 
-def update_gene_nodes_batch(update_dict: Dict[str, List[str]]) -> BatchResult:
+def update_gene_nodes_batch(update_dict: dict[str, list[str]]) -> BatchResult:
     """
     Combines multiple SPARQL updates into one request.
 
@@ -78,7 +79,7 @@ def gene_node_unifier() -> StepReport:
     report = StepReport("gene_node_unifier")
     try:
         ensembl_terms = run_query(build_sparql_query(PREFIXES["ensembl"]))
-    except Exception as e:
+    except QUERY_ERRORS as e:
         report.fail(f"querying Ensembl gene nodes failed: {e}")
         return report
     ensembl_curie_list = uri_to_curie(ensembl_terms)

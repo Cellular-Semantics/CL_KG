@@ -61,7 +61,7 @@ def test_failed_batch_is_reported_and_later_batches_still_run(monkeypatch):
 
 def test_query_failure_is_reported_not_raised(monkeypatch):
     def broken(query):
-        raise ConnectionError("triplestore down")
+        raise OSError("triplestore down")
 
     monkeypatch.setattr(gnu, "run_query", broken)
     report = gnu.gene_node_unifier()
