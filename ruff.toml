@@ -14,7 +14,6 @@ src = [
 extend-exclude = ["anndata2rdf/.venv-anndata2rdf"]
 
 [per-file-target-version]
-"cl_kb_pipeline/**" = "py38"          # schema_validator CI job
 "bitmap_query_service/**" = "py313"   # Dockerfile
 "graph_query_service/**" = "py313"    # Dockerfile
 "cl_kb_mcp/**" = "py311"              # pyproject requires-python

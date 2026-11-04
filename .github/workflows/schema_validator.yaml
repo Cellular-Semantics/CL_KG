@@ -18,11 +18,11 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set up uv and Python 3.8
+    - name: Set up uv and Python 3.10
       uses: astral-sh/setup-uv@v10.3.0
       with:
         version: "0.13.0"
-        python-version: "3.8"
+        python-version: "3.10"
     - name: Install dependencies (cl_kb_pipeline/uv.lock)
       run: uv sync --frozen --no-dev --project cl_kb_pipeline
     - name: Schema validation
