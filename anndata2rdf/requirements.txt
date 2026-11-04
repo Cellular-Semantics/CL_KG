@@ -1,4 +1,4 @@
-pandasaurus-cxg==0.2.8
+pandasaurus-cxg==0.2.9
 cellxgene-census
 pandas
 pyroaring
