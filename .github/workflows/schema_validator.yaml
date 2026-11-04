@@ -5,6 +5,9 @@ on:
     branches: [ main ]
     paths:
       - 'cl_kb_pipeline/config/dumps/neo4j2owl-config.yaml'
+      - 'cl_kb_pipeline/config/dumps/neo4j2owl_config_schema.json'
+      - 'cl_kb_pipeline/src/**'
+      - '.github/workflows/schema_validator.yaml'
 permissions:
     pull-requests: write
 
@@ -22,7 +25,7 @@ jobs:
     - name: Schema validation
       id: schema
       run: |
-        python cl_kb_pipeline/src/test_neo2owl_config.py
+        python cl_kb_pipeline/src/validate_neo2owl_config.py
     - name: Prepare schema validator comment
       if: failure()
       run: |
