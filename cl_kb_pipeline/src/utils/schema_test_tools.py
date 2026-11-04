@@ -86,7 +86,7 @@ def recurse_through_errors(es, level=0):
     return messages
 
 
-def test_local(path_to_schema_dir, schema_file, path_to_test_dir, load_yaml=True):
+def validate_files_against_schema(path_to_schema_dir, schema_file, path_to_test_dir, load_yaml=True):
     """Tests all instances in a test_folder against a single schema.
     Assumes all schema files in single dir.
     Assumes all *.json files in the test_dir should validate against the schema.

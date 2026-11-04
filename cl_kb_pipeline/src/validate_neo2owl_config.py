@@ -7,13 +7,13 @@ comment.
 import os
 import sys
 
-from utils.schema_test_tools import test_local
+from utils.schema_test_tools import validate_files_against_schema
 
 REPORT_FILE = "validation.report"
 
 
 def main() -> int:
-    errors = test_local(
+    errors = validate_files_against_schema(
         path_to_schema_dir="config/dumps/",
         schema_file="neo4j2owl_config_schema.json",
         path_to_test_dir="config/dumps/",

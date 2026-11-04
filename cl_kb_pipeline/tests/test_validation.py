@@ -1,7 +1,7 @@
 import pytest
 from jsonschema import Draft4Validator
 
-import test_neo2owl_config as ci_script
+import validate_neo2owl_config as ci_script
 from utils.schema_test_tools import validate
 
 SCHEMA = {"type": "object", "required": ["name"], "properties": {"name": {"type": "string"}}}
@@ -28,7 +28,7 @@ def test_ci_script_passes_on_repository_config(tmp_path, monkeypatch):
 def test_ci_script_fails_and_writes_report(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(
-        ci_script, "test_local", lambda **kwargs: [f"{tmp_path}/config.yaml: bad value\n"]
+        ci_script, "validate_files_against_schema", lambda **kwargs: [f"{tmp_path}/config.yaml: bad value\n"]
     )
     assert ci_script.main() == 1
     assert (tmp_path / "validation.report").read_text() == "```\nconfig.yaml: bad value\n```\n"
