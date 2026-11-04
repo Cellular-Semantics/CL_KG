@@ -1,5 +1,0 @@
-fastapi
-httpx
-neo4j
-pytest
-uvicorn[standard]

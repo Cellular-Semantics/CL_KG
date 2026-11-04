@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "graph-query-service"
+version = "0.1.0"
+description = "FastAPI service that returns cell-cluster metadata manifests from the Neo4j knowledge graph"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi",
+    "neo4j",
+    "uvicorn[standard]",
+]
+
+[dependency-groups]
+# Test-only: not installed in the Docker image (uv sync --no-dev).
+dev = [
+    "httpx",  # required by fastapi.testclient
+    "pytest",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/graph_query_service"]
