@@ -19,18 +19,23 @@ STEPS = (
     ("gene_node_unifier", gene_node_unifier),
 )
 
-reports = []
-for name, step in STEPS:
-    try:
-        reports.append(step())
-    except Exception as e:
-        logger.exception(f"[{name}] crashed")
-        reports.append(StepReport(name, failures=[f"crashed: {e}"]))
+def main() -> None:
+    reports = []
+    for name, step in STEPS:
+        try:
+            reports.append(step())
+        except Exception as e:
+            logger.exception(f"[{name}] crashed")
+            reports.append(StepReport(name, failures=[f"crashed: {e}"]))
 
-logger.info("=== Translator API mapper summary ===")
-for report in reports:
-    report.log_summary(logger)
-if all(report.ok for report in reports):
-    logger.info("All steps completed without failures.")
-else:
-    logger.error("Some steps reported failures; re-running the pipeline is safe.")
+    logger.info("=== Translator API mapper summary ===")
+    for report in reports:
+        report.log_summary(logger)
+    if all(report.ok for report in reports):
+        logger.info("All steps completed without failures.")
+    else:
+        logger.error("Some steps reported failures; re-running the pipeline is safe.")
+
+
+if __name__ == "__main__":
+    main()
