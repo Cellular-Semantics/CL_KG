@@ -9,26 +9,21 @@ from pathlib import Path
 
 
 def get_json_from_file(filename):
-    """Loads json from a file.
-    """
-    with open(filename, 'r') as f:
+    """Load JSON from a file; parse errors keep their line/column details."""
+    with open(filename) as f:
         try:
-            fc = f.read()
-        except Exception as exc:
-            warnings.warn('Failed to open ' + filename + ' as JSON')
-    return json.loads(fc)
+            return json.load(f)
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"{filename} is not valid JSON: {exc}") from exc
 
 
 def get_yaml_from_file(filename):
-    """Loads YAML from a file.
-    """
-    ryaml = YAML(typ='safe')
+    """Load YAML from a file; parse errors keep their line/column details."""
     with open(filename) as stream:
         try:
-            y = ryaml.load(stream)
+            return YAML(typ="safe").load(stream)
         except YAMLError as exc:
-            warnings.warn('Failed to open ' + filename + ' as YAML')
-    return y
+            raise ValueError(f"{filename} is not valid YAML:\n{exc}") from exc
 
 
 def get_validator(filename, base_uri=''):
