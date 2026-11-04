@@ -92,7 +92,12 @@ def gene_node_unifier():
     batch_size = 20000
     for start in range(0, len(ensembl_curie_list), batch_size):
         batch = ensembl_curie_list[start : start + batch_size]
-        # batch_result = get_normalized_curies(batch, source_field="id", filter_keywords=["NCBIGene"])
+        # Node Normalization lists equivalent_identifiers with the preferred ID first;
+        # for genes that is the NCBIGene ID when a mapping exists, so [0] becomes the
+        # primary node and every other equivalent ID (ENSEMBL, HGNC, OMIM, UMLS, ...)
+        # is kept as a hasDbXref literal. Genes with no NCBIGene mapping get their own
+        # Ensembl ID as [0], which rewrites the node onto itself. Pinned by
+        # tests/test_gene_node_unifier_selection.py.
         batch_result = get_normalized_curies(
             batch, source_field="equivalent_identifiers"
         )
