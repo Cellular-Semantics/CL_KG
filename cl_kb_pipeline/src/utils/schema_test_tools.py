@@ -52,31 +52,38 @@ def get_validator(filename, base_uri=''):
                            resolver=resolver)
 
 
-def validate(validator, instance):
-    """Validate an instance of a schema and report errors."""
+def validate(validator, instance, errors=None):
+    """Validate an instance against a schema and report errors.
+
+    Returns True if valid. Error messages are reported and, if an `errors` list
+    is given, appended to it. Never exits the process; the caller decides.
+    """
     if validator.is_valid(instance):
         print("Validation Passes")
         return True
-    else:
-        es = validator.iter_errors(instance)
-        recurse_through_errors(es)
-        # print("Validation Fails")
-        sys.exit("Validation Fails")
-        return False
+    messages = recurse_through_errors(validator.iter_errors(instance))
+    for message in messages:
+        warnings.warn(message)
+    if errors is not None:
+        errors.extend(messages)
+    print("Validation Fails")
+    return False
 
 
 def recurse_through_errors(es, level=0):
-    """Recurse through errors posting message
+    """Recurse through errors collecting message
     and schema path until context is empty"""
     # Assuming blank context is a sufficient escape clause here.
+    messages = []
     for e in es:
-        warnings.warn(
+        messages.append(
             "***" * level + " subschema level " + str(level) + "\t".join([str(e.message),
                                                                           "Path to error:" + str(
                                                                               e.absolute_schema_path)]) + "\n")
         if e.context:
             level += 1
-            recurse_through_errors(e.context, level=level)
+            messages.extend(recurse_through_errors(e.context, level=level))
+    return messages
 
 
 def test_local(path_to_schema_dir, schema_file, path_to_test_dir, load_yaml=True):
@@ -86,6 +93,7 @@ def test_local(path_to_schema_dir, schema_file, path_to_test_dir, load_yaml=True
        * path_to_schema_dir:  Absolute or relative path to schema dir
        * schema_file: schema file name
        * test_dir: path to test directory (absolute or local to schema dir)
+    Returns a list of error messages for all files; an empty list means all passed.
     """
     file_ext = 'json'
     loader = get_json_from_file
@@ -106,8 +114,16 @@ def test_local(path_to_schema_dir, schema_file, path_to_test_dir, load_yaml=True
         test_dir_files = ''.join(['/*.', file_ext])
         test_files = glob.glob(pathname=os.path.join(script_folder.parent, test_dir) + test_dir_files)
         # print("Found test files: %s in %s" % (str(test_files), path_to_test_dir))
+        errors = []
         for instance_file in test_files:
-            print(instance_file)
-            i = loader(instance_file)
             print("Testing: %s" % instance_file)
-            validate(sv, i)
+            try:
+                instance = loader(instance_file)
+            except ValueError as exc:  # unparsable file
+                print(exc, file=sys.stderr)
+                errors.append(str(exc))
+                continue
+            file_errors = []
+            if not validate(sv, instance, file_errors):
+                errors.extend(f"{instance_file}: {message}" for message in file_errors)
+        return errors

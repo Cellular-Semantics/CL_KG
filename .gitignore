@@ -180,3 +180,6 @@ anndata2rdf/dev_scripts/
 /*.py
 /*.csv
 /*.xlsx
+
+# Written by cl_kb_pipeline/src/test_neo2owl_config.py on validation failure
+validation.report
