@@ -1,0 +1,20 @@
+[project]
+name = "translator-api-mapper"
+version = "0.1.0"
+description = "Maps PR/UniProtKB/Ensembl/NCBIGene nodes in the CL KG triplestore via Translator APIs"
+requires-python = ">=3.10,<3.11"  # matches the Dockerfile base image
+dependencies = [
+    "requests==2.32.2",
+    "SPARQLWrapper==2.0.0",
+]
+
+[dependency-groups]
+# Test-only: not installed in the Docker image (uv sync --no-dev).
+dev = [
+    "pytest",
+    "rdflib",  # tests parse generated SPARQL; also a SPARQLWrapper dependency
+]
+
+[tool.uv]
+# Scripts in src/ run directly (python src/pipeline_mapper.py); not an installable package.
+package = false
