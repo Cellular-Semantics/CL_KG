@@ -1,10 +1,8 @@
 import json
 import sys
-from jsonschema import Draft4Validator, RefResolver, SchemaError
-import os
+from jsonschema import Draft4Validator
 import glob
 from ruamel.yaml import YAML, YAMLError
-import warnings
 from pathlib import Path
 
 
@@ -26,30 +24,13 @@ def get_yaml_from_file(filename):
             raise ValueError(f"{filename} is not valid YAML:\n{exc}") from exc
 
 
-def get_validator(filename, base_uri=''):
-    """Load schema from JSON file;
-    Check whether it's a valid schema;
-    Return a Draft4Validator object.
-    Optionally specify a base URI for relative path
-    resolution of JSON pointers (This is especially useful
-    for local resolution via base_uri of form file://{some_path}/)
-    """
-
+def get_validator(filename):
+    """Load a JSON schema from file, check it is a valid Draft 4 schema
+    (raises SchemaError if not) and return a Draft4Validator for it."""
     schema = get_json_from_file(filename)
-    try:
-        # Check schema via class method call. Works, despite IDE complaining
-        # However, it appears that this doesn't catch every schema issue.
-        Draft4Validator.check_schema(schema)
-        print("%s is a valid JSON schema" % filename)
-    except SchemaError:
-        raise
-    if base_uri:
-        resolver = RefResolver(base_uri=base_uri,
-                               referrer=filename)
-    else:
-        resolver = None
-    return Draft4Validator(schema=schema,
-                           resolver=resolver)
+    Draft4Validator.check_schema(schema)
+    print("%s is a valid JSON schema" % filename)
+    return Draft4Validator(schema=schema)
 
 
 def validate(validator, instance, errors=None):
@@ -63,7 +44,7 @@ def validate(validator, instance, errors=None):
         return True
     messages = recurse_through_errors(validator.iter_errors(instance))
     for message in messages:
-        warnings.warn(message)
+        print(message, file=sys.stderr)
     if errors is not None:
         errors.extend(messages)
     print("Validation Fails")
@@ -87,43 +68,34 @@ def recurse_through_errors(es, level=0):
 
 
 def validate_files_against_schema(path_to_schema_dir, schema_file, path_to_test_dir, load_yaml=True):
-    """Tests all instances in a test_folder against a single schema.
-    Assumes all schema files in single dir.
-    Assumes all *.json files in the test_dir should validate against the schema.
-       * path_to_schema_dir:  Absolute or relative path to schema dir
-       * schema_file: schema file name
-       * test_dir: path to test directory (absolute or local to schema dir)
+    """Validate every instance file in a directory against a single schema.
+
+       * path_to_schema_dir: schema directory, relative to the cl_kb_pipeline folder
+       * schema_file: schema file name inside path_to_schema_dir
+       * path_to_test_dir: directory of instance files, relative to the cl_kb_pipeline folder
+       * load_yaml: validate *.yaml files if True, otherwise *.json files
     Returns a list of error messages for all files; an empty list means all passed.
     """
-    file_ext = 'json'
-    loader = get_json_from_file
-    if load_yaml:
-        file_ext = 'yaml'
-        loader = get_yaml_from_file
-    # Getting script directory, schema directory and test directory
-    script_folder = Path(os.path.dirname(os.path.realpath(__file__))).parent
-    schema_dir = Path(os.path.dirname(path_to_schema_dir))
-    test_dir = Path(os.path.dirname(path_to_test_dir))
-    # Checking whether schema directory and test directory are in the parent directory of script directory
-    if not os.path.exists(os.path.join(script_folder.parent, schema_dir)):
-        raise Exception("Please provide valid path_to_schema_dir")
-    if not os.path.exists(os.path.join(script_folder.parent, test_dir)):
-        raise Exception("Please provide valid path_to_test_dir")
-    else:
-        sv = get_validator(os.path.join(script_folder.parent, schema_dir, schema_file))
-        test_dir_files = ''.join(['/*.', file_ext])
-        test_files = glob.glob(pathname=os.path.join(script_folder.parent, test_dir) + test_dir_files)
-        # print("Found test files: %s in %s" % (str(test_files), path_to_test_dir))
-        errors = []
-        for instance_file in test_files:
-            print("Testing: %s" % instance_file)
-            try:
-                instance = loader(instance_file)
-            except ValueError as exc:  # unparsable file
-                print(exc, file=sys.stderr)
-                errors.append(str(exc))
-                continue
-            file_errors = []
-            if not validate(sv, instance, file_errors):
-                errors.extend(f"{instance_file}: {message}" for message in file_errors)
-        return errors
+    file_ext, loader = ("yaml", get_yaml_from_file) if load_yaml else ("json", get_json_from_file)
+    # This file lives in cl_kb_pipeline/src/utils/; paths are relative to cl_kb_pipeline/.
+    pipeline_root = Path(__file__).resolve().parents[2]
+    schema_dir = pipeline_root / path_to_schema_dir
+    test_dir = pipeline_root / path_to_test_dir
+    for directory in (schema_dir, test_dir):
+        if not directory.is_dir():
+            raise FileNotFoundError(f"Directory not found: {directory}")
+
+    sv = get_validator(str(schema_dir / schema_file))
+    errors = []
+    for instance_file in sorted(glob.glob(str(test_dir / f"*.{file_ext}"))):
+        print("Testing: %s" % instance_file)
+        try:
+            instance = loader(instance_file)
+        except ValueError as exc:  # unparsable file
+            print(exc, file=sys.stderr)
+            errors.append(str(exc))
+            continue
+        file_errors = []
+        if not validate(sv, instance, file_errors):
+            errors.extend(f"{instance_file}: {message}" for message in file_errors)
+    return errors
