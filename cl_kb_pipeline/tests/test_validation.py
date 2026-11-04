@@ -32,3 +32,34 @@ def test_ci_script_fails_and_writes_report(tmp_path, monkeypatch):
     )
     assert ci_script.main() == 1
     assert (tmp_path / "validation.report").read_text() == "```\nconfig.yaml: bad value\n```\n"
+
+
+NESTED_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "a": {"oneOf": [{"type": "integer"}, {"type": "boolean"}]},
+        "b": {"type": "array", "items": {"type": "string"}},
+    },
+}
+
+
+def test_error_report_nesting_and_locations():
+    errors = []
+    with pytest.warns(UserWarning):
+        validate(Draft4Validator(NESTED_SCHEMA), {"a": "x", "b": ["ok", 2]}, errors)
+
+    # 'a' failed oneOf: its two sub-errors are indented one level. 'b/1' is a
+    # sibling of 'a' and stays at level 0 (the old code indented it further).
+    assert errors == [
+        "a: 'x' is not valid under any of the given schemas  [schema: properties/a/oneOf]",
+        "  a: 'x' is not of type 'integer'  [schema: properties/a/oneOf/0/type]",
+        "  a: 'x' is not of type 'boolean'  [schema: properties/a/oneOf/1/type]",
+        "b/1: 2 is not of type 'string'  [schema: properties/b/items/type]",
+    ]
+
+
+def test_error_report_uses_dollar_for_document_root():
+    errors = []
+    with pytest.warns(UserWarning):
+        validate(Draft4Validator(SCHEMA), "just a string", errors)
+    assert errors == ["$: 'just a string' is not of type 'object'  [schema: type]"]

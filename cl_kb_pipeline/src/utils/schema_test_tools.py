@@ -71,18 +71,18 @@ def validate(validator, instance, errors=None):
 
 
 def recurse_through_errors(es, level=0):
-    """Recurse through errors collecting message
-    and schema path until context is empty"""
-    # Assuming blank context is a sufficient escape clause here.
+    """Format validation errors and their sub-errors (oneOf/anyOf context).
+
+    Each line is '<location in instance>: <message>  [schema: <rule path>]',
+    indented two spaces per nesting level; '$' is the document root.
+    """
     messages = []
     for e in es:
-        messages.append(
-            "***" * level + " subschema level " + str(level) + "\t".join([str(e.message),
-                                                                          "Path to error:" + str(
-                                                                              e.absolute_schema_path)]) + "\n")
+        location = "/".join(str(part) for part in e.absolute_path) or "$"
+        rule = "/".join(str(part) for part in e.absolute_schema_path)
+        messages.append(f"{'  ' * level}{location}: {e.message}  [schema: {rule}]")
         if e.context:
-            level += 1
-            messages.extend(recurse_through_errors(e.context, level=level))
+            messages.extend(recurse_through_errors(e.context, level + 1))
     return messages
 
 
