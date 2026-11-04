@@ -2,8 +2,8 @@ import logging
 import os
 import re
 import uuid
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Dict, Iterable, Optional, Tuple
 
 import cellxgene_census
 import pandas as pd
@@ -46,7 +46,7 @@ def build_cluster_bitmaps(aea, gg, output_dir: str) -> int:
         logger.warning("Skipping bitmap build: no cluster bitmap records found in RDF graph.")
         return 0
 
-    joinid_map_cache: Dict[Tuple[str, str], pd.Series] = {}
+    joinid_map_cache: dict[tuple[str, str], pd.Series] = {}
     bitmap_count = 0
 
     for record in records:
@@ -215,6 +215,6 @@ def _get_rdf_graph(gg):
     raise AttributeError("GraphGenerator does not expose an RDF graph via 'rdf_graph' or 'graph'.")
 
 
-def _get_literal(graph, subject, predicate: URIRef) -> Optional[str]:
+def _get_literal(graph, subject, predicate: URIRef) -> str | None:
     value = graph.value(subject, predicate)
     return None if value is None else str(value)

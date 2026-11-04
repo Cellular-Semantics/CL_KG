@@ -4,13 +4,13 @@ import os
 import sys
 
 from csv_parser import generate_author_cell_type_config, write_yaml_file
-from pull_anndata import (
-    get_dataset_dict,
-    download_dataset_with_url,
-    get_dataset_id_from_link,
-    delete_file,
-)
 from generate_rdf import generate_rdf_graph
+from pull_anndata import (
+    delete_file,
+    download_dataset_with_url,
+    get_dataset_dict,
+    get_dataset_id_from_link,
+)
 
 logger = logging.getLogger(__name__)
 

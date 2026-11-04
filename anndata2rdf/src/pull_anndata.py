@@ -2,7 +2,6 @@ import logging
 import os
 import re
 import time
-from typing import Dict, List, Optional
 
 import requests
 from tqdm import tqdm
@@ -22,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 def download_dataset_with_url(
     matrix_id: str, dataset_download_url: str, dataset_dir: str
-) -> Optional[str]:
+) -> str | None:
     """
     Download an AnnData dataset from the specified URL in chunks with retry logic.
 
@@ -79,7 +78,8 @@ def download_dataset_with_url(
                         f"Failed to download the dataset. Status code: {response.status_code}"
                     )
                     break
-        except Exception as e:
+        except (requests.RequestException, OSError) as e:
+            # Network errors (incl. timeouts) and local write errors are retried.
             logger.error(
                 f"Error occurred while downloading the dataset: {e}. Retrying..."
             )
@@ -105,7 +105,7 @@ def delete_file(file_name):
         logger.info(f"Error deleting file '{file_name}': {e}")
 
 
-def get_dataset_dict(input_source: List[Dict]) -> Dict[str, Dict]:
+def get_dataset_dict(input_source: list[dict]) -> dict[str, dict]:
     cxg_dataset_dict = {}
     for config in input_source:
         matrix_id = get_dataset_id_from_link(config["CxG_link"])

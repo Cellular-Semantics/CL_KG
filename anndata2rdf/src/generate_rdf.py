@@ -1,19 +1,19 @@
 import logging
-from typing import List, Optional
 
-from bitmap_builder import build_cluster_bitmaps
 from pandasaurus_cxg.enrichment_analysis import AnndataEnrichmentAnalyzer
 from pandasaurus_cxg.graph_generator.graph_generator import GraphGenerator
+
+from bitmap_builder import build_cluster_bitmaps
 
 logger = logging.getLogger(__name__)
 
 
 def generate_rdf_graph(
     anndata_file_path: str,
-    author_cell_type_list: List[str],
+    author_cell_type_list: list[str],
     output_rdf_path: str,
-    dataset_metadata: Optional[dict] = None,
-    bitmap_output_dir: Optional[str] = None,
+    dataset_metadata: dict | None = None,
+    bitmap_output_dir: str | None = None,
 ):
     logger.info(f"Generating RDF graph using {anndata_file_path}...")
     aea = AnndataEnrichmentAnalyzer(anndata_file_path, author_cell_type_list)

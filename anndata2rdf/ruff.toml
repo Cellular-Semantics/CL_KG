@@ -1,0 +1,4 @@
+# Ruff settings for anndata2rdf. Modules in src/ import each other as top-level
+# modules (that is how the Dockerfile runs them), so mark src/ as first-party.
+target-version = "py310"  # matches the Dockerfile base image
+src = ["src"]

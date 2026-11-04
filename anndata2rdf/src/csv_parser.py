@@ -1,7 +1,6 @@
 import logging
 import os
 import time
-from typing import Dict, Optional
 
 import pandas as pd
 import requests
@@ -19,7 +18,6 @@ logger = logging.getLogger(__name__)
 class DatasetNotFoundException(Exception):
     """Custom exception for missing dataset versions."""
 
-    pass
 
 
 def generate_yaml_data(data):
@@ -53,13 +51,13 @@ def generate_yaml_data(data):
 
         except DatasetNotFoundException as e:
             logger.error(e)
-        except Exception as e:
-            logger.exception(f"Unexpected error while processing link {link}: {e}")
+        except Exception:
+            logger.exception(f"Unexpected error while processing link {link}")
 
     return _yaml_data
 
 
-def fetch_latest_cxg_dataset_metadata(link: str) -> Optional[Dict[str, str]]:
+def fetch_latest_cxg_dataset_metadata(link: str) -> dict[str, str] | None:
     """
     Retrieve the latest CXG dataset metadata for the given dataset identifier.
 
@@ -139,7 +137,7 @@ def generate_author_cell_type_config(curated_data_dir: str):
 
         if file_name.endswith(".csv"):
             df = pd.read_csv(file_path)
-        elif file_name.endswith(".xlsx") or file_name.endswith(".xls"):
+        elif file_name.endswith((".xlsx", ".xls")):
             df = pd.read_excel(file_path)
         else:
             logger.info(f"Skipping file '{file_name}' with unsupported format.")
