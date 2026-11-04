@@ -7,6 +7,8 @@ on:
       - 'cl_kb_pipeline/config/dumps/neo4j2owl-config.yaml'
       - 'cl_kb_pipeline/config/dumps/neo4j2owl_config_schema.json'
       - 'cl_kb_pipeline/src/**'
+      - 'cl_kb_pipeline/pyproject.toml'
+      - 'cl_kb_pipeline/uv.lock'
       - '.github/workflows/schema_validator.yaml'
 permissions:
     pull-requests: write
@@ -16,16 +18,17 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v3
+    - name: Set up uv and Python 3.8
+      uses: astral-sh/setup-uv@v10.3.0
       with:
-        python-version: 3.8
-    - name: Install dependencies
-      run: pip install ruamel.yaml==0.17.21 jsonschema==4.4.0
+        version: "0.13.0"
+        python-version: "3.8"
+    - name: Install dependencies (cl_kb_pipeline/uv.lock)
+      run: uv sync --frozen --no-dev --project cl_kb_pipeline
     - name: Schema validation
       id: schema
       run: |
-        python cl_kb_pipeline/src/validate_neo2owl_config.py
+        uv run --frozen --no-dev --project cl_kb_pipeline python cl_kb_pipeline/src/validate_neo2owl_config.py
     - name: Prepare schema validator comment
       if: failure()
       run: |

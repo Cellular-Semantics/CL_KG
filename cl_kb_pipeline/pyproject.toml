@@ -1,0 +1,16 @@
+[project]
+name = "cl-kb-pipeline-tools"
+version = "0.1.0"
+description = "Validation tools for the CL KB pipeline config (neo4j2owl schema check)"
+requires-python = ">=3.8,<3.9"  # the schema_validator CI job runs Python 3.8
+dependencies = [
+    "jsonschema==4.4.0",
+    "ruamel.yaml==0.17.21",
+]
+
+[dependency-groups]
+dev = ["pytest"]
+
+[tool.uv]
+# src/validate_neo2owl_config.py runs directly; not an installable package.
+package = false
