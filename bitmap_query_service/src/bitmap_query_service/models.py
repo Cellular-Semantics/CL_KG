@@ -4,7 +4,11 @@ from pydantic import BaseModel, Field, model_validator
 
 
 class BitmapQueryRequest(BaseModel):
-    census_version: str = Field(min_length=1)
+    # Used in the bitmap filename, so only allow version-like values
+    # (e.g. "2025-11-08", "stable"): no path separators or leading dots.
+    census_version: str = Field(
+        min_length=1, max_length=64, pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]*$"
+    )
     operation: Literal["lookup"]
     clusters: list[str] = Field(min_length=1)
 

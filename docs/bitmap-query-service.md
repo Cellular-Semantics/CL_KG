@@ -11,10 +11,10 @@ The current implementation is intentionally narrow:
 - no bitmap set operations yet
 
 ## Current state
-The repo already contains a working initial vertical slice in [bitmap_query_service](</Users/ub2/github/CL_KB/bitmap_query_service>).
+The repo already contains a working initial vertical slice in [bitmap_query_service](https://github.com/Cellular-Semantics/CL_KG/tree/main/bitmap_query_service).
 
 Implemented pieces:
-- service module with Dockerfile, requirements, app code, and tests
+- service module with Dockerfile, pyproject.toml/uv.lock, app code, and tests
 - `GET /health`
 - `POST /bitmap/query`
 - bitmap filename resolution aligned with `anndata2rdf`
@@ -79,7 +79,7 @@ Resolution rules:
 - otherwise, derive a deterministic UUID5 from the full IRI
 - construct filenames as `"{storage_id}__{census_version}.bitmap"`
 
-This logic is aligned to [anndata2rdf/src/bitmap_builder.py](/Users/ub2/github/CL_KB/anndata2rdf/src/bitmap_builder.py).
+This logic is aligned to [anndata2rdf/src/bitmap_builder.py](https://github.com/Cellular-Semantics/CL_KG/blob/main/anndata2rdf/src/bitmap_builder.py).
 
 ## Module layout
 
@@ -87,27 +87,29 @@ This logic is aligned to [anndata2rdf/src/bitmap_builder.py](/Users/ub2/github/C
 bitmap_query_service/
 ├── Dockerfile
 ├── README.md
-├── requirements.txt
+├── pyproject.toml
+├── uv.lock
 ├── src/
-│   ├── main.py
-│   ├── config.py
-│   ├── models.py
-│   ├── bitmap_ops.py
-│   ├── bitmap_store.py
-│   └── iri_utils.py
+│   └── bitmap_query_service/
+│       ├── main.py
+│       ├── config.py
+│       ├── models.py
+│       ├── bitmap_ops.py
+│       ├── bitmap_store.py
+│       └── iri_utils.py
 └── tests/
 ```
 
 Key responsibilities:
-- `src/main.py`: FastAPI app and HTTP endpoints
-- `src/config.py`: environment loading
-- `src/models.py`: request and response validation
-- `src/iri_utils.py`: IRI to bitmap filename resolution
-- `src/bitmap_store.py`: file lookup and bitmap deserialization
-- `src/bitmap_ops.py`: bitmap serialization and count helpers
+- `src/bitmap_query_service/main.py`: FastAPI app and HTTP endpoints
+- `src/bitmap_query_service/config.py`: environment loading
+- `src/bitmap_query_service/models.py`: request and response validation
+- `src/bitmap_query_service/iri_utils.py`: IRI to bitmap filename resolution
+- `src/bitmap_query_service/bitmap_store.py`: file lookup and bitmap deserialization
+- `src/bitmap_query_service/bitmap_ops.py`: bitmap serialization and count helpers
 
 ## Deployment
-The service is wired into [cl_kb_pipeline/docker-compose.yml](/Users/ub2/github/CL_KB/cl_kb_pipeline/docker-compose.yml).
+The service is wired into [cl_kb_pipeline/docker-compose.yml](https://github.com/Cellular-Semantics/CL_KG/blob/main/cl_kb_pipeline/docker-compose.yml).
 
 Current compose shape:
 - service name: `bitmap-query-service`
