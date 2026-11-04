@@ -14,7 +14,7 @@ The current implementation is intentionally narrow:
 The repo already contains a working initial vertical slice in [bitmap_query_service](https://github.com/Cellular-Semantics/CL_KG/tree/main/bitmap_query_service).
 
 Implemented pieces:
-- service module with Dockerfile, requirements, app code, and tests
+- service module with Dockerfile, pyproject.toml/uv.lock, app code, and tests
 - `GET /health`
 - `POST /bitmap/query`
 - bitmap filename resolution aligned with `anndata2rdf`
@@ -87,7 +87,8 @@ This logic is aligned to [anndata2rdf/src/bitmap_builder.py](https://github.com/
 bitmap_query_service/
 ├── Dockerfile
 ├── README.md
-├── requirements.txt
+├── pyproject.toml
+├── uv.lock
 ├── src/
 │   └── bitmap_query_service/
 │       ├── main.py
